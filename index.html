@@ -222,6 +222,26 @@ ul.clean svg{color:var(--primary)}
     width: -webkit-fill-available;
   }
 }
+  nav{position:relative}
+@media(max-width:999px){
+nav.open ul{
+display:flex;
+position:absolute;
+top:100%;
+right:0;
+margin-top:10px;
+flex-direction:column;
+gap:0;
+background:#fff;
+border:1px solid var(--border);
+border-radius:14px;
+box-shadow:var(--shadow);
+padding:8px;
+min-width:220px;
+z-index:55
+}
+nav.open ul a{display:block}
+}
 </style>
 </head>
 <body>
@@ -249,11 +269,19 @@ ul.clean svg{color:var(--primary)}
       <a href="#contact" class="btn alt focus-ring">Request Brochure</a>
       <a href="#visit" class="btn focus-ring">Book a Tour</a>
     </div>
-    <button class="menu-btn focus-ring" aria-label="Open menu">
+    <button class="menu-btn focus-ring" aria-label="Open menu" aria-expanded="false" aria-controls="primary-menu">
       <svg viewBox="0 0 24 24" fill="none">
         <path d="M4 7h16M4 12h16M4 17h16" stroke="#27413b" stroke-width="2" stroke-linecap="round"/>
       </svg>
     </button>
+    <nav aria-label="Primary">
+      <ul id="primary-menu">
+        <li><a href="#home" aria-current="page">Home</a></li>
+        <li><a href="#lifestyle">Lifestyle</a></li>
+        <li><a href="#care">Care</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
   </div>
 </header>
 
@@ -695,6 +723,16 @@ function showToast(msg){
   toast.textContent=msg;
   toast.classList.add('show');
   setTimeout(()=>toast.classList.remove('show'),3500);
+}
+  const menuBtn=document.querySelector('.menu-btn');
+const nav=document.querySelector('nav[aria-label="Primary"]');
+if(menuBtn&&nav){
+menuBtn.addEventListener('click',()=>{
+const expanded=menuBtn.getAttribute('aria-expanded')==='true';
+menuBtn.setAttribute('aria-expanded',(!expanded).toString());
+menuBtn.setAttribute('aria-label',expanded?'Open menu':'Close menu');
+nav.classList.toggle('open',!expanded);
+});
 }
 </script>
 </body>
