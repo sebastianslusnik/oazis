@@ -161,7 +161,8 @@
 	}
 
 	.navbar {
-		position: sticky;
+		position: fixed;
+		width: -webkit-fill-available;
 		top: 0;
 		z-index: 50;
 		background: rgba(246, 251, 249, .75);
@@ -750,10 +751,16 @@
 			gap: 0;
 		}
 	}
+	.pd-180 {
+		padding-top: 90px;
+	}
 
 	@media (min-width: 1000px) {
 		.mobileOnly {
 			display: none;
+		}
+		.pd-180 {
+			padding-top: 180px;
 		}
 	}
 
@@ -925,7 +932,7 @@
 </head>
 
 <body>
-	<header class="navbar" role="banner">
+	<header class="navbar pd-180" role="banner">
 		<div class="container nav-inner">
 			<a href="#" class="brand">
 				<span class="logo" aria-hidden="true">
