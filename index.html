@@ -748,6 +748,18 @@
 			display: none;
 		}
 	}
+		.onMobile {
+			display: none !important;
+		}
+
+	@media (max-width: 429px) {
+		.onMobile {
+			display: block;
+		}
+		.offMobile {
+			display: none !important;
+		}
+	}
 	</style>
 </head>
 
@@ -761,7 +773,8 @@
 						<circle cx="18" cy="6" r="3" fill="#fff" opacity=".7" />
 					</svg>
 				</span>
-				<span>OAZIS <font style="font-weight: 300">| Zariadenie Sociálnych Služieb</font></span>
+				<span class="offMobile">OAZIS <font style="font-weight: 300">| Zariadenie Sociálnych Služieb</font></span>
+				<span class="onMobile">OAZIS <font style="font-weight: 300">| ZSS</font></span>
 			</a>
 			<nav aria-label="Primary">
 				<ul>
@@ -1255,7 +1268,8 @@
 							<circle cx="18" cy="6" r="3" fill="#fff" opacity=".7" />
 						</svg>
 					</span>
-					<span>OAZIS <font style="font-weight: 300">| Zariadenie Sociálnych Služieb</font></span>
+					<span class="offMobile">OAZIS <font style="font-weight: 300">| Zariadenie Sociálnych Služieb</font></span>
+					<span class="onMobile">OAZIS <font style="font-weight: 300">| ZSS</font></span>
 				</div>
 				<p class="lead">Aby sa u nás každý cítil človekom.</p>
 				<div class="social" aria-label="Social media">
