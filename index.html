@@ -1317,8 +1317,8 @@
 		form.addEventListener('submit', e => {
 			e.preventDefault();
 			const fd = new FormData(form);
-			const name = fd.get('name') ? .toString().trim();
-			const email = fd.get('email') ? .toString().trim();
+			const name = fd.get('name')?.toString().trim();
+			const email = fd.get('email')?.toString().trim();
 			if(!name || !email) {
 				showToast('Please provide your name and email.');
 				return
