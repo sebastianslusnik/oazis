@@ -762,6 +762,42 @@
 			display: none !important;
 		}
 	}
+
+	/* New utility classes replacing former inline styles */
+	.mb-14 { margin-bottom:14px }
+	.mb-20 { margin-bottom:20px }
+	.mb-35 { margin-bottom:35px }
+	.mt-4 { margin-top:4px }
+	.mt-6 { margin-top:6px }
+	.mt-12 { margin-top:12px }
+	.mt-14 { margin-top:14px }
+	.mt-18 { margin-top:18px }
+	.mb-0 { margin-bottom:0 }
+	.mt-0 { margin-top:0 }
+	.flex { display:flex }
+	.flex-wrap { flex-wrap:wrap }
+	.flex-col { flex-direction:column }
+	.gap-10 { gap:10px }
+	.gap-12 { gap:12px }
+	.gap-14 { gap:14px }
+	.gap-6 { gap:6px }
+	.justify-between { justify-content:space-between }
+	.text-justify { text-align:justify }
+	.grid-colspan-2 { grid-row:span 2 }
+	.minh-260 { min-height:260px }
+	.minh-140 { min-height:140px }
+	.obj-pos-right { object-position:right }
+	.grid-1col-force { grid-template-columns: 2fr !important }
+	.p-40 { padding:40px }
+	.flex-flow-wrap { display:flex; flex-flow:wrap }
+	.w-full-webkit { width: -webkit-fill-available }
+	.price-lg { flex:auto; align-content:flex-end; font-size:32px; text-align:center }
+	.img-rounded-ratio { border-radius:14px; aspect-ratio: 3 / 2 }
+	.addr-box { background-color:#edf9f5; padding:10px 20px; border-radius:10px; border:1px solid #dff4ee; margin:0 }
+	.text-muted { color: var(--muted) }
+	.grid-3-cols { grid-template-columns:repeat(3,1fr) }
+	.footer-meta { margin-top:14px; color:var(--muted); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px }
+	.hide { display:none }
 	</style>
 </head>
 
@@ -784,7 +820,7 @@
 					<li><a href="#lifestyle">Starostlivosť</a></li>
 					<li><a href="#care">Služby</a></li>
 					<li><a href="#contact">Kontakt</a></li>
-				</ul>
+				<ul>
 			</nav>
 			<div class="cta-group">
 				<a href="#contact" class="btn alt focus-ring">CENNÍK</a>
@@ -809,13 +845,13 @@
 		<section class="hero section" id="home" aria-label="Welcome">
 			<div class="container">
 				<div>
-					<div class="badge" style="margin-bottom:14px">
+					<div class="badge mb-14">
 						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
 							<path d="M12 2l2.4 6.9H22l-5.8 4.2 2.3 7L12 16l-6.5 4.1 2.3-7L2 8.9h7.6L12 2z" stroke="#2c8d7e" stroke-width="1.4" fill="#e9fbf7" />
 						</svg> Občianske Združenie </div>
-					<h1 class="reveal" style="margin-bottom: 20px;">Aby sa u nás každý cítil človekom</h1>
-					<p class="lead reveal" style="margin-bottom: 40px;">a pociťoval etický a odborný prístup kvalifikovaných zamestnancov v súlade s ochranou ľudských práv a základných slobôd, zamerané na individuálny prístup k prijímateľom sociálnej služby v zariadení, poskytovaním služieb založených na úcte a empatii.</p>
-					<div class="reveal mobileFlex" style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap">
+					<h1 class="reveal mb-20">Aby sa u nás každý cítil človekom</h1>
+					<p class="lead reveal mb-35">a pociťoval etický a odborný prístup kvalifikovaných zamestnancov v súlade s ochranou ľudských práv a základných slobôd, zamerané na individuálny prístup k prijímateľom sociálnej služby v zariadení, poskytovaním služieb založených na úcte a empatii.</p>
+					<div class="reveal mobileFlex flex gap-12 mt-14 flex-wrap">
 						<a href="#visit" class="btn focus-ring">VOĽNÉ MIESTA</a>
 						<a href="#contact" class="btn alt focus-ring">CENNÍK</a>
 					</div>
@@ -830,13 +866,13 @@
 					<span class="blob a"></span>
 					<span class="blob b"></span>
 					<div class="collage">
-						<div class="tile" style="grid-row:span 2;min-height:260px">
-							<img style="object-position: right" src="https://www.oazis.sk/images/phocagallery/Balvany/thumbs/phoca_thumb_l_IMG_0015.jpg" alt="Residents enjoying gardening together">
+						<div class="tile grid-colspan-2 minh-260">
+							<img class="obj-pos-right" src="https://www.oazis.sk/images/phocagallery/Balvany/thumbs/phoca_thumb_l_IMG_0015.jpg" alt="Residents enjoying gardening together">
 						</div>
-						<div class="tile" style="min-height:140px">
+						<div class="tile minh-140">
 							<img src="https://www.oazis.sk/images/phocagallery/Balvany/thumbs/phoca_thumb_l_IMG_0011.jpg" alt="Friendly staff member with a resident">
 						</div>
-						<div class="tile" style="min-height:140px">
+						<div class="tile minh-140">
 							<img src="https://www.oazis.sk/images/phocagallery/Balvany/thumbs/phoca_thumb_l_IMG_0073.jpg" alt="Chef-prepared healthy meals">
 						</div>
 					</div>
@@ -860,20 +896,20 @@
 			</div>
 		</section>
 		<section class="section" id="lifestyle">
-			<div class="container grid-2" style="grid-template-columns: 2fr !important;">
+			<div class="container grid-2 grid-1col-force">
 				<div class="reveal">
 					<span class="kicker">Starostlivosť</span>
-					<h2 margin-bottom:0>Zmysluplné využitie voľného času</h2>
-					<p style="margin-top: 4px;margin-bottom: 35px" class="lead">Našim hlavným cieľom a víziou je zabezpečiť pre našich milých prijímateľov sociálnej služby dostatočnú kvalitu života, aby mohli žiť v našom zariadení plnohodnotný život v rámci svojich možností.</p>
-					<div class="services-grid" style="margin-top:14px">
+					<h2>Zmysluplné využitie voľného času</h2>
+					<p class="lead mt-4 mb-35">Našim hlavným cieľom a víziou je zabezpečiť pre našich milých prijímateľov sociálnej služby dostatočnú kvalitu života, aby mohli žiť v našom zariadení plnohodnotný život v rámci svojich možností.</p>
+					<div class="services-grid mt-14">
 						<div class="service-card">
 							<div class="icon">
 								<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
 									<path d="M12 4v16M4 12h16" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round" />
 								</svg>
 							</div>
-							<h3 style="margin-bottom: 0;">Aktivity pre mozog</h3>
-							<p style="text-align: justify">S našimi klientmi precvičujeme pozornosť, pamäť, slovnú zásobu a lúštime hlavolamy pomocou ktorých sa snažíme zachovať mozog v dobrej kondícii.</p>
+							<h3 class="mb-0">Aktivity pre mozog</h3>
+							<p class="text-justify">S našimi klientmi precvičujeme pozornosť, pamäť, slovnú zásobu a lúštime hlavolamy pomocou ktorých sa snažíme zachovať mozog v dobrej kondícii.</p>
 						</div>
 						<div class="service-card">
 							<div class="icon">
@@ -882,8 +918,8 @@
 									<path d="M8 8h8M8 12h5" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round" />
 								</svg>
 							</div>
-							<h3 style="margin-bottom: 0;">Aktivity pre dušu</h3>
-							<p style="text-align: justify">Pravidelne organizujeme komunitné stretnutia vždy s aktuálnymi témami v menších skupinkách ale aj schôdze obyvateľov s účasťou väčšieho počtu klientov.</p>
+							<h3 class="mb-0">Aktivity pre dušu</h3>
+							<p class="text-justify">Pravidelne organizujeme komunitné stretnutia vždy s aktuálnymi témami v menších skupinkách ale aj schôdze obyvateľov s účasťou väčšieho počtu klientov.</p>
 						</div>
 						<div class="service-card">
 							<div class="icon">
@@ -891,8 +927,8 @@
 									<path d="M12 20s7-4.35 7-10A7 7 0 005 10c0 5.65 7 10 7 10z" stroke="#2c8d7e" stroke-width="2" />
 								</svg>
 							</div>
-							<h3 style="margin-bottom: 0;">Pohybové aktivity</h3>
-							<p style="text-align: justify">Naši klienti majú možnosť zúčastniť sa rannej rozcvičky sprevádzanej príjemnou hudbou. Výber pohybovej aktivity sa vždy odvíja od zdravotného stavu klienta.</p>
+							<h3 class="mb-0">Pohybové aktivity</h3>
+							<p class="text-justify">Naši klienti majú možnosť zúčastniť sa rannej rozcvičky sprevádzanej príjemnou hudbou. Výber pohybovej aktivity sa vždy odvíja od zdravotného stavu klienta.</p>
 						</div>
 						<div class="service-card">
 							<div class="icon">
@@ -902,13 +938,13 @@
 									<path d="M4 20c2-3 6-3 8-3s6 0 8 3" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round" />
 								</svg>
 							</div>
-							<h3 style="margin-bottom: 0;">Kreatívne aktivity</h3>
-							<p style="text-align: justify">V našich tvorivých dielňach majú klienti možnosť vyskúšať rôzne techniky maľovania a kreslenia, trhať, lepiť, strihať alebo vyrábať darčeky z modelovej hmoty či z keramiky.</p>
+							<h3 class="mb-0">Kreatívne aktivity</h3>
+							<p class="text-justify">V našich tvorivých dielňach majú klienti možnosť vyskúšať rôzne techniky maľovania a kreslenia, trhať, lepiť, strihať alebo vyrábať darčeky z modelovej hmoty či z keramiky.</p>
 						</div>
 					</div>
 				</div>
-				<div class="card reveal" style="padding:40px;">
-					<div class="service" style="margin-bottom:12px;flex-direction:column;gap:10px">
+				<div class="card reveal p-40">
+					<div class="service mb-12 flex-col gap-10">
 						<div class="icon">
 							<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
 								<rect x="3" y="4" width="18" height="14" rx="4" stroke="#2c8d7e" stroke-width="2" />
@@ -920,7 +956,7 @@
 							<p class="lead">Našim úsilím je byť orientovaným na podporu našich klientov v tom, aby získali dostatočné zručnosti, aby mohli lepšie fungovať a to čo najsamostatnejšie.</p>
 						</div>
 					</div>
-					<ul class="clean" style="display: flex;flex-flow: wrap;">
+					<ul class="clean flex-flow-wrap">
 						<li>
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
 								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round" /></svg> Relaxácia v solnej jaskyni </li>
@@ -961,11 +997,11 @@
 		<section class="section" id="care">
 			<div class="container">
 				<span class="kicker">Služby</span>
-				<h2 style="margin-bottom:0">Služby, ktoré poskytujeme</h2>
-				<p style="margin-top: 4px;margin-bottom: 35px" class="lead">
+				<h2 class="mb-0">Služby, ktoré poskytujeme</h2>
+				<p class="lead mt-4 mb-35">
 					<font style="color:#333"><strong>OAZIS</strong></font> | zariadenie sociálnych služieb je občianske združenie, ktoré poskytuje 3 druhy pobytových sociálnych služieb pre občanov z celého Slovenska.
 				</p>
-				<div class="cards" style="margin-top:18px">
+				<div class="cards mt-18">
 					<div class="card reveal">
 						<div class="icon">
 							<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -1051,61 +1087,40 @@
 		<section class="section" id="residences">
 			<div class="container">
 				<span class="kicker">Cenník</span>
-				<h2 style="margin-bottom:0">Cenník sociálnych služieb pre rok 2025</h2>				
-				<p style="margin-top: 4px;margin-bottom: 35px" class="lead">
+				<h2 class="mb-0">Cenník sociálnych služieb pre rok 2025</h2>
+				<p class="lead mt-4 mb-35">
 					<font style="color:#333"><strong>OAZIS</strong></font> | zariadenie sociálnych služieb je občianske združenie, ktoré poskytuje 3 druhy pobytových sociálnych služieb pre občanov z celého Slovenska.
 				</p>
-				<div class="pricing" style="margin-top:18px">
+				<div class="pricing mt-18">
 					<div class="price-card reveal">
-						<img src="https://m.smedata.sk/api-media/media/image/sme/5/62/6298355/6298355_1200x.jpeg" alt="Cozy studio apartment with warm light" style="border-radius:14px;aspect-ratio: 3 / 2">
-						<h3 style="
-    margin-bottom: 0;
-">Zariadenie pre seniorov</h3>
-						<p style="margin:0">Kapacita zariadenia: <strong>95 osôb</strong></p>
-						<p style="margin:0;background-color: #edf9f5;margin: 0;padding: 10px 20px;border-radius: 10px;border: 1px solid #dff4ee;">Adresa zariadenia:<br><strong>Slobody 19 B, Komárno</strong><br><br></p>
-						<p style="text-align: justify;">V zariadení pre seniorov sa poskytuje sociálna služba fyzickej osobe, ktorá dovŕšila dôchodkový vek a je odkázaná na pomoc inej fyzickej osoby a jej stupeň odkázanosti je najmenej IV podľa prílohy č.3 zákona č. 448/2008 Z.z. o sociálnych službách, alebo fyzickej osobe, ktorá dovŕšila dôchodkový vek a poskytovanie sociálnej služby v tomto zariadení potrebuje z iných vážnych dôvodov. </p>
-						<div class="price" style="
-    flex: auto;
-    align-content: flex-end;
-    font-size: 32px;
-    text-align: center
-">558,-€<font style="font-weight:300;font-size:smaller"> /mesiac</font>
+						<img src="https://m.smedata.sk/api-media/media/image/sme/5/62/6298355/6298355_1200x.jpeg" alt="Cozy studio apartment with warm light" class="img-rounded-ratio">
+						<h3 class="mb-0">Zariadenie pre seniorov</h3>
+						<p class="mt-0 mb-0">Kapacita zariadenia: <strong>95 osôb</strong></p>
+						<p class="addr-box">Adresa zariadenia:<br><strong>Slobody 19 B, Komárno</strong><br><br></p>
+						<p class="text-justify">V zariadení pre seniorov sa poskytuje sociálna služba fyzickej osobe, ktorá dovŕšila dôchodkový vek a je odkázaná na pomoc inej fyzickej osoby a jej stupeň odkázanosti je najmenej IV podľa prílohy č.3 zákona č. 448/2008 Z.z. o sociálnych službách, alebo fyzickej osobe, ktorá dovŕšila dôchodkový vek a poskytovanie sociálnej služby v tomto zariadení potrebuje z iných vážnych dôvodov. </p>
+						<div class="price price-lg">558,-€<font style="font-weight:300;font-size:smaller"> /mesiac</font>
 						</div>
-						<a href="#visit" class="btn alt focus-ring" style="width: -webkit-fill-available;    flex-flow: column;">Podrobný Cenník</a>
+						<a href="#visit" class="btn alt focus-ring w-full-webkit flex-col">Podrobný Cenník</a>
 					</div>
 					<div class="price-card reveal">
-						<img src="https://www.oazis.sk/images/page_img/IMG_9998.jpg" alt="Spacious one-bedroom living room" style="border-radius:14px;aspect-ratio: 3 / 2">
-						<h3 style="
-    margin-bottom: 0;
-">Domov sociálnych služieb</h3>
-						<p style="margin:0">Kapacita zariadenia: <strong>125 osôb</strong></p>
-						<p style="margin:0;background-color: #edf9f5;margin: 0;padding: 10px 20px;border-radius: 10px;border: 1px solid #dff4ee;">Adresa zariadenia:<br><strong>Balvany 642, Kameničná</strong><br><br></p>
-						<p style="text-align: justify;">V domove sociálnych služieb sa poskytuje sociálna služba fyzickej osobe do dovŕšenia dôchodkového veku, ak je táto fyzická osoba odkázaná na pomoc inej fyzickej osoby a jej stupeň odkázanosti je najmenej V podľa prílohy č. 3 zákona č. 448/2008 Z.z.o sociálnych službách, alebo fyzickej osobe, ktorá je nevidiaca alebo prakticky nevidiaca a jej stupeň odkázanosti je najmenej III podľa prílohy č. 3 zákona č. 448/2008 Z.z. o sociálnych službách. </p>
-						<div class="price" style="
-    flex: auto;
-    align-content: flex-end;
-    font-size: 32px;
-    text-align: center
-">496,-€<font style="font-weight:300;font-size:smaller"> /mesiac</font>
+						<img src="https://www.oazis.sk/images/page_img/IMG_9998.jpg" alt="Spacious one-bedroom living room" class="img-rounded-ratio">
+						<h3 class="mb-0">Domov sociálnych služieb</h3>
+						<p class="mt-0 mb-0">Kapacita zariadenia: <strong>125 osôb</strong></p>
+						<p class="addr-box">Adresa zariadenia:<br><strong>Balvany 642, Kameničná</strong><br><br></p>
+						<p class="text-justify">V domove sociálnych služieb sa poskytuje sociálna služba fyzickej osobe do dovŕšenia dôchodkového veku, ak je táto fyzická osoba odkázaná na pomoc inej fyzickej osoby a jej stupeň odkázanosti je najmenej V podľa prílohy č. 3 zákona č. 448/2008 Z.z.o sociálnych službách, alebo fyzickej osobe, ktorá je nevidiaca alebo prakticky nevidiaca a jej stupeň odkázanosti je najmenej III podľa prílohy č. 3 zákona č. 448/2008 Z.z. o sociálnych službách. </p>
+						<div class="price price-lg">496,-€<font style="font-weight:300;font-size:smaller"> /mesiac</font>
 						</div>
-						<a href="#visit" class="btn alt focus-ring" style="width: -webkit-fill-available;    flex-flow: column;">Podrobný Cenník</a>
+						<a href="#visit" class="btn alt focus-ring w-full-webkit flex-col">Podrobný Cenník</a>
 					</div>
 					<div class="price-card reveal">
-						<img src="https://lh5.googleusercontent.com/p/AF1QipMfYfYezBcJtYlgAYWfqx4pkaQpYTpmK0PHEgcp=w650-h486-k-no" alt="Elegant companion suite" style="border-radius:14px;aspect-ratio: 3 / 2">
-						<h3 style="
-    margin-bottom: 0;
-">Zariadenie podporovaného bývania</h3>
-						<p style="margin:0">Kapacita zariadení spolu: <strong>24 osôb</strong></p>
-						<p style="margin:0;background-color: #edf9f5;margin: 0;padding: 10px 20px;border-radius: 10px;border: 1px solid #dff4ee;">Adresa zariadení:<br><strong>Balvany 642, Kameničná</strong><br><strong>J. Baranyaiho 17, Komárno</strong></p>
-						<p style="text-align: justify;">V zariadení podporovaného bývania sa poskytuje sociálna služba fyzickej osobe od 16. roku veku do dovŕšenia dôchodkového veku, ak je táto fyzická osoba odkázaná na pomoc inej fyzickej osoby podľa prílohy č.3 zákona č. 448/2008 Z.z. a na dohľad, pod ktorým je schopná viesť samostatný život. </p>
-						<div class="price" style="
-    flex: auto;
-    align-content: flex-end;
-    font-size: 32px;
-    text-align: center
-">217,-€<font style="font-weight:300;font-size:smaller"> /mesiac</font>
+						<img src="https://lh5.googleusercontent.com/p/AF1QipMfYfYezBcJtYlgAYWfqx4pkaQpYTpmK0PHEgcp=w650-h486-k-no" alt="Elegant companion suite" class="img-rounded-ratio">
+						<h3 class="mb-0">Zariadenie podporovaného bývania</h3>
+						<p class="mt-0 mb-0">Kapacita zariadení spolu: <strong>24 osôb</strong></p>
+						<p class="addr-box">Adresa zariadení:<br><strong>Balvany 642, Kameničná</strong><br><strong>J. Baranyaiho 17, Komárno</strong></p>
+						<p class="text-justify">V zariadení podporovaného bývania sa poskytuje sociálna služba fyzickej osobe od 16. roku veku do dovŕšenia dôchodkového veku, ak je táto fyzická osoba odkázaná na pomoc inej fyzickej osoby podľa prílohy č.3 zákona č. 448/2008 Z.z. a na dohľad, pod ktorým je schopná viesť samostatný život. </p>
+						<div class="price price-lg">217,-€<font style="font-weight:300;font-size:smaller"> /mesiac</font>
 						</div>
-						<a href="#visit" class="btn alt focus-ring" style="width: -webkit-fill-available;    flex-flow: column;">Podrobný Cenník</a>
+						<a href="#visit" class="btn alt focus-ring w-full-webkit flex-col">Podrobný Cenník</a>
 					</div>
 				</div>
 			</div>
@@ -1114,13 +1129,13 @@
 			<div class="container grid-2">
 				<div class="reveal">
 					<span class="kicker">Podmienky</span>
-					<h2 style="margin-bottom:0">Podmienky prijatia do nášho zariadenia</h2>
-					<p style="margin-top: 4px;margin-bottom: 35px" class="lead">Občan, ktorý potrebuje zabezpečenie poskytovania sociálnej služby v našom zariadení:</p>
-					<ul class="clean" style="margin-top:12px;margin-bottom: 20px">
+					<h2 class="mb-0">Podmienky prijatia do nášho zariadenia</h2>
+					<p class="lead mt-4 mb-35">Občan, ktorý potrebuje zabezpečenie poskytovania sociálnej služby v našom zariadení:</p>
+					<ul class="clean mt-12 mb-20">
 						<li><svg width="18" height="18" viewBox="0 0 24 24">
 								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg> Požiada príslušnú obec (alebo VÚC v prípade podporovaného bývania) o vydanie rozhodnutia o odkázanosti na sociálnu službu v zariadení pre seniorov (alebo v domove sociálnych služieb)</li>
 						<li><svg width="18" height="18" viewBox="0 0 24 24">
-								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg> Požiada príslušnú obec (alebo samosprávny kraj v prípade podporovaného bývania) o vyznačenie právoplatnosti rozhodnutia</li>
+								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg> Požiada príslušnú obecnú (alebo samosprávny kraj v prípade podporovaného bývania) o vyznačenie právoplatnosti rozhodnutia</li>
 						<li><svg width="18" height="18" viewBox="0 0 24 24">
 								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg> Podá žiadosť o prijatie do nášho zariadenia</li>
 						<li><svg width="18" height="18" viewBox="0 0 24 24">
@@ -1130,7 +1145,7 @@
 						<li><svg width="18" height="18" viewBox="0 0 24 24">
 								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg> Predloží notársky overené potvrdenie o majetku</li>
 					</ul>
-					<div class="mobileFlex" style="display:flex;gap:10px;margin-top:14px">
+					<div class="mobileFlex flex gap-10 mt-14">
 						<a href="#contact" class="btn focus-ring">VOĽNÉ MIESTA</a>
 						<a href="#visit" class="btn alt focus-ring">DOKUMENTY NA STIAHNUTIE</a>
 					</div>
@@ -1147,26 +1162,26 @@
 			<div class="container testimonials">
 				<div class="reveal">
 					<span class="kicker">Recenzie</span>
-					<h2 style="margin-bottom: 0">Ako nás hodnotia ostatný</h2>
-					<p style="margin-top: 4px;margin-bottom: 35px" class="lead">Pokladáme za svoje poslanie poskytovať kvalitné sociálne služby v našich zariadeniach so zreteľom na etický a odborný prístup, s rešpektovaním ľudských práv a základných slobôd bez ohľadu na rasu, národnosť, náboženstvo či politické zmýšľanie.</p>
-					<div class="quote" style="margin-top:14px">
+					<h2 class="mb-0">Ako nás hodnotia ostatný</h2>
+					<p class="lead mt-4 mb-35">Pokladáme za svoje poslanie poskytovať kvalitné sociálne služby v našich zariadeniach so zreteľom na etický a odborný prístup, s rešpektovaním ľudských práv a základných slobôd bez ohľadu na rasu, národnosť, náboženstvo či politické zmýšľanie.</p>
+					<div class="quote mt-14">
 						<img src="https://lh3.googleusercontent.com/a-/ALV-UjUD1LgYpLxYkASPSV57za1ib-x20-ExhSPhp-BlhZg_vGCQ2DnL=s64-c-rp-mo-ba3-br100" alt="Family member portrait">
 						<div>
 							<p>Vynikajúce služby pre starších ľudí so starostlivým a súcitným personálom. Čisté prostredie, denné aktivity a chutné jedlo</p>
-							<b>Denisa B.</b><br><span style="color:var(--muted)">Rodinný príslušník</span>
+							<b>Denisa B.</b><br><span class="text-muted">Rodinný príslušník</span>
 						</div>
 					</div>
-					<div class="quote" style="margin-top:14px">
+					<div class="quote mt-14">
 						<img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541" alt="Resident portrait">
 						<div>
 							<p>Veľmi milý, ochotný personál. Chutné jedlo.<br>Babička bola spokojná. Ďakujem!</p>
-							<b>Andrej C.</b><br><span style="color:var(--muted)">Rodinný príslušník</span>
+							<b>Andrej C.</b><br><span class="text-muted">Rodinný príslušník</span>
 						</div>
 					</div>
 				</div>
 				<div class="card reveal">
 					<h3>Nadchádzajúce udalosti</h3>
-					<ul class="clean" style="display: none">
+					<ul class="clean hide">
 						<li><svg width="16" height="16" viewBox="0 0 24 24">
 								<circle cx="12" cy="12" r="9" stroke="#46b3a2" stroke-width="2" />
 								<path d="M12 7v5l3 2" stroke="#46b3a2" stroke-width="2" stroke-linecap="round" /></svg>Jazz Brunch on the Terrace</li>
@@ -1177,16 +1192,16 @@
 								<circle cx="12" cy="12" r="9" stroke="#46b3a2" stroke-width="2" />
 								<path d="M12 7v5l3 2" stroke="#46b3a2" stroke-width="2" stroke-linecap="round" /></svg>Art Show & Tea Social</li>
 					</ul>
-					<a href="#visit" class="btn alt focus-ring" style="margin-top:14px">Žiadna udalosť</a>
+					<a href="#visit" class="btn alt focus-ring mt-14">Žiadna udalosť</a>
 				</div>
 			</div>
 		</section>
 		<section class="section" id="gallery">
 			<div class="container">
 				<span class="kicker">Galéria</span>
-				<h2 style="margin-bottom:0">Galéria</h2>
-				<p style="margin-top: 4px;margin-bottom: 35px" class="lead">Nahliadnite do nášho každodenného života</p>
-				<div class="gallery reveal" style="margin-top:12px;grid-template-columns:repeat(3,1fr)">
+				<h2 class="mb-0">Galéria</h2>
+				<p class="lead mt-4 mb-35">Nahliadnite do nášho každodenného života</p>
+				<div class="gallery reveal mt-12 grid-3-cols">
 					<img src="https://go.hfcu.org/hubfs/Senior%20citizens.jpg" alt="Sunlit lounge with plants">
 					<img src="https://vyta.ca/wp-content/uploads/2024/01/Social-Connections-for-Seniors-1072x603.jpg" alt="Calm hallway with artwork">
 					<img src="https://www.ideafit.com/wp-content/uploads/2021/05/Health-for-Seniors.jpg" alt="Sunlit lounge with plants">
@@ -1197,10 +1212,10 @@
 			<div class="container grid-2">
 				<div class="reveal">
 					<span class="kicker">Navštívte nás</span>
-					<h2 style="margin-bottom: 0px;">Radi Vás privítame</h2>
-					<p style="margin-top: 4px;margin-bottom: 35px" class="lead">Prevedieme Vás našími zariadeniami a ponúkneme chutnú kávu alebo čaj.</p>
+					<h2 class="mb-0">Radi Vás privítame</h2>
+					<p class="lead mt-4 mb-35">Prevedieme Vás našími zariadeniami a ponúkneme chutnú kávu alebo čaj.</p>
 					<iframe title="Map to Serenity Grove" class="map" loading="lazy" src="https://www.google.com/maps?q=oazis%20kameničná&output=embed"></iframe>
-					<div class="mobileFlex" style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+					<div class="mobileFlex flex gap-10 mt-12 flex-wrap">
 						<a href="tel:+1234567890" class="btn alt focus-ring">
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
 								<path d="M3 5l4-1 3 5-2 2a14 14 0 006 6l2-2 5 3-1 4c-7 1-16-8-17-17z" stroke="#27413b" stroke-width="2" /></svg> +421 950 123 456 </a>
@@ -1211,7 +1226,7 @@
 					</div>
 				</div>
 				<div class="contact card reveal">
-					<h3 style="margin-top: 8px;">Kontaktný fomulár</h3>
+					<h3 class="mt-8">Kontaktný fomulár</h3>
 					<form class="form" id="tourForm" novalidate>
 						<div class="row">
 							<div class="input">
@@ -1253,8 +1268,8 @@
 							<label for="message">Dotatočné informácie</label>
 							<textarea id="message" name="message" rows="4" placeholder="Povedzte nám niečo o sebe..."></textarea>
 						</div>
-						<button type="submit" class="btn" style="flex-direction:column">Poslať žiadosť</button>
-						<small style="color:var(--muted)">Odoslaním formulára súhlasíte so všeobecným používateľskými podmienkami.</small>
+						<button type="submit" class="btn flex-col">Poslať žiadosť</button>
+						<small class="text-muted">Odoslaním formulára súhlasíte so všeobecným používateľskými podmienkami.</small>
 					</form>
 				</div>
 			</div>
@@ -1263,7 +1278,7 @@
 	<footer class="footer" id="contact">
 		<div class="container footer-grid">
 			<div>
-				<div class="brand" style="margin-bottom:10px">
+				<div class="brand mb-10">
 					<span class="logo" aria-hidden="true">
 						<svg width="22" height="22" viewBox="0 0 24 24" fill="none">
 							<path d="M4 14c5-1 6-8 8-8s3 7 8 8c-3 1-5 4-8 4s-5-3-8-4z" fill="white" opacity=".9" />
@@ -1294,27 +1309,25 @@
 			<div>
 				<h3>Adresa</h3>
 				<p>Ulica Slobody 2822/19 B<br>945 01 Komárno</p>
-				<a href="#visit" class="btn alt" style="margin-top:6px">Trasa</a>
+				<a href="#visit" class="btn alt mt-6">Trasa</a>
 			</div>
 			<div>
 				<h3>Kontakt</h3>
 				<p><a href="tel:+1234567890">+421 950 123 456</a><br><a href="mailto:hello@oazis.sk">hello@oazis.sk</a></p>
-				<a href="#visit" class="btn alt" style="margin-top:6px">Napíšte Nám</a>
+				<a href="#visit" class="btn alt mt-6">Napíšte Nám</a>
 			</div>
 			<div>
 				<h3>Otváracie Hodiny</h3>
 				<p>Denne 9:00–18:00<br>Recepcia 24/7</p>
-				<a href="#contact" class="btn alt" style="margin-top:6px">Kontakt</a>
+				<a href="#contact" class="btn alt mt-6">Kontakt</a>
 			</div>
 		</div>
-		<div class="container" style="margin-top:14px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px">
+		<div class="container footer-meta">
 			<small>© <span id="year"></span> OAZIS ZSS</small>
 			<small><a href="#">Ochrana Osobných Údajov</a> · <a href="#">Všeobecne Podmienky</a></small>
 		</div>
 	</footer>
 	<div class="mobile-cta">
-		<!--a href="#visit" class="btn">VOĽNÉ MIESTA</a>
-		<a href="tel:+1234567890" class="btn alt">ZAVOLAŤ</a-->
 	</div>
 	<div class="toast" role="status" aria-live="polite" id="toast">Správa bola úspešne odoslaná!</div>
 	<script>
@@ -1350,7 +1363,8 @@
 
 	function showToast(msg) {
 		if(!toast) return;
-		toast.textContent = msg;
+		t
+		oast.textContent = msg;
 		toast.classList.add('show');
 		setTimeout(() => toast.classList.remove('show'), 3500);
 	}
