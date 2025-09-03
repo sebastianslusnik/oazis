@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="sk">
-  <head>
+
+<head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>OAZIS | Zariadenie Sociálnych Služieb</title>
@@ -104,7 +105,7 @@
 		cursor: pointer;
 		font-weight: 700;
 		min-width: 160px;
-	    justify-content: center;
+		justify-content: center;
 	}
 
 	.btn:hover {
@@ -491,13 +492,13 @@
 		color: var(--primary);
 		flex-shrink: 0;
 		align-self: flex-start;
-    	margin-top: 5px;
+		margin-top: 5px;
 	}
 
 	#lifestyle ul.clean {
 		display: flex;
-	}	
-		
+	}
+
 	.testimonials {
 		display: grid;
 		gap: 20px
@@ -755,54 +756,171 @@
 			display: none;
 		}
 	}
-		.onMobile {
-			display: none !important;
-		}
+
+	.onMobile {
+		display: none !important;
+	}
 
 	@media (max-width: 429px) {
 		.onMobile {
 			display: block !important;
 		}
+
 		.offMobile {
 			display: none !important;
 		}
 	}
 
 	/* New utility classes replacing former inline styles */
-	.mb-14 { margin-bottom:14px }
-	.mb-20 { margin-bottom:20px }
-	.mb-35 { margin-bottom:35px }
-	.mt-4 { margin-top:4px }
-	.mt-6 { margin-top:6px }
-	.mt-12 { margin-top:12px }
-	.mt-14 { margin-top:14px }
-	.mt-18 { margin-top:18px }
-	.mb-0 { margin-bottom:0 }
-	.mt-0 { margin-top:0 }
-	.flex { display:flex }
-	.flex-wrap { flex-wrap:wrap }
-	.flex-col { flex-direction:column }
-	.gap-10 { gap:10px }
-	.gap-12 { gap:12px }
-	.gap-14 { gap:14px }
-	.gap-6 { gap:6px }
-	.justify-between { justify-content:space-between }
-	.text-justify { text-align:justify }
-	.grid-colspan-2 { grid-row:span 2 }
-	.minh-260 { min-height:260px }
-	.minh-140 { min-height:140px }
-	.obj-pos-right { object-position:right }
-	.grid-1col-force { grid-template-columns: 2fr !important }
-	.p-40 { padding:40px }
-	.flex-flow-wrap { display:flex; flex-flow:wrap }
-	.w-full-webkit { width: -webkit-fill-available }
-	.price-lg { flex:auto; align-content:flex-end; font-size:32px; text-align:center }
-	.img-rounded-ratio { border-radius:14px; aspect-ratio: 3 / 2 }
-	.addr-box { background-color:#edf9f5; padding:10px 20px; border-radius:10px; border:1px solid #dff4ee; margin:0 }
-	.text-muted { color: var(--muted) }
-	.grid-3-cols { grid-template-columns:repeat(3,1fr) }
-	.footer-meta { margin-top:50px; color:var(--muted); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px }
-	.hide { display:none }
+	.mb-14 {
+		margin-bottom: 14px
+	}
+
+	.mb-20 {
+		margin-bottom: 20px
+	}
+
+	.mb-35 {
+		margin-bottom: 35px
+	}
+
+	.mt-4 {
+		margin-top: 4px
+	}
+
+	.mt-6 {
+		margin-top: 6px
+	}
+
+	.mt-12 {
+		margin-top: 12px
+	}
+
+	.mt-14 {
+		margin-top: 14px
+	}
+
+	.mt-18 {
+		margin-top: 18px
+	}
+
+	.mb-0 {
+		margin-bottom: 0
+	}
+
+	.mt-0 {
+		margin-top: 0
+	}
+
+	.flex {
+		display: flex
+	}
+
+	.flex-wrap {
+		flex-wrap: wrap
+	}
+
+	.flex-col {
+		flex-direction: column
+	}
+
+	.gap-10 {
+		gap: 10px
+	}
+
+	.gap-12 {
+		gap: 12px
+	}
+
+	.gap-14 {
+		gap: 14px
+	}
+
+	.gap-6 {
+		gap: 6px
+	}
+
+	.justify-between {
+		justify-content: space-between
+	}
+
+	.text-justify {
+		text-align: justify
+	}
+
+	.grid-colspan-2 {
+		grid-row: span 2
+	}
+
+	.minh-260 {
+		min-height: 260px
+	}
+
+	.minh-140 {
+		min-height: 140px
+	}
+
+	.obj-pos-right {
+		object-position: right
+	}
+
+	.grid-1col-force {
+		grid-template-columns: 2fr !important
+	}
+
+	.p-40 {
+		padding: 40px
+	}
+
+	.flex-flow-wrap {
+		display: flex;
+		flex-flow: wrap
+	}
+
+	.w-full-webkit {
+		width: -webkit-fill-available
+	}
+
+	.price-lg {
+		flex: auto;
+		align-content: flex-end;
+		font-size: 32px;
+		text-align: center
+	}
+
+	.img-rounded-ratio {
+		border-radius: 14px;
+		aspect-ratio: 3 / 2
+	}
+
+	.addr-box {
+		background-color: #edf9f5;
+		padding: 10px 20px;
+		border-radius: 10px;
+		border: 1px solid #dff4ee;
+		margin: 0
+	}
+
+	.text-muted {
+		color: var(--muted)
+	}
+
+	.grid-3-cols {
+		grid-template-columns: repeat(3, 1fr)
+	}
+
+	.footer-meta {
+		margin-top: 50px;
+		color: var(--muted);
+		display: flex;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 10px
+	}
+
+	.hide {
+		display: none
+	}
 	</style>
 </head>
 
@@ -825,7 +943,7 @@
 					<li><a href="#lifestyle">Starostlivosť</a></li>
 					<li><a href="#care">Služby</a></li>
 					<li><a href="#contact">Kontakt</a></li>
-				<ul>
+					<ul>
 			</nav>
 			<div class="cta-group">
 				<a href="#contact" class="btn alt focus-ring">Cenník</a>
@@ -1384,5 +1502,5 @@
 		});
 	}
 	</script>
-  </body>
+</body>
 <html>
