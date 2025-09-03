@@ -1,841 +1,1348 @@
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>OAZIS | Zariadenie Sociálnych Služieb</title>
-<link rel="icon" type="image/png" href="https://cdn2.iconfinder.com/data/icons/natural-green-perfect-pixel/512/leaf_green_natural-512.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-  
-:root{
-  --bg:#f6fbf9;
-  --bg-2:#eef7f4;
-  --soft:#e8f5f1;
-  --primary:#46b3a2;
-  --primary-600:#3aa494;
-  --primary-700:#2c8d7e;
-  --accent:#f4c88f;
-  --ink:#10211c;
-  --muted:#5a746f;
-  --card:#ffffff;
-  --border:rgba(16,33,28,.08);
-  --shadow:0 10px 30px rgba(25,68,60,.08), 0 2px 6px rgba(25,68,60,.05);
-  --radius:18px;
-  --radius-sm:12px;
-  --radius-lg:28px;
-}
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family:"Plus Jakarta Sans",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-  color:var(--ink);
-  background:radial-gradient(#dff4ee 20%, rgba(223,244,238,0) 80%);
-  line-height:1.6;
-  -webkit-font-smoothing:antialiased;
-  scroll-behavior:smooth;
-}
-a{color:inherit;text-decoration:none}
-img{max-width:100%;display:block}
-button{font:inherit}
-.container{width:min(1300px, 92%);margin-inline:auto}
-h1,h2,h3{font-family:"Playfair Display",serif;line-height:1.15;color:#0f201b}
-h1{font-size:clamp(2.2rem, 3vw + 1.2rem, 4rem);letter-spacing:-.02em}
-h2{font-size:clamp(1.6rem, 1.4vw + 1.1rem, 2.4rem)}
-h3{font-size:clamp(1.1rem, .6vw + 1rem, 1.4rem)}
-p.lead{font-size:clamp(1rem, .5vw + .9rem, 1.2rem);color:var(--muted)}
-.btn{
-  display:inline-flex;align-items:center;gap:.6rem;
-  background:var(--primary);
-  color:#fff;padding:.95rem 1.25rem;border-radius:999px;border:none;
-  box-shadow:0 10px 20px rgba(70,179,162,.18);
-  transition:transform .15s ease, box-shadow .2s ease, background .2s ease, color .2s ease;
-  cursor:pointer;font-weight:700
-}
-.btn:hover{transform:translateY(-1px);box-shadow:0 14px 28px rgba(70,179,162,.22);background:var(--primary-600)}
-.btn.alt{background:#fff;color:#0f201b;border:1px solid var(--border);box-shadow:0 10px 20px rgba(16,33,28,.06)}
-.btn.alt:hover{background:#f6fbf9}
-.badge{
-  display:inline-flex;align-items:center;gap:.5rem;
-  padding:.5rem .85rem;border-radius:999px;background:#fff;border:1px solid var(--border);
-  color:var(--primary-700);font-weight:700
-}
-.section{padding:clamp(56px,8vw,90px) 0}
-.cards{display:grid;gap:22px}
-@media(min-width:768px){.cards{grid-template-columns:repeat(3,1fr)}}
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  padding:24px
-}
-.navbar{
-  position:sticky;top:0;z-index:50;background:rgba(246,251,249,.75);backdrop-filter:blur(10px);border-bottom:1px solid rgba(16,33,28,.06)
-}
-.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
-.brand{display:flex;align-items:center;gap:.75rem;font-weight:800}
-.logo{
-  width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
-  background:radial-gradient(circle at 30% 30%, #7ddbcf, var(--primary));
-  color:white;box-shadow:0 8px 20px rgba(70,179,162,.35)
-}
-nav ul{list-style:none;display:none;gap:22px;margin:0;padding:0}
-nav a{color:#27413b;font-weight:600;opacity:.9;padding:10px 12px;border-radius:999px}
-nav a:hover{background:#ecf7f4}
-.cta-group{display:none;gap:10px;align-items:center}
-.menu-btn{border:1px solid var(--border);background:#fff;border-radius:12px;padding:10px 12px;display:grid;place-items:center}
-.menu-btn svg{width:22px;height:22px}
-@media(min-width:1000px){
-  nav ul{display:flex}
-  .cta-group{display:flex}
-  .menu-btn{display:none}
-}
-.hero{
-  position:relative;overflow:hidden
-}
-.hero .container{display:grid;gap:100px;align-items:center}
-@media(min-width:960px){
-  .hero .container{grid-template-columns:1.05fr .95fr}
-}
-.hero-visual{
-  position:relative;min-height:70%;border-radius:var(--radius-lg);overflow:hidden;
-  background:linear-gradient(135deg,#e8f9f3,#fefcf6)
-}
-.blob{
-  position:absolute;filter:blur(30px);opacity:.6;border-radius:999px
-}
-.blob.a{width:320px;height:320px;background:#46b3a2;top:-40px;left:-40px}
-.blob.b{width:280px;height:280px;background:#d39751;bottom:-30px;right:-20px}
-.collage{
-  position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px
-}
-.tile{
-  border-radius:18px;overflow:hidden;border:1px solid rgba(16,33,28,.06);box-shadow:0 10px 24px rgba(16,33,28,.08)
-}
-.tile img{width:100%;height:100%;object-fit:cover}
-.hero-badges{
-  position:absolute;left:14px;bottom:14px;display:flex;gap:10px;flex-wrap:wrap;display: none;
-}
-.stats{
-  display:grid;gap:18px;margin-top:24px
-}
-@media(min-width:700px){.stats{grid-template-columns:repeat(4,1fr)}}
-.stat{
-  background:#fff;border:1px solid var(--border);border-radius:16px;padding:18px;text-align:center;box-shadow:var(--shadow)
-}
-.stat b{display:block;font-size:1.4rem}
-.grid-2{display:grid;gap:40px}
-@media(min-width:900px){.grid-2{grid-template-columns:1.2fr .8fr}}
-.icon{
-  width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
-  background:#ecf7f4;color:var(--primary-700)
-}
-.kicker{color:var(--primary-700);font-weight:800;letter-spacing:.02em;text-transform:uppercase;font-size:.85rem}
-.service{
-  display:flex;gap:16px;align-items:flex-start
-}
-.service .content{flex:1}
-.services-grid{display:grid;gap:18px}
-@media(min-width:768px){.services-grid{grid-template-columns:repeat(4,1fr)}}
-.service-card{
-  background:#fff;border:1px solid var(--border);border-radius:18px;padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px
-}
-.tag{
-  display:inline-flex;align-items:center;gap:.5rem;padding:.4rem .7rem;border-radius:999px;border:1px dashed rgba(17,33,28,.18);color:#29544c;background:#f1fbf8;font-weight:700;font-size:.85rem
-}
-.gallery{
-  display:grid;gap:12px;grid-template-columns:repeat(2,1fr)
-}
-@media(min-width:900px){.gallery{grid-template-columns:1fr 1fr}}
-.gallery img{border-radius:16px;height:100%;object-fit:cover}
-.pricing{display:grid;gap:20px}
-@media(min-width:900px){.pricing{grid-template-columns:repeat(3,1fr)}}
-.price-card{
-  background:#fff;border:1px solid var(--border);border-radius:20px;padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:16px
-}
-.price{font-weight:800;font-size:1.6rem}
-ul.clean{padding:0;margin:0;list-style:none;display:grid;gap:10px}
-ul.clean li{display:flex;gap:10px;align-items:anchor-center;min-width: 300px;}
-ul.clean svg{color:var(--primary);flex-shrink:0}
-.testimonials{display:grid;gap:20px}
-@media(min-width:960px){.testimonials{grid-template-columns:1.1fr .9fr}}
-.quote{
-  background:#fff;border:1px solid var(--border);border-radius:20px;padding:24px;box-shadow:var(--shadow);display:flex;gap:14px
-}
-.quote img{width:54px;height:54px;border-radius:10px;object-fit:cover}
-.map{
-  border:0;width:100%;height:360px;border-radius:18px;box-shadow:var(--shadow)
-}
-.contact{
-  background:linear-gradient(180deg, var(--bg-2), #ffffff)
-}
-.form{
-  background:#fff;border:1px solid var(--border);border-radius:22px;padding:24px;box-shadow:var(--shadow);display:grid;gap:14px
-}
-.input{
-  display:grid;gap:6px
-}
-.input input,.input textarea,.input select{
-  width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(0,0,0,.08);background:#fbfefc;font-size:1rem
-}
-.row{display:grid;gap:12px}
-@media(min-width:700px){.row{grid-template-columns:1fr 1fr}}
-.footer{
-  padding:44px 0;border-top:1px solid rgba(16,33,28,.08);background:#fbfefc
-}
-.footer-grid{display:grid;gap:24px}
-@media(min-width:900px){.footer-grid{grid-template-columns:2fr 1fr 1fr 1fr}}
-.social{display:flex;gap:10px}
-.social a{
-  width:40px;height:40px;border-radius:12px;background:#fff;border:1px solid var(--border);display:grid;place-items:center
-}
-.toast{
-  position:fixed;right:18px;bottom:18px;background:#10211c;color:#dff3ee;padding:14px 16px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.2);opacity:0;transform:translateY(10px);transition:.25s ease;z-index:60
-}
-.toast.show{opacity:1;transform:translateY(0)}
-.reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease, transform .6s ease}
-.reveal.in{opacity:1;transform:translateY(0)}
-.skip-link{
-  position:absolute;left:-999px;top:auto;width:1px;height:1px;overflow:hidden
-}
-.skip-link:focus{
-  left:10px;top:10px;width:auto;height:auto;background:#fff;border:2px solid var(--primary);padding:10px;border-radius:8px;z-index:100
-}
-.mobile-cta{
-  position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
-  display:flex;gap:10px;z-index:45
-}
-@media(min-width:800px){.mobile-cta{display:none}}
-.focus-ring:focus{outline:3px solid #b7efe6;outline-offset:3px}
-@media (prefers-reduced-motion: reduce){
-  .reveal,.btn,.stat{transition:none}
-  body{scroll-behavior:auto}
-}
-@media(max-width: 460px) {
-  .mobileFlex {
-    flex-direction: column;
-  }
-  .mobile-cta a.btn {
-    width: max-content;  
-  }
-  .btn.alt {
-    width: -webkit-fill-available;
-  }
-}
-@media(max-width:999px){
-nav.open ul{
-display:flex;
-position:absolute;
-top:100%;
-left:10px;
-margin-top:10px;
-flex-direction:column;
-gap:0;
-background:#fff;
-border:1px solid var(--border);
-border-radius:14px;
-box-shadow:var(--shadow);
-padding:8px;
-min-width: calc(100% - 20px);
-z-index:55
-}
-nav.open ul a{display:block}
-  .menu-btn {
-    position: absolute;
-    right: 15px;
-  }
-  .gallery img {
-    height: auto;
-  }
-  .gallery {
-    display: flex;
-    flex-direction: column;
-  }
-  .hero .container {
-    gap: 0;
-  }
-}
-  @media (min-width: 1000px) {
-    .mobileOnly {
-      display: none;
-    }
-  }
-</style>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>OAZIS | Zariadenie Sociálnych Služieb</title>
+	<link rel="icon" type="image/png" href="https://cdn2.iconfinder.com/data/icons/natural-green-perfect-pixel/512/leaf_green_natural-512.png">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+	<style>
+	:root {
+		--bg: #f6fbf9;
+		--bg-2: #eef7f4;
+		--soft: #e8f5f1;
+		--primary: #46b3a2;
+		--primary-600: #3aa494;
+		--primary-700: #2c8d7e;
+		--accent: #f4c88f;
+		--ink: #10211c;
+		--muted: #5a746f;
+		--card: #ffffff;
+		--border: rgba(16, 33, 28, .08);
+		--shadow: 0 10px 30px rgba(25, 68, 60, .08), 0 2px 6px rgba(25, 68, 60, .05);
+		--radius: 18px;
+		--radius-sm: 12px;
+		--radius-lg: 28px;
+	}
+
+	* {
+		box-sizing: border-box
+	}
+
+	html,
+	body {
+		height: 100%
+	}
+
+	body {
+		margin: 0;
+		font-family: "Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+		color: var(--ink);
+		background: radial-gradient(#dff4ee 20%, rgba(223, 244, 238, 0) 80%);
+		line-height: 1.6;
+		-webkit-font-smoothing: antialiased;
+		scroll-behavior: smooth;
+	}
+
+	a {
+		color: inherit;
+		text-decoration: none
+	}
+
+	img {
+		max-width: 100%;
+		display: block
+	}
+
+	button {
+		font: inherit
+	}
+
+	.container {
+		width: min(1300px, 92%);
+		margin-inline: auto
+	}
+
+	h1,
+	h2,
+	h3 {
+		font-family: "Playfair Display", serif;
+		line-height: 1.15;
+		color: #0f201b
+	}
+
+	h1 {
+		font-size: clamp(2.2rem, 3vw + 1.2rem, 4rem);
+		letter-spacing: -.02em
+	}
+
+	h2 {
+		font-size: clamp(1.6rem, 1.4vw + 1.1rem, 2.4rem)
+	}
+
+	h3 {
+		font-size: clamp(1.1rem, .6vw + 1rem, 1.4rem)
+	}
+
+	p.lead {
+		font-size: clamp(1rem, .5vw + .9rem, 1.2rem);
+		color: var(--muted)
+	}
+
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		gap: .6rem;
+		background: var(--primary);
+		color: #fff;
+		padding: .95rem 1.25rem;
+		border-radius: 999px;
+		border: none;
+		box-shadow: 0 10px 20px rgba(70, 179, 162, .18);
+		transition: transform .15s ease, box-shadow .2s ease, background .2s ease, color .2s ease;
+		cursor: pointer;
+		font-weight: 700
+	}
+
+	.btn:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 14px 28px rgba(70, 179, 162, .22);
+		background: var(--primary-600)
+	}
+
+	.btn.alt {
+		background: #fff;
+		color: #0f201b;
+		border: 1px solid var(--border);
+		box-shadow: 0 10px 20px rgba(16, 33, 28, .06)
+	}
+
+	.btn.alt:hover {
+		background: #f6fbf9
+	}
+
+	.badge {
+		display: inline-flex;
+		align-items: center;
+		gap: .5rem;
+		padding: .5rem .85rem;
+		border-radius: 999px;
+		background: #fff;
+		border: 1px solid var(--border);
+		color: var(--primary-700);
+		font-weight: 700
+	}
+
+	.section {
+		padding: clamp(56px, 8vw, 90px) 0
+	}
+
+	.cards {
+		display: grid;
+		gap: 22px
+	}
+
+	@media(min-width:768px) {
+		.cards {
+			grid-template-columns: repeat(3, 1fr)
+		}
+	}
+
+	.card {
+		background: var(--card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		box-shadow: var(--shadow);
+		padding: 24px
+	}
+
+	.navbar {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		background: rgba(246, 251, 249, .75);
+		backdrop-filter: blur(10px);
+		border-bottom: 1px solid rgba(16, 33, 28, .06)
+	}
+
+	.nav-inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 14px 0
+	}
+
+	.brand {
+		display: flex;
+		align-items: center;
+		gap: .75rem;
+		font-weight: 800
+	}
+
+	.logo {
+		width: 40px;
+		height: 40px;
+		border-radius: 12px;
+		display: grid;
+		place-items: center;
+		background: radial-gradient(circle at 30% 30%, #7ddbcf, var(--primary));
+		color: white;
+		box-shadow: 0 8px 20px rgba(70, 179, 162, .35)
+	}
+
+	nav ul {
+		list-style: none;
+		display: none;
+		gap: 22px;
+		margin: 0;
+		padding: 0
+	}
+
+	nav a {
+		color: #27413b;
+		font-weight: 600;
+		opacity: .9;
+		padding: 10px 12px;
+		border-radius: 999px
+	}
+
+	nav a:hover {
+		background: #ecf7f4
+	}
+
+	.cta-group {
+		display: none;
+		gap: 10px;
+		align-items: center
+	}
+
+	.menu-btn {
+		border: 1px solid var(--border);
+		background: #fff;
+		border-radius: 12px;
+		padding: 10px 12px;
+		display: grid;
+		place-items: center
+	}
+
+	.menu-btn svg {
+		width: 22px;
+		height: 22px
+	}
+
+	@media(min-width:1000px) {
+		nav ul {
+			display: flex
+		}
+
+		.cta-group {
+			display: flex
+		}
+
+		.menu-btn {
+			display: none
+		}
+	}
+
+	.hero {
+		position: relative;
+		overflow: hidden
+	}
+
+	.hero .container {
+		display: grid;
+		gap: 100px;
+		align-items: center
+	}
+
+	@media(min-width:960px) {
+		.hero .container {
+			grid-template-columns: 1.05fr .95fr
+		}
+	}
+
+	.hero-visual {
+		position: relative;
+		min-height: 70%;
+		border-radius: var(--radius-lg);
+		overflow: hidden;
+		background: linear-gradient(135deg, #e8f9f3, #fefcf6)
+	}
+
+	.blob {
+		position: absolute;
+		filter: blur(30px);
+		opacity: .6;
+		border-radius: 999px
+	}
+
+	.blob.a {
+		width: 320px;
+		height: 320px;
+		background: #46b3a2;
+		top: -40px;
+		left: -40px
+	}
+
+	.blob.b {
+		width: 280px;
+		height: 280px;
+		background: #d39751;
+		bottom: -30px;
+		right: -20px
+	}
+
+	.collage {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 14px;
+		padding: 14px
+	}
+
+	.tile {
+		border-radius: 18px;
+		overflow: hidden;
+		border: 1px solid rgba(16, 33, 28, .06);
+		box-shadow: 0 10px 24px rgba(16, 33, 28, .08)
+	}
+
+	.tile img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover
+	}
+
+	.hero-badges {
+		position: absolute;
+		left: 14px;
+		bottom: 14px;
+		display: flex;
+		gap: 10px;
+		flex-wrap: wrap;
+		display: none;
+	}
+
+	.stats {
+		display: grid;
+		gap: 18px;
+		margin-top: 24px
+	}
+
+	@media(min-width:700px) {
+		.stats {
+			grid-template-columns: repeat(4, 1fr)
+		}
+	}
+
+	.stat {
+		background: #fff;
+		border: 1px solid var(--border);
+		border-radius: 16px;
+		padding: 18px;
+		text-align: center;
+		box-shadow: var(--shadow)
+	}
+
+	.stat b {
+		display: block;
+		font-size: 1.4rem
+	}
+
+	.grid-2 {
+		display: grid;
+		gap: 40px
+	}
+
+	@media(min-width:900px) {
+		.grid-2 {
+			grid-template-columns: 1.2fr .8fr
+		}
+	}
+
+	.icon {
+		width: 40px;
+		height: 40px;
+		border-radius: 12px;
+		display: grid;
+		place-items: center;
+		background: #ecf7f4;
+		color: var(--primary-700)
+	}
+
+	.kicker {
+		color: var(--primary-700);
+		font-weight: 800;
+		letter-spacing: .02em;
+		text-transform: uppercase;
+		font-size: .85rem
+	}
+
+	.service {
+		display: flex;
+		gap: 16px;
+		align-items: flex-start
+	}
+
+	.service .content {
+		flex: 1
+	}
+
+	.services-grid {
+		display: grid;
+		gap: 18px
+	}
+
+	@media(min-width:768px) {
+		.services-grid {
+			grid-template-columns: repeat(4, 1fr)
+		}
+	}
+
+	.service-card {
+		background: #fff;
+		border: 1px solid var(--border);
+		border-radius: 18px;
+		padding: 20px;
+		box-shadow: var(--shadow);
+		display: flex;
+		flex-direction: column;
+		gap: 10px
+	}
+
+	.tag {
+		display: inline-flex;
+		align-items: center;
+		gap: .5rem;
+		padding: .4rem .7rem;
+		border-radius: 999px;
+		border: 1px dashed rgba(17, 33, 28, .18);
+		color: #29544c;
+		background: #f1fbf8;
+		font-weight: 700;
+		font-size: .85rem
+	}
+
+	.gallery {
+		display: grid;
+		gap: 12px;
+		grid-template-columns: repeat(2, 1fr)
+	}
+
+	@media(min-width:900px) {
+		.gallery {
+			grid-template-columns: 1fr 1fr
+		}
+	}
+
+	.gallery img {
+		border-radius: 16px;
+		height: 100%;
+		object-fit: cover
+	}
+
+	.pricing {
+		display: grid;
+		gap: 20px
+	}
+
+	@media(min-width:900px) {
+		.pricing {
+			grid-template-columns: repeat(3, 1fr)
+		}
+	}
+
+	.price-card {
+		background: #fff;
+		border: 1px solid var(--border);
+		border-radius: 20px;
+		padding: 22px;
+		box-shadow: var(--shadow);
+		display: flex;
+		flex-direction: column;
+		gap: 16px
+	}
+
+	.price {
+		font-weight: 800;
+		font-size: 1.6rem
+	}
+
+	ul.clean {
+		padding: 0;
+		margin: 0;
+		list-style: none;
+		display: grid;
+		gap: 10px
+	}
+
+	ul.clean li {
+		display: flex;
+		gap: 10px;
+		align-items: anchor-center;
+		min-width: 300px;
+	}
+
+	ul.clean svg {
+		color: var(--primary);
+		flex-shrink: 0
+	}
+
+	.testimonials {
+		display: grid;
+		gap: 20px
+	}
+
+	@media(min-width:960px) {
+		.testimonials {
+			grid-template-columns: 1.1fr .9fr
+		}
+	}
+
+	.quote {
+		background: #fff;
+		border: 1px solid var(--border);
+		border-radius: 20px;
+		padding: 24px;
+		box-shadow: var(--shadow);
+		display: flex;
+		gap: 14px
+	}
+
+	.quote img {
+		width: 54px;
+		height: 54px;
+		border-radius: 10px;
+		object-fit: cover
+	}
+
+	.map {
+		border: 0;
+		width: 100%;
+		height: 360px;
+		border-radius: 18px;
+		box-shadow: var(--shadow)
+	}
+
+	.contact {
+		background: linear-gradient(180deg, var(--bg-2), #ffffff)
+	}
+
+	.form {
+		background: #fff;
+		border: 1px solid var(--border);
+		border-radius: 22px;
+		padding: 24px;
+		box-shadow: var(--shadow);
+		display: grid;
+		gap: 14px
+	}
+
+	.input {
+		display: grid;
+		gap: 6px
+	}
+
+	.input input,
+	.input textarea,
+	.input select {
+		width: 100%;
+		padding: 12px 14px;
+		border-radius: 12px;
+		border: 1px solid rgba(0, 0, 0, .08);
+		background: #fbfefc;
+		font-size: 1rem
+	}
+
+	.row {
+		display: grid;
+		gap: 12px
+	}
+
+	@media(min-width:700px) {
+		.row {
+			grid-template-columns: 1fr 1fr
+		}
+	}
+
+	.footer {
+		padding: 44px 0;
+		border-top: 1px solid rgba(16, 33, 28, .08);
+		background: #fbfefc
+	}
+
+	.footer-grid {
+		display: grid;
+		gap: 24px
+	}
+
+	@media(min-width:900px) {
+		.footer-grid {
+			grid-template-columns: 2fr 1fr 1fr 1fr
+		}
+	}
+
+	.social {
+		display: flex;
+		gap: 10px
+	}
+
+	.social a {
+		width: 40px;
+		height: 40px;
+		border-radius: 12px;
+		background: #fff;
+		border: 1px solid var(--border);
+		display: grid;
+		place-items: center
+	}
+
+	.toast {
+		position: fixed;
+		right: 18px;
+		bottom: 18px;
+		background: #10211c;
+		color: #dff3ee;
+		padding: 14px 16px;
+		border-radius: 14px;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, .2);
+		opacity: 0;
+		transform: translateY(10px);
+		transition: .25s ease;
+		z-index: 60
+	}
+
+	.toast.show {
+		opacity: 1;
+		transform: translateY(0)
+	}
+
+	.reveal {
+		opacity: 0;
+		transform: translateY(14px);
+		transition: opacity .6s ease, transform .6s ease
+	}
+
+	.reveal.in {
+		opacity: 1;
+		transform: translateY(0)
+	}
+
+	.skip-link {
+		position: absolute;
+		left: -999px;
+		top: auto;
+		width: 1px;
+		height: 1px;
+		overflow: hidden
+	}
+
+	.skip-link:focus {
+		left: 10px;
+		top: 10px;
+		width: auto;
+		height: auto;
+		background: #fff;
+		border: 2px solid var(--primary);
+		padding: 10px;
+		border-radius: 8px;
+		z-index: 100
+	}
+
+	.mobile-cta {
+		position: fixed;
+		bottom: 14px;
+		left: 50%;
+		transform: translateX(-50%);
+		display: flex;
+		gap: 10px;
+		z-index: 45
+	}
+
+	@media(min-width:800px) {
+		.mobile-cta {
+			display: none
+		}
+	}
+
+	.focus-ring:focus {
+		outline: 3px solid #b7efe6;
+		outline-offset: 3px
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+
+		.reveal,
+		.btn,
+		.stat {
+			transition: none
+		}
+
+		body {
+			scroll-behavior: auto
+		}
+	}
+
+	@media(max-width: 460px) {
+		.mobileFlex {
+			flex-direction: column;
+		}
+
+		.mobile-cta a.btn {
+			width: max-content;
+		}
+
+		.btn.alt {
+			width: -webkit-fill-available;
+		}
+	}
+
+	@media(max-width:999px) {
+		nav.open ul {
+			display: flex;
+			position: absolute;
+			top: 100%;
+			left: 10px;
+			margin-top: 10px;
+			flex-direction: column;
+			gap: 0;
+			background: #fff;
+			border: 1px solid var(--border);
+			border-radius: 14px;
+			box-shadow: var(--shadow);
+			padding: 8px;
+			min-width: calc(100% - 20px);
+			z-index: 55
+		}
+
+		nav.open ul a {
+			display: block
+		}
+
+		.menu-btn {
+			position: absolute;
+			right: 15px;
+		}
+
+		.gallery img {
+			height: auto;
+		}
+
+		.gallery {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.hero .container {
+			gap: 0;
+		}
+	}
+
+	@media (min-width: 1000px) {
+		.mobileOnly {
+			display: none;
+		}
+	}
+	</style>
 </head>
+
 <body>
-<header class="navbar" role="banner">
-  <div class="container nav-inner">
-    <a href="#" class="brand">
-      <span class="logo" aria-hidden="true">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path d="M4 14c5-1 6-8 8-8s3 7 8 8c-3 1-5 4-8 4s-5-3-8-4z" fill="white" opacity=".9"/>
-          <circle cx="18" cy="6" r="3" fill="#fff" opacity=".7"/>
-        </svg>
-      </span>
-      <span>OAZIS <font style="font-weight: 300">| Zariadenie Sociálnych Služieb</font></span>
-    </a>
-    <nav aria-label="Primary">
-      <ul>
-        <li><a href="#home" aria-current="page">Domov</a></li>
-        <li><a href="#lifestyle">Starostlivosť</a></li>
-        <li><a href="#care">Služby</a></li>
-        <li><a href="#contact">Kontakt</a></li>
-      </ul>
-    </nav>
-    <div class="cta-group">
-      <a href="#contact" class="btn alt focus-ring">CENNÍK</a>
-      <a href="#visit" class="btn focus-ring">VOĽNÉ MIESTA</a>
-    </div>
-    <button class="menu-btn focus-ring" aria-label="Open menu" aria-expanded="false" aria-controls="primary-menu">
-      <svg viewBox="0 0 24 24" fill="none">
-        <path d="M4 7h16M4 12h16M4 17h16" stroke="#27413b" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-    </button>
-    <nav aria-label="Primary" class="mobileOnly">
-      <ul id="primary-menu">
-        <li><a href="#home" aria-current="page">Domov</a></li>
-        <li><a href="#lifestyle">Starostlivosť</a></li>
-        <li><a href="#care">Služby</a></li>
-        <li><a href="#contact">Kontakt</a></li>
-      </ul>
-    </nav>
-  </div>
-</header>
-
-<main id="main">
-  <section class="hero section" id="home" aria-label="Welcome">
-    <div class="container">
-      <div>
-        <div class="badge" style="margin-bottom:14px">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 2l2.4 6.9H22l-5.8 4.2 2.3 7L12 16l-6.5 4.1 2.3-7L2 8.9h7.6L12 2z" stroke="#2c8d7e" stroke-width="1.4" fill="#e9fbf7"/>
-          </svg>
-          Občianske Združenie
-        </div>
-        <h1 class="reveal" style="margin-bottom: 20px;">Aby sa u nás každý cítil človekom</h1>
-        <p class="lead reveal" style="margin-bottom: 40px;">a pociťoval etický a odborný prístup kvalifikovaných zamestnancov v súlade s ochranou ľudských práv a základných slobôd, zamerané na individuálny prístup k prijímateľom sociálnej služby v zariadení, poskytovaním služieb založených na úcte a empatii.</p>
-        <div class="reveal mobileFlex" style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap">
-          <a href="#visit" class="btn focus-ring">VOĽNÉ MIESTA</a>
-          <a href="#contact" class="btn alt focus-ring">CENNÍK</a>
-        </div>
-        <div class="stats reveal">
-          <div class="stat"><b>98%</b><span>Spokojnosť klientov</span></div>
-          <div class="stat"><b>24/7</b><span>Odborný dozor</span></div>
-          <div class="stat"><b>12+</b><span>Denných aktivít</span></div>
-          <div class="stat"><b>6 ha</b><span>Zelenej plochy</span></div>
-        </div>
-      </div>
-      <div class="hero-visual reveal" aria-hidden="true">
-        <span class="blob a"></span>
-        <span class="blob b"></span>
-        <div class="collage">
-          <div class="tile" style="grid-row:span 2;min-height:260px">
-            <img style="object-position: right" src="https://www.oazis.sk/images/phocagallery/Balvany/thumbs/phoca_thumb_l_IMG_0015.jpg" alt="Residents enjoying gardening together">
-          </div>
-          <div class="tile" style="min-height:140px">
-            <img src="https://www.oazis.sk/images/phocagallery/Balvany/thumbs/phoca_thumb_l_IMG_0011.jpg" alt="Friendly staff member with a resident">
-          </div>
-          <div class="tile" style="min-height:140px">
-            <img src="https://www.oazis.sk/images/phocagallery/Balvany/thumbs/phoca_thumb_l_IMG_0073.jpg" alt="Chef-prepared healthy meals">
-          </div>
-        </div>
-        <div class="hero-badges">
-          <span class="tag">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M5 13l4 4L19 7" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            Licensed Starostlivosť
-          </span>
-          <span class="tag">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="8" stroke="#2c8d7e" stroke-width="2"/><path d="M12 7v6l4 2" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            On‑Call Nurse
-          </span>
-          <span class="tag">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M3 7h18M6 7v10a3 3 0 003 3h6a3 3 0 003-3V7" stroke="#2c8d7e" stroke-width="2"/><rect x="8" y="3" width="8" height="4" rx="2" fill="#b9efe5"/>
-            </svg>
-            Medication Support
-          </span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="lifestyle">
-    <div class="container grid-2" style="grid-template-columns: 2fr !important;">
-      <div class="reveal">
-        <span class="kicker">Starostlivosť</span>
-        <h2>Zmysluplné využitie voľného času</h2>
-        <p class="lead">Našim hlavným cieľom a víziou je zabezpečiť pre našich milých prijímateľov sociálnej služby dostatočnú kvalitu života, aby mohli žiť v našom zariadení plnohodnotný život v rámci svojich možností.</p>
-        <div class="services-grid" style="margin-top:14px">
-          <div class="service-card">
-            <div class="icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M12 4v16M4 12h16" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <h3 style="margin-bottom: 0;">Aktivity pre mozog</h3>
-            <p style="text-align: justify">S našimi klientmi precvičujeme pozornosť, pamäť, slovnú zásobu a lúštime hlavolamy pomocou ktorých sa snažíme zachovať mozog v dobrej kondícii.</p>
-          </div>
-          <div class="service-card">
-            <div class="icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="4" width="18" height="14" rx="3" stroke="#2c8d7e" stroke-width="2"/><path d="M8 8h8M8 12h5" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <h3 style="margin-bottom: 0;">Aktivity pre dušu</h3>
-            <p style="text-align: justify">Pravidelne organizujeme komunitné stretnutia vždy s aktuálnymi témami v menších skupinkách ale aj schôdze obyvateľov s účasťou väčšieho počtu klientov.</p>
-          </div>
-          <div class="service-card">
-            <div class="icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M12 20s7-4.35 7-10A7 7 0 005 10c0 5.65 7 10 7 10z" stroke="#2c8d7e" stroke-width="2"/>
-              </svg>
-            </div>
-            <h3 style="margin-bottom: 0;">Pohybové aktivity</h3>
-            <p style="text-align: justify">Naši klienti majú možnosť zúčastniť sa rannej rozcvičky sprevádzanej príjemnou hudbou. Výber pohybovej aktivity sa vždy odvíja od zdravotného stavu klienta.</p>
-          </div>
-          <div class="service-card">
-            <div class="icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <circle cx="8" cy="10" r="3" stroke="#2c8d7e" stroke-width="2"/><circle cx="16" cy="10" r="3" stroke="#2c8d7e" stroke-width="2"/><path d="M4 20c2-3 6-3 8-3s6 0 8 3" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <h3 style="margin-bottom: 0;">Kreatívne aktivity</h3>
-            <p style="text-align: justify">V našich tvorivých dielňach majú klienti možnosť vyskúšať rôzne techniky maľovania a kreslenia, trhať, lepiť, strihať alebo vyrábať darčeky z modelovej hmoty či z keramiky.</p>
-          </div>
-        </div>
-      </div>
-      <div class="card reveal" style="padding:40px;">
-        <div class="service" style="margin-bottom:12px;flex-direction:column;gap:10px">
-          <div class="icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="4" width="18" height="14" rx="4" stroke="#2c8d7e" stroke-width="2"/>
-              <path d="M7 12h10" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div class="content">
-            <h3>Oddychové aktivity podporujúce uvoľnenie a relaxáciu</h3>
-            <p class="lead">Našim úsilím je byť orientovaným na podporu našich klientov v tom, aby získali dostatočné zručnosti, aby mohli lepšie fungovať a to čo najsamostatnejšie.</p>
-          </div>
-        </div>
-        <ul class="clean" style="display: flex;flex-flow: wrap;">
-          <li>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round"/></svg>
-            Relaxácia v solnej jaskyni
-          </li>
-          <li>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round"/></svg>
-            Premietanie filmov
-          </li>
-          <li>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round"/></svg>
-            Spevácky krúžok
-          </li>
-          <li>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round"/></svg>
-            Vlastná knižnica
-          </li>
-          <li>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round"/></svg>
-            Garden terapia
-          </li>
-          <li>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round"/></svg>
-            Gardenterapia
-          </li>
-          <li>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round"/></svg>
-            Animoterapia
-          </li>
-          <li>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round"/></svg>
-            Kulinoterapia
-          </li>
-          <li>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round"/></svg>
-            Duchovná starostlivoť
-          </li>
-          <li>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round"/></svg>
-            Psychologická starostlivoť
-          </li>
-          <li>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round"/></svg>
-            Práca s PC a využitie IKT
-          </li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="care">
-    <div class="container">
-      <span class="kicker">Služby</span>
-      <h2>Služby, ktoré poskytujeme</h2>
-      <p class="lead"><font style="color:#333"><strong>OAZIS</strong> | zariadenie sociálnych služieb</font> je občianske združenie, ktoré poskytuje 3 druhy pobytových sociálnych služieb pre občanov z celého Slovenska.</p>
-      <div class="cards" style="margin-top:18px">
-        <div class="card reveal">
-          <div class="icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 6c-2.8-4-9-1.7-9 3.6C3 15 12 20 12 20s9-5 9-10.4C21 4.3 14.8 2 12 6z" stroke="#2c8d7e" stroke-width="2"/></svg>
-          </div>
-          <h3>Domov sociálnych služieb</h3>
-          <p><u>Balvany 642, Kameničná</u></p>
-          <ul class="clean">
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Pomoc pri odkázanosti</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Rozvoj pracovných činností </li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Záujmová činnosť</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Uschovanie cenností</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Sociálne poradenstvo</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Sociálna rehabilitácia</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Ubytovanie</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Stravovanie</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Údržba šatstva</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Osobné vybavenie</li>
-          </ul>
-        </div>
-        <div class="card reveal">
-          <div class="icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 22V6M5 11V4m14 10V7" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round"/></svg>
-          </div>
-          <h3>Zariadenie podporovaného bývania</h3>
-          <p><u>Balvany 640, Kameničná<br>J. Baranyaiho 17, Komárno</u></p>
-          <ul class="clean">
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Pomoc pri uplatňovaní práv</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Dohľad a starostlivosť</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Sociálne poradenstvo</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Sociálna rehabilitácia</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Ubytovanie</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Stravovanie</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Údržba šatstva</li>
-          </ul>
-        </div>
-        <div class="card reveal">
-          <div class="icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 7a5 5 0 015 5v1a3 3 0 003 3H4a3 3 0 003-3v-1a5 5 0 015-5z" stroke="#2c8d7e" stroke-width="2"/><path d="M9 7a3 3 0 016 0" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round"/></svg>
-          </div>
-          <h3>Zariadenie pre seniorov</h3>
-          <p><u>Slobody 19 B, Komárno</u></p>
-          <ul class="clean">
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Pomoc pri odkázanosti</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Sociálne poradenstvo</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Sociálna rehabilitácia</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Ubytovanie</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Stravovanie</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Údržba šatstva</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Osobné vybavenie</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="residences">
-    <div class="container">
-      <span class="kicker">Cenník</span>
-      <h2>Cenník sociálnych služieb pre rok 2025</h2>
-      <p class="lead" style="display: none">test</p>
-      <div class="pricing" style="margin-top:18px">
-        <div class="price-card reveal">
-          <img src="https://m.smedata.sk/api-media/media/image/sme/5/62/6298355/6298355_1200x.jpeg" alt="Cozy studio apartment with warm light" style="border-radius:14px;aspect-ratio: 3 / 2">
-          <h3 style="
+	<header class="navbar" role="banner">
+		<div class="container nav-inner">
+			<a href="#" class="brand">
+				<span class="logo" aria-hidden="true">
+					<svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+						<path d="M4 14c5-1 6-8 8-8s3 7 8 8c-3 1-5 4-8 4s-5-3-8-4z" fill="white" opacity=".9" />
+						<circle cx="18" cy="6" r="3" fill="#fff" opacity=".7" />
+					</svg>
+				</span>
+				<span>OAZIS <font style="font-weight: 300">| Zariadenie Sociálnych Služieb</font></span>
+			</a>
+			<nav aria-label="Primary">
+				<ul>
+					<li><a href="#home" aria-current="page">Domov</a></li>
+					<li><a href="#lifestyle">Starostlivosť</a></li>
+					<li><a href="#care">Služby</a></li>
+					<li><a href="#contact">Kontakt</a></li>
+				</ul>
+			</nav>
+			<div class="cta-group">
+				<a href="#contact" class="btn alt focus-ring">CENNÍK</a>
+				<a href="#visit" class="btn focus-ring">VOĽNÉ MIESTA</a>
+			</div>
+			<button class="menu-btn focus-ring" aria-label="Open menu" aria-expanded="false" aria-controls="primary-menu">
+				<svg viewBox="0 0 24 24" fill="none">
+					<path d="M4 7h16M4 12h16M4 17h16" stroke="#27413b" stroke-width="2" stroke-linecap="round" />
+				</svg>
+			</button>
+			<nav aria-label="Primary" class="mobileOnly">
+				<ul id="primary-menu">
+					<li><a href="#home" aria-current="page">Domov</a></li>
+					<li><a href="#lifestyle">Starostlivosť</a></li>
+					<li><a href="#care">Služby</a></li>
+					<li><a href="#contact">Kontakt</a></li>
+				</ul>
+			</nav>
+		</div>
+	</header>
+	<main id="main">
+		<section class="hero section" id="home" aria-label="Welcome">
+			<div class="container">
+				<div>
+					<div class="badge" style="margin-bottom:14px">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+							<path d="M12 2l2.4 6.9H22l-5.8 4.2 2.3 7L12 16l-6.5 4.1 2.3-7L2 8.9h7.6L12 2z" stroke="#2c8d7e" stroke-width="1.4" fill="#e9fbf7" />
+						</svg> Občianske Združenie </div>
+					<h1 class="reveal" style="margin-bottom: 20px;">Aby sa u nás každý cítil človekom</h1>
+					<p class="lead reveal" style="margin-bottom: 40px;">a pociťoval etický a odborný prístup kvalifikovaných zamestnancov v súlade s ochranou ľudských práv a základných slobôd, zamerané na individuálny prístup k prijímateľom sociálnej služby v zariadení, poskytovaním služieb založených na úcte a empatii.</p>
+					<div class="reveal mobileFlex" style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap">
+						<a href="#visit" class="btn focus-ring">VOĽNÉ MIESTA</a>
+						<a href="#contact" class="btn alt focus-ring">CENNÍK</a>
+					</div>
+					<div class="stats reveal">
+						<div class="stat"><b>98%</b><span>Spokojnosť klientov</span></div>
+						<div class="stat"><b>24/7</b><span>Odborný dozor</span></div>
+						<div class="stat"><b>12+</b><span>Denných aktivít</span></div>
+						<div class="stat"><b>6 ha</b><span>Zelenej plochy</span></div>
+					</div>
+				</div>
+				<div class="hero-visual reveal" aria-hidden="true">
+					<span class="blob a"></span>
+					<span class="blob b"></span>
+					<div class="collage">
+						<div class="tile" style="grid-row:span 2;min-height:260px">
+							<img style="object-position: right" src="https://www.oazis.sk/images/phocagallery/Balvany/thumbs/phoca_thumb_l_IMG_0015.jpg" alt="Residents enjoying gardening together">
+						</div>
+						<div class="tile" style="min-height:140px">
+							<img src="https://www.oazis.sk/images/phocagallery/Balvany/thumbs/phoca_thumb_l_IMG_0011.jpg" alt="Friendly staff member with a resident">
+						</div>
+						<div class="tile" style="min-height:140px">
+							<img src="https://www.oazis.sk/images/phocagallery/Balvany/thumbs/phoca_thumb_l_IMG_0073.jpg" alt="Chef-prepared healthy meals">
+						</div>
+					</div>
+					<div class="hero-badges">
+						<span class="tag">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+								<path d="M5 13l4 4L19 7" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round" />
+							</svg> Licensed Starostlivosť </span>
+						<span class="tag">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+								<circle cx="12" cy="12" r="8" stroke="#2c8d7e" stroke-width="2" />
+								<path d="M12 7v6l4 2" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round" />
+							</svg> On‑Call Nurse </span>
+						<span class="tag">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+								<path d="M3 7h18M6 7v10a3 3 0 003 3h6a3 3 0 003-3V7" stroke="#2c8d7e" stroke-width="2" />
+								<rect x="8" y="3" width="8" height="4" rx="2" fill="#b9efe5" />
+							</svg> Medication Support </span>
+					</div>
+				</div>
+			</div>
+		</section>
+		<section class="section" id="lifestyle">
+			<div class="container grid-2" style="grid-template-columns: 2fr !important;">
+				<div class="reveal">
+					<span class="kicker">Starostlivosť</span>
+					<h2>Zmysluplné využitie voľného času</h2>
+					<p class="lead">Našim hlavným cieľom a víziou je zabezpečiť pre našich milých prijímateľov sociálnej služby dostatočnú kvalitu života, aby mohli žiť v našom zariadení plnohodnotný život v rámci svojich možností.</p>
+					<div class="services-grid" style="margin-top:14px">
+						<div class="service-card">
+							<div class="icon">
+								<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+									<path d="M12 4v16M4 12h16" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round" />
+								</svg>
+							</div>
+							<h3 style="margin-bottom: 0;">Aktivity pre mozog</h3>
+							<p style="text-align: justify">S našimi klientmi precvičujeme pozornosť, pamäť, slovnú zásobu a lúštime hlavolamy pomocou ktorých sa snažíme zachovať mozog v dobrej kondícii.</p>
+						</div>
+						<div class="service-card">
+							<div class="icon">
+								<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+									<rect x="3" y="4" width="18" height="14" rx="3" stroke="#2c8d7e" stroke-width="2" />
+									<path d="M8 8h8M8 12h5" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round" />
+								</svg>
+							</div>
+							<h3 style="margin-bottom: 0;">Aktivity pre dušu</h3>
+							<p style="text-align: justify">Pravidelne organizujeme komunitné stretnutia vždy s aktuálnymi témami v menších skupinkách ale aj schôdze obyvateľov s účasťou väčšieho počtu klientov.</p>
+						</div>
+						<div class="service-card">
+							<div class="icon">
+								<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+									<path d="M12 20s7-4.35 7-10A7 7 0 005 10c0 5.65 7 10 7 10z" stroke="#2c8d7e" stroke-width="2" />
+								</svg>
+							</div>
+							<h3 style="margin-bottom: 0;">Pohybové aktivity</h3>
+							<p style="text-align: justify">Naši klienti majú možnosť zúčastniť sa rannej rozcvičky sprevádzanej príjemnou hudbou. Výber pohybovej aktivity sa vždy odvíja od zdravotného stavu klienta.</p>
+						</div>
+						<div class="service-card">
+							<div class="icon">
+								<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+									<circle cx="8" cy="10" r="3" stroke="#2c8d7e" stroke-width="2" />
+									<circle cx="16" cy="10" r="3" stroke="#2c8d7e" stroke-width="2" />
+									<path d="M4 20c2-3 6-3 8-3s6 0 8 3" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round" />
+								</svg>
+							</div>
+							<h3 style="margin-bottom: 0;">Kreatívne aktivity</h3>
+							<p style="text-align: justify">V našich tvorivých dielňach majú klienti možnosť vyskúšať rôzne techniky maľovania a kreslenia, trhať, lepiť, strihať alebo vyrábať darčeky z modelovej hmoty či z keramiky.</p>
+						</div>
+					</div>
+				</div>
+				<div class="card reveal" style="padding:40px;">
+					<div class="service" style="margin-bottom:12px;flex-direction:column;gap:10px">
+						<div class="icon">
+							<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+								<rect x="3" y="4" width="18" height="14" rx="4" stroke="#2c8d7e" stroke-width="2" />
+								<path d="M7 12h10" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round" />
+							</svg>
+						</div>
+						<div class="content">
+							<h3>Oddychové aktivity podporujúce uvoľnenie a relaxáciu</h3>
+							<p class="lead">Našim úsilím je byť orientovaným na podporu našich klientov v tom, aby získali dostatočné zručnosti, aby mohli lepšie fungovať a to čo najsamostatnejšie.</p>
+						</div>
+					</div>
+					<ul class="clean" style="display: flex;flex-flow: wrap;">
+						<li>
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round" /></svg> Relaxácia v solnej jaskyni </li>
+						<li>
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round" /></svg> Premietanie filmov </li>
+						<li>
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round" /></svg> Spevácky krúžok </li>
+						<li>
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round" /></svg> Vlastná knižnica </li>
+						<li>
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round" /></svg> Garden terapia </li>
+						<li>
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round" /></svg> Gardenterapia </li>
+						<li>
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round" /></svg> Animoterapia </li>
+						<li>
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round" /></svg> Kulinoterapia </li>
+						<li>
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round" /></svg> Duchovná starostlivoť </li>
+						<li>
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round" /></svg> Psychologická starostlivoť </li>
+						<li>
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" stroke-linecap="round" /></svg> Práca s PC a využitie IKT </li>
+					</ul>
+				</div>
+			</div>
+		</section>
+		<section class="section" id="care">
+			<div class="container">
+				<span class="kicker">Služby</span>
+				<h2>Služby, ktoré poskytujeme</h2>
+				<p class="lead">
+					<font style="color:#333"><strong>OAZIS</strong> | zariadenie sociálnych služieb</font> je občianske združenie, ktoré poskytuje 3 druhy pobytových sociálnych služieb pre občanov z celého Slovenska.
+				</p>
+				<div class="cards" style="margin-top:18px">
+					<div class="card reveal">
+						<div class="icon">
+							<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+								<path d="M12 6c-2.8-4-9-1.7-9 3.6C3 15 12 20 12 20s9-5 9-10.4C21 4.3 14.8 2 12 6z" stroke="#2c8d7e" stroke-width="2" /></svg>
+						</div>
+						<h3>Domov sociálnych služieb</h3>
+						<p><u>Balvany 642, Kameničná</u></p>
+						<ul class="clean">
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Pomoc pri odkázanosti</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Rozvoj pracovných činností </li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Záujmová činnosť</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Uschovanie cenností</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Sociálne poradenstvo</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Sociálna rehabilitácia</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Ubytovanie</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Stravovanie</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Údržba šatstva</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Osobné vybavenie</li>
+						</ul>
+					</div>
+					<div class="card reveal">
+						<div class="icon">
+							<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+								<path d="M12 22V6M5 11V4m14 10V7" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round" /></svg>
+						</div>
+						<h3>Zariadenie podporovaného bývania</h3>
+						<p><u>Balvany 640, Kameničná<br>J. Baranyaiho 17, Komárno</u></p>
+						<ul class="clean">
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Pomoc pri uplatňovaní práv</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Dohľad a starostlivosť</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Sociálne poradenstvo</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Sociálna rehabilitácia</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Ubytovanie</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Stravovanie</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Údržba šatstva</li>
+						</ul>
+					</div>
+					<div class="card reveal">
+						<div class="icon">
+							<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+								<path d="M12 7a5 5 0 015 5v1a3 3 0 003 3H4a3 3 0 003-3v-1a5 5 0 015-5z" stroke="#2c8d7e" stroke-width="2" />
+								<path d="M9 7a3 3 0 016 0" stroke="#2c8d7e" stroke-width="2" stroke-linecap="round" /></svg>
+						</div>
+						<h3>Zariadenie pre seniorov</h3>
+						<p><u>Slobody 19 B, Komárno</u></p>
+						<ul class="clean">
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Pomoc pri odkázanosti</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Sociálne poradenstvo</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Sociálna rehabilitácia</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Ubytovanie</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Stravovanie</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Údržba šatstva</li>
+							<li><svg width="16" height="16" viewBox="0 0 24 24">
+									<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg>Osobné vybavenie</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</section>
+		<section class="section" id="residences">
+			<div class="container">
+				<span class="kicker">Cenník</span>
+				<h2>Cenník sociálnych služieb pre rok 2025</h2>
+				<p class="lead" style="display: none">test</p>
+				<div class="pricing" style="margin-top:18px">
+					<div class="price-card reveal">
+						<img src="https://m.smedata.sk/api-media/media/image/sme/5/62/6298355/6298355_1200x.jpeg" alt="Cozy studio apartment with warm light" style="border-radius:14px;aspect-ratio: 3 / 2">
+						<h3 style="
     margin-bottom: 0;
 ">Zariadenie pre seniorov</h3>
-          <p style="margin:0">Kapacita zariadenia: <strong>95 osôb</strong></p>
-          <p style="margin:0;background-color: #edf9f5;margin: 0;padding: 10px 20px;border-radius: 10px;border: 1px solid #dff4ee;">Adresa zariadenia:<br><strong>Slobody 19 B, Komárno</strong><br><br></p>
-          <p style="text-align: justify;">V zariadení pre seniorov sa poskytuje sociálna služba fyzickej osobe, ktorá dovŕšila dôchodkový vek a je
-            odkázaná na pomoc inej fyzickej osoby a jej stupeň odkázanosti je najmenej IV podľa prílohy č.3 zákona č. 448/2008 Z.z. o sociálnych službách, alebo
-            fyzickej osobe, ktorá dovŕšila dôchodkový vek a poskytovanie sociálnej služby v tomto zariadení potrebuje z iných vážnych dôvodov.
-          </p>
-          <div class="price" style="
+						<p style="margin:0">Kapacita zariadenia: <strong>95 osôb</strong></p>
+						<p style="margin:0;background-color: #edf9f5;margin: 0;padding: 10px 20px;border-radius: 10px;border: 1px solid #dff4ee;">Adresa zariadenia:<br><strong>Slobody 19 B, Komárno</strong><br><br></p>
+						<p style="text-align: justify;">V zariadení pre seniorov sa poskytuje sociálna služba fyzickej osobe, ktorá dovŕšila dôchodkový vek a je odkázaná na pomoc inej fyzickej osoby a jej stupeň odkázanosti je najmenej IV podľa prílohy č.3 zákona č. 448/2008 Z.z. o sociálnych službách, alebo fyzickej osobe, ktorá dovŕšila dôchodkový vek a poskytovanie sociálnej služby v tomto zariadení potrebuje z iných vážnych dôvodov. </p>
+						<div class="price" style="
     flex: auto;
     align-content: flex-end;
     font-size: 32px;
     text-align: center
-">558,-€<font style="font-weight:300;font-size:smaller">/mesiac</font></div>
-          <a href="#visit" class="btn alt focus-ring" style="width: -webkit-fill-available;    flex-flow: column;">Podrobný Cenník</a>
-        </div>
-        <div class="price-card reveal">
-          <img src="https://www.oazis.sk/images/page_img/IMG_9998.jpg" alt="Spacious one-bedroom living room" style="border-radius:14px;aspect-ratio: 3 / 2">
-          <h3 style="
+">558,-€<font style="font-weight:300;font-size:smaller"> /mesiac</font>
+						</div>
+						<a href="#visit" class="btn alt focus-ring" style="width: -webkit-fill-available;    flex-flow: column;">Podrobný Cenník</a>
+					</div>
+					<div class="price-card reveal">
+						<img src="https://www.oazis.sk/images/page_img/IMG_9998.jpg" alt="Spacious one-bedroom living room" style="border-radius:14px;aspect-ratio: 3 / 2">
+						<h3 style="
     margin-bottom: 0;
 ">Domov sociálnych služieb</h3>
-          <p style="margin:0">Kapacita zariadenia: <strong>125 osôb</strong></p>
-          <p style="margin:0;background-color: #edf9f5;margin: 0;padding: 10px 20px;border-radius: 10px;border: 1px solid #dff4ee;">Adresa zariadenia:<br><strong>Balvany 642, Kameničná</strong><br><br></p>
-          <p style="text-align: justify;">V domove sociálnych služieb sa poskytuje sociálna služba fyzickej osobe do dovŕšenia dôchodkového veku, ak je táto fyzická osoba odkázaná na pomoc inej fyzickej osoby a jej stupeň odkázanosti
-            je najmenej V podľa prílohy č. 3 zákona č. 448/2008 Z.z.o sociálnych službách, alebo fyzickej osobe, ktorá je nevidiaca alebo prakticky nevidiaca a jej stupeň odkázanosti je najmenej III podľa prílohy č. 3 zákona č. 448/2008 Z.z. o sociálnych službách.
-          </p>
-          <div class="price" style="
+						<p style="margin:0">Kapacita zariadenia: <strong>125 osôb</strong></p>
+						<p style="margin:0;background-color: #edf9f5;margin: 0;padding: 10px 20px;border-radius: 10px;border: 1px solid #dff4ee;">Adresa zariadenia:<br><strong>Balvany 642, Kameničná</strong><br><br></p>
+						<p style="text-align: justify;">V domove sociálnych služieb sa poskytuje sociálna služba fyzickej osobe do dovŕšenia dôchodkového veku, ak je táto fyzická osoba odkázaná na pomoc inej fyzickej osoby a jej stupeň odkázanosti je najmenej V podľa prílohy č. 3 zákona č. 448/2008 Z.z.o sociálnych službách, alebo fyzickej osobe, ktorá je nevidiaca alebo prakticky nevidiaca a jej stupeň odkázanosti je najmenej III podľa prílohy č. 3 zákona č. 448/2008 Z.z. o sociálnych službách. </p>
+						<div class="price" style="
     flex: auto;
     align-content: flex-end;
     font-size: 32px;
     text-align: center
-">496,-€<font style="font-weight:300;font-size:smaller">/mesiac</font></div>
-          <a href="#visit" class="btn alt focus-ring" style="width: -webkit-fill-available;    flex-flow: column;">Podrobný Cenník</a>
-        </div>
-        <div class="price-card reveal">
-          <img src="https://lh5.googleusercontent.com/p/AF1QipMfYfYezBcJtYlgAYWfqx4pkaQpYTpmK0PHEgcp=w650-h486-k-no" alt="Elegant companion suite" style="border-radius:14px;aspect-ratio: 3 / 2">
-          <h3 style="
+">496,-€<font style="font-weight:300;font-size:smaller"> /mesiac</font>
+						</div>
+						<a href="#visit" class="btn alt focus-ring" style="width: -webkit-fill-available;    flex-flow: column;">Podrobný Cenník</a>
+					</div>
+					<div class="price-card reveal">
+						<img src="https://lh5.googleusercontent.com/p/AF1QipMfYfYezBcJtYlgAYWfqx4pkaQpYTpmK0PHEgcp=w650-h486-k-no" alt="Elegant companion suite" style="border-radius:14px;aspect-ratio: 3 / 2">
+						<h3 style="
     margin-bottom: 0;
 ">Zariadenie podporovaného bývania</h3>
-          <p style="margin:0">Kapacita zariadení spolu: <strong>24 osôb</strong></p>
-          <p style="margin:0;background-color: #edf9f5;margin: 0;padding: 10px 20px;border-radius: 10px;border: 1px solid #dff4ee;">Adresa zariadení:<br><strong>Balvany 642, Kameničná</strong><br><strong>J. Baranyaiho 17, Komárno</strong></p>
-          <p style="text-align: justify;">V zariadení podporovaného bývania sa poskytuje sociálna služba fyzickej osobe od 16. roku veku do dovŕšenia dôchodkového veku, ak je táto fyzická osoba odkázaná na pomoc inej fyzickej osoby
-            podľa prílohy č.3 zákona č. 448/2008 Z.z. a na dohľad, pod ktorým je schopná viesť samostatný život.
-          </p>
-          <div class="price" style="
+						<p style="margin:0">Kapacita zariadení spolu: <strong>24 osôb</strong></p>
+						<p style="margin:0;background-color: #edf9f5;margin: 0;padding: 10px 20px;border-radius: 10px;border: 1px solid #dff4ee;">Adresa zariadení:<br><strong>Balvany 642, Kameničná</strong><br><strong>J. Baranyaiho 17, Komárno</strong></p>
+						<p style="text-align: justify;">V zariadení podporovaného bývania sa poskytuje sociálna služba fyzickej osobe od 16. roku veku do dovŕšenia dôchodkového veku, ak je táto fyzická osoba odkázaná na pomoc inej fyzickej osoby podľa prílohy č.3 zákona č. 448/2008 Z.z. a na dohľad, pod ktorým je schopná viesť samostatný život. </p>
+						<div class="price" style="
     flex: auto;
     align-content: flex-end;
     font-size: 32px;
     text-align: center
-">217,-€<font style="font-weight:300;font-size:smaller">/mesiac</font></div>
-          <a href="#visit" class="btn alt focus-ring" style="width: -webkit-fill-available;    flex-flow: column;">Podrobný Cenník</a>
-        </div>
-      </div>
-    </div>
-  </section>
+">217,-€<font style="font-weight:300;font-size:smaller"> /mesiac</font>
+						</div>
+						<a href="#visit" class="btn alt focus-ring" style="width: -webkit-fill-available;    flex-flow: column;">Podrobný Cenník</a>
+					</div>
+				</div>
+			</div>
+		</section>
+		<section class="section" id="dining">
+			<div class="container grid-2">
+				<div class="reveal">
+					<span class="kicker">Podmienky</span>
+					<h2>Podmienky prijatia do nášho zariadenia</h2>
+					<p class="lead">Občan, ktorý potrebuje zabezpečenie poskytovania sociálnej služby v našom zariadení:</p>
+					<ul class="clean" style="margin-top:12px;margin-bottom: 20px">
+						<li><svg width="18" height="18" viewBox="0 0 24 24">
+								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg> Požiada príslušnú obec (alebo VÚC v prípade podporovaného bývania) o vydanie rozhodnutia o odkázanosti na sociálnu službu v zariadení pre seniorov (alebo v domove sociálnych služieb)</li>
+						<li><svg width="18" height="18" viewBox="0 0 24 24">
+								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg> Požiada príslušnú obec (alebo samosprávny kraj v prípade podporovaného bývania) o vyznačenie právoplatnosti rozhodnutia</li>
+						<li><svg width="18" height="18" viewBox="0 0 24 24">
+								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg> Podá žiadosť o prijatie do nášho zariadenia</li>
+						<li><svg width="18" height="18" viewBox="0 0 24 24">
+								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg> Požiada obec (alebo samosprávny kraj v prípade podporovaného bývania) o zabezpečenie poskytovania sociálnej služby</li>
+						<li><svg width="18" height="18" viewBox="0 0 24 24">
+								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg> Predloží potvrdenia o bezinfekčnosti</li>
+						<li><svg width="18" height="18" viewBox="0 0 24 24">
+								<path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round" /></svg> Predloží notársky overené potvrdenie o majetku</li>
+					</ul>
+					<div class="mobileFlex" style="display:flex;gap:10px;margin-top:14px">
+						<a href="#contact" class="btn focus-ring">VOĽNÉ MIESTA</a>
+						<a href="#visit" class="btn alt focus-ring">DOKUMENTY NA STIAHNUTIE</a>
+					</div>
+				</div>
+				<div class="gallery reveal">
+					<img src="https://images.unsplash.com/photo-1498654200943-1088dd4438ae?q=80&w=1200&auto=format&fit=crop" alt="Colorful seasonal salad">
+					<img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1200&auto=format&fit=crop" alt="Balanced entrée plate">
+					<img src="https://images.unsplash.com/photo-1498654200943-1088dd4438ae?q=80&w=1200&auto=format&fit=crop" alt="Colorful seasonal salad">
+					<img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1200&auto=format&fit=crop" alt="Balanced entrée plate">
+				</div>
+			</div>
+		</section>
+		<section class="section" id="community">
+			<div class="container testimonials">
+				<div class="reveal">
+					<span class="kicker">Community</span>
+					<h2>Stories of comfort and connection</h2>
+					<p class="lead">Families trust us because we lead with heart and deliver excellence in every detail.</p>
+					<div class="quote" style="margin-top:14px">
+						<img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=500&auto=format&fit=crop" alt="Family member portrait">
+						<div>
+							<p>Within days, Mom was smiling again. The staff know her by name, and the gardens are her favorite place. We are so grateful.</p>
+							<b>Elena R.</b><br><span style="color:var(--muted)">Daughter of resident</span>
+						</div>
+					</div>
+					<div class="quote" style="margin-top:14px">
+						<img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=500&auto=format&fit=crop" alt="Resident portrait">
+						<div>
+							<p>The food is wonderful and I have more friends than ever. My days are peaceful and full of laughter.</p>
+							<b>Robert M.</b><br><span style="color:var(--muted)">Resident</span>
+						</div>
+					</div>
+				</div>
+				<div class="card reveal">
+					<h3>Upcoming highlights</h3>
+					<ul class="clean">
+						<li><svg width="16" height="16" viewBox="0 0 24 24">
+								<circle cx="12" cy="12" r="9" stroke="#46b3a2" stroke-width="2" />
+								<path d="M12 7v5l3 2" stroke="#46b3a2" stroke-width="2" stroke-linecap="round" /></svg>Jazz Brunch on the Terrace</li>
+						<li><svg width="16" height="16" viewBox="0 0 24 24">
+								<circle cx="12" cy="12" r="9" stroke="#46b3a2" stroke-width="2" />
+								<path d="M12 7v5l3 2" stroke="#46b3a2" stroke-width="2" stroke-linecap="round" /></svg>Grandchildren Garden Day</li>
+						<li><svg width="16" height="16" viewBox="0 0 24 24">
+								<circle cx="12" cy="12" r="9" stroke="#46b3a2" stroke-width="2" />
+								<path d="M12 7v5l3 2" stroke="#46b3a2" stroke-width="2" stroke-linecap="round" /></svg>Art Show & Tea Social</li>
+					</ul>
+					<a href="#visit" class="btn alt focus-ring" style="margin-top:14px">Join an Event</a>
+				</div>
+			</div>
+		</section>
+		<section class="section" id="gallery">
+			<div class="container">
+				<span class="kicker">Gallery</span>
+				<h2>A gentle, modern place to call home</h2>
+				<p class="lead">Soft tones, sunlit lounges, and serene outdoor spaces designed for relaxation.</p>
+				<div class="gallery reveal" style="margin-top:12px;grid-template-columns:repeat(3,1fr)">
+					<img src="https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=1200&auto=format&fit=crop" alt="Sunlit lounge with plants">
+					<img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop" alt="Calm hallway with artwork">
+					<img src="https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=1200&auto=format&fit=crop" alt="Sunlit lounge with plants">
+				</div>
+			</div>
+		</section>
+		<section class="section" id="visit">
+			<div class="container grid-2">
+				<div class="reveal">
+					<span class="kicker">Visit Us</span>
+					<h2>We’d love to show you around</h2>
+					<p class="lead">Book a gentle, no‑rush tour with a cup of tea and meet our caring team.</p>
+					<iframe title="Map to Serenity Grove" class="map" loading="lazy" src="https://www.google.com/maps?q=central%20park%20new%20york&output=embed"></iframe>
+					<div class="mobileFlex" style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+						<a href="tel:+1234567890" class="btn alt focus-ring">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+								<path d="M3 5l4-1 3 5-2 2a14 14 0 006 6l2-2 5 3-1 4c-7 1-16-8-17-17z" stroke="#27413b" stroke-width="2" /></svg> +1 (234) 567‑890 </a>
+						<a href="mailto:hello@serenitygrove.example" class="btn focus-ring">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+								<path d="M3 6h18v12H3z" stroke="#fff" stroke-width="2" />
+								<path d="M3 7l9 6 9-6" stroke="#fff" stroke-width="2" /></svg> Email Us </a>
+					</div>
+				</div>
+				<div class="contact card reveal">
+					<h3>VOĽNÉ MIESTA</h3>
+					<form class="form" id="tourForm" novalidate>
+						<div class="row">
+							<div class="input">
+								<label for="name">Full Name</label>
+								<input id="name" name="name" type="text" placeholder="Your name" required aria-required="true">
+							</div>
+							<div class="input">
+								<label for="email">Email</label>
+								<input id="email" name="email" type="email" placeholder="you@example.com" required aria-required="true">
+							</div>
+						</div>
+						<div class="row">
+							<div class="input">
+								<label for="phone">Phone</label>
+								<input id="phone" name="phone" type="tel" placeholder="+1 (___) ___‑____">
+							</div>
+							<div class="input">
+								<label for="date">Preferred Date</label>
+								<input id="date" name="date" type="date">
+							</div>
+						</div>
+						<div class="row">
+							<div class="input">
+								<label for="care-level">Starostlivosť Interest</label>
+								<select id="care-level" name="care">
+									<option>Independent Living</option>
+									<option>Assisted Living</option>
+									<option>Memory Starostlivosť</option>
+									<option>Unsure</option>
+								</select>
+							</div>
+							<div class="input">
+								<label for="time">Preferred Time</label>
+								<select id="time" name="time">
+									<option>Morning</option>
+									<option>Afternoon</option>
+									<option>Evening</option>
+								</select>
+							</div>
+						</div>
+						<div class="input">
+							<label for="message">Anything we should know?</label>
+							<textarea id="message" name="message" rows="4" placeholder="Tell us about preferences or questions"></textarea>
+						</div>
+						<button type="submit" class="btn">Submit Request</button>
+						<small style="color:var(--muted)">By submitting, you agree to be contacted about your inquiry.</small>
+					</form>
+				</div>
+			</div>
+		</section>
+	</main>
+	<footer class="footer" id="contact">
+		<div class="container footer-grid">
+			<div>
+				<div class="brand" style="margin-bottom:10px">
+					<span class="logo" aria-hidden="true">
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+							<path d="M4 14c5-1 6-8 8-8s3 7 8 8c-3 1-5 4-8 4s-5-3-8-4z" fill="white" opacity=".9" />
+							<circle cx="18" cy="6" r="3" fill="#fff" opacity=".7" />
+						</svg>
+					</span>
+					<span>Serenity Grove</span>
+				</div>
+				<p class="lead">A calm, modern retirement community where care and joy live side by side.</p>
+				<div class="social" aria-label="Social media">
+					<a href="#" aria-label="Instagram">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+							<rect x="3" y="3" width="18" height="18" rx="5" stroke="#27413b" stroke-width="2" />
+							<circle cx="12" cy="12" r="4" stroke="#27413b" stroke-width="2" />
+							<circle cx="17" cy="7" r="1.2" fill="#27413b" /></svg>
+					</a>
+					<a href="#" aria-label="Facebook">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+							<path d="M14 9h3V6h-3c-2 0-3 .9-3 3v2H8v3h3v7h3v-7h3l1-3h-4V9c0-.7.3-1 1-1z" fill="#27413b" /></svg>
+					</a>
+					<a href="#" aria-label="X">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+							<path d="M4 4l16 16M20 4L4 20" stroke="#27413b" stroke-width="2" stroke-linecap="round" /></svg>
+					</a>
+				</div>
+			</div>
+			<div>
+				<h3>Visit</h3>
+				<p>123 Serenity Lane<br>Greengrove, CA 90210</p>
+				<a href="#visit" class="btn alt" style="margin-top:6px">Directions</a>
+			</div>
+			<div>
+				<h3>Contact</h3>
+				<p><a href="tel:+1234567890">+1 (234) 567‑890</a><br><a href="mailto:hello@serenitygrove.example">hello@serenitygrove.example</a></p>
+				<a href="#visit" class="btn alt" style="margin-top:6px">VOĽNÉ MIESTA</a>
+			</div>
+			<div>
+				<h3>Hours</h3>
+				<p>Tours daily 9am–6pm<br>Front desk 24/7</p>
+				<a href="#contact" class="btn alt" style="margin-top:6px">CENNÍK</a>
+			</div>
+		</div>
+		<div class="container" style="margin-top:14px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px">
+			<small>© <span id="year"></span> Serenity Grove Living</small>
+			<small><a href="#">Privacy Policy</a> · <a href="#">Terms</a></small>
+		</div>
+	</footer>
+	<div class="mobile-cta">
+		<a href="#visit" class="btn">VOĽNÉ MIESTA</a>
+		<a href="tel:+1234567890" class="btn alt">ZAVOLAŤ</a>
+	</div>
+	<div class="toast" role="status" aria-live="polite" id="toast">Thank you! We’ll be in touch shortly.</div>
+	<script>
+	const observer = new IntersectionObserver((entries) => {
+		entries.forEach(e => {
+			if(e.isIntersecting) {
+				e.target.classList.add('in');
+				observer.unobserve(e.target)
+			}
+		})
+	}, {
+		threshold: .12
+	});
+	document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+	const year = document.getElementById('year');
+	if(year) year.textContent = new Date().getFullYear();
+	const form = document.getElementById('tourForm');
+	const toast = document.getElementById('toast');
+	if(form) {
+		form.addEventListener('submit', e => {
+			e.preventDefault();
+			const fd = new FormData(form);
+			const name = fd.get('name') ? .toString().trim();
+			const email = fd.get('email') ? .toString().trim();
+			if(!name || !email) {
+				showToast('Please provide your name and email.');
+				return
+			}
+			form.reset();
+			showToast('Thank you! We’ll be in touch shortly.');
+		});
+	}
 
-  <section class="section" id="dining">
-    <div class="container grid-2">
-      <div class="reveal">
-        <span class="kicker">Podmienky</span>
-        <h2>Podmienky prijatia do nášho zariadenia</h2>
-        <p class="lead">Občan, ktorý potrebuje zabezpečenie poskytovania sociálnej služby v našom zariadení:</p>
-        <ul class="clean" style="margin-top:12px;margin-bottom: 20px">
-          <li><svg width="18" height="18" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-            Požiada príslušnú obec (alebo VÚC v prípade podporovaného bývania) o vydanie rozhodnutia o odkázanosti na sociálnu službu v zariadení pre seniorov (alebo v domove sociálnych služieb)</li>
-          <li><svg width="18" height="18" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-            Požiada príslušnú obec (alebo samosprávny kraj v prípade podporovaného bývania) o vyznačenie právoplatnosti rozhodnutia</li>
-          <li><svg width="18" height="18" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-            Podá žiadosť o prijatie do nášho zariadenia</li>
-          <li><svg width="18" height="18" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-            Požiada obec (alebo samosprávny kraj v prípade podporovaného bývania) o zabezpečenie poskytovania sociálnej služby</li>
-          <li><svg width="18" height="18" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-            Predloží potvrdenia o bezinfekčnosti</li>
-          <li><svg width="18" height="18" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#46b3a2" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-            Predloží notársky overené potvrdenie o majetku</li> 
-        </ul>
-        <div class="mobileFlex" style="display:flex;gap:10px;margin-top:14px">
-          <a href="#contact" class="btn focus-ring">VOĽNÉ MIESTA</a>
-          <a href="#visit" class="btn alt focus-ring">DOKUMENTY NA STIAHNUTIE</a>
-        </div>
-      </div>
-      <div class="gallery reveal">
-        <img src="https://images.unsplash.com/photo-1498654200943-1088dd4438ae?q=80&w=1200&auto=format&fit=crop" alt="Colorful seasonal salad">
-        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1200&auto=format&fit=crop" alt="Balanced entrée plate">
-        <img src="https://images.unsplash.com/photo-1498654200943-1088dd4438ae?q=80&w=1200&auto=format&fit=crop" alt="Colorful seasonal salad">
-        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1200&auto=format&fit=crop" alt="Balanced entrée plate">
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="community">
-    <div class="container testimonials">
-      <div class="reveal">
-        <span class="kicker">Community</span>
-        <h2>Stories of comfort and connection</h2>
-        <p class="lead">Families trust us because we lead with heart and deliver excellence in every detail.</p>
-        <div class="quote" style="margin-top:14px">
-          <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=500&auto=format&fit=crop" alt="Family member portrait">
-          <div>
-            <p>Within days, Mom was smiling again. The staff know her by name, and the gardens are her favorite place. We are so grateful.</p>
-            <b>Elena R.</b><br><span style="color:var(--muted)">Daughter of resident</span>
-          </div>
-        </div>
-        <div class="quote" style="margin-top:14px">
-          <img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=500&auto=format&fit=crop" alt="Resident portrait">
-          <div>
-            <p>The food is wonderful and I have more friends than ever. My days are peaceful and full of laughter.</p>
-            <b>Robert M.</b><br><span style="color:var(--muted)">Resident</span>
-          </div>
-        </div>
-      </div>
-      <div class="card reveal">
-        <h3>Upcoming highlights</h3>
-        <ul class="clean">
-          <li><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="#46b3a2" stroke-width="2"/><path d="M12 7v5l3 2" stroke="#46b3a2" stroke-width="2" stroke-linecap="round"/></svg>Jazz Brunch on the Terrace</li>
-          <li><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="#46b3a2" stroke-width="2"/><path d="M12 7v5l3 2" stroke="#46b3a2" stroke-width="2" stroke-linecap="round"/></svg>Grandchildren Garden Day</li>
-          <li><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="#46b3a2" stroke-width="2"/><path d="M12 7v5l3 2" stroke="#46b3a2" stroke-width="2" stroke-linecap="round"/></svg>Art Show & Tea Social</li>
-        </ul>
-        <a href="#visit" class="btn alt focus-ring" style="margin-top:14px">Join an Event</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="gallery">
-    <div class="container">
-      <span class="kicker">Gallery</span>
-      <h2>A gentle, modern place to call home</h2>
-      <p class="lead">Soft tones, sunlit lounges, and serene outdoor spaces designed for relaxation.</p>
-      <div class="gallery reveal" style="margin-top:12px;grid-template-columns:repeat(3,1fr)">
-        <img src="https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=1200&auto=format&fit=crop" alt="Sunlit lounge with plants">
-        <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop" alt="Calm hallway with artwork">
-        <img src="https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=1200&auto=format&fit=crop" alt="Sunlit lounge with plants">
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="visit">
-    <div class="container grid-2">
-      <div class="reveal">
-        <span class="kicker">Visit Us</span>
-        <h2>We’d love to show you around</h2>
-        <p class="lead">Book a gentle, no‑rush tour with a cup of tea and meet our caring team.</p>
-        <iframe title="Map to Serenity Grove" class="map" loading="lazy" src="https://www.google.com/maps?q=central%20park%20new%20york&output=embed"></iframe>
-        <div class="mobileFlex" style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
-          <a href="tel:+1234567890" class="btn alt focus-ring">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 5l4-1 3 5-2 2a14 14 0 006 6l2-2 5 3-1 4c-7 1-16-8-17-17z" stroke="#27413b" stroke-width="2"/></svg>
-            +1 (234) 567‑890
-          </a>
-          <a href="mailto:hello@serenitygrove.example" class="btn focus-ring">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 6h18v12H3z" stroke="#fff" stroke-width="2"/><path d="M3 7l9 6 9-6" stroke="#fff" stroke-width="2"/></svg>
-            Email Us
-          </a>
-        </div>
-      </div>
-      <div class="contact card reveal">
-        <h3>VOĽNÉ MIESTA</h3>
-        <form class="form" id="tourForm" novalidate>
-          <div class="row">
-            <div class="input">
-              <label for="name">Full Name</label>
-              <input id="name" name="name" type="text" placeholder="Your name" required aria-required="true">
-            </div>
-            <div class="input">
-              <label for="email">Email</label>
-              <input id="email" name="email" type="email" placeholder="you@example.com" required aria-required="true">
-            </div>
-          </div>
-          <div class="row">
-            <div class="input">
-              <label for="phone">Phone</label>
-              <input id="phone" name="phone" type="tel" placeholder="+1 (___) ___‑____">
-            </div>
-            <div class="input">
-              <label for="date">Preferred Date</label>
-              <input id="date" name="date" type="date">
-            </div>
-          </div>
-          <div class="row">
-            <div class="input">
-              <label for="care-level">Starostlivosť Interest</label>
-              <select id="care-level" name="care">
-                <option>Independent Living</option>
-                <option>Assisted Living</option>
-                <option>Memory Starostlivosť</option>
-                <option>Unsure</option>
-              </select>
-            </div>
-            <div class="input">
-              <label for="time">Preferred Time</label>
-              <select id="time" name="time">
-                <option>Morning</option>
-                <option>Afternoon</option>
-                <option>Evening</option>
-              </select>
-            </div>
-          </div>
-          <div class="input">
-            <label for="message">Anything we should know?</label>
-            <textarea id="message" name="message" rows="4" placeholder="Tell us about preferences or questions"></textarea>
-          </div>
-          <button type="submit" class="btn">Submit Request</button>
-          <small style="color:var(--muted)">By submitting, you agree to be contacted about your inquiry.</small>
-        </form>
-      </div>
-    </div>
-  </section>
-</main>
-
-<footer class="footer" id="contact">
-  <div class="container footer-grid">
-    <div>
-      <div class="brand" style="margin-bottom:10px">
-        <span class="logo" aria-hidden="true">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M4 14c5-1 6-8 8-8s3 7 8 8c-3 1-5 4-8 4s-5-3-8-4z" fill="white" opacity=".9"/>
-            <circle cx="18" cy="6" r="3" fill="#fff" opacity=".7"/>
-          </svg>
-        </span>
-        <span>Serenity Grove</span>
-      </div>
-      <p class="lead">A calm, modern retirement community where care and joy live side by side.</p>
-      <div class="social" aria-label="Social media">
-        <a href="#" aria-label="Instagram">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="#27413b" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="#27413b" stroke-width="2"/><circle cx="17" cy="7" r="1.2" fill="#27413b"/></svg>
-        </a>
-        <a href="#" aria-label="Facebook">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 9h3V6h-3c-2 0-3 .9-3 3v2H8v3h3v7h3v-7h3l1-3h-4V9c0-.7.3-1 1-1z" fill="#27413b"/></svg>
-        </a>
-        <a href="#" aria-label="X">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 4l16 16M20 4L4 20" stroke="#27413b" stroke-width="2" stroke-linecap="round"/></svg>
-        </a>
-      </div>
-    </div>
-    <div>
-      <h3>Visit</h3>
-      <p>123 Serenity Lane<br>Greengrove, CA 90210</p>
-      <a href="#visit" class="btn alt" style="margin-top:6px">Directions</a>
-    </div>
-    <div>
-      <h3>Contact</h3>
-      <p><a href="tel:+1234567890">+1 (234) 567‑890</a><br><a href="mailto:hello@serenitygrove.example">hello@serenitygrove.example</a></p>
-      <a href="#visit" class="btn alt" style="margin-top:6px">VOĽNÉ MIESTA</a>
-    </div>
-    <div>
-      <h3>Hours</h3>
-      <p>Tours daily 9am–6pm<br>Front desk 24/7</p>
-      <a href="#contact" class="btn alt" style="margin-top:6px">CENNÍK</a>
-    </div>
-  </div>
-  <div class="container" style="margin-top:14px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px">
-    <small>© <span id="year"></span> Serenity Grove Living</small>
-    <small><a href="#">Privacy Policy</a> · <a href="#">Terms</a></small>
-  </div>
-</footer>
-
-<div class="mobile-cta">
-  <a href="#visit" class="btn">VOĽNÉ MIESTA</a>
-  <a href="tel:+1234567890" class="btn alt">ZAVOLAŤ</a>
-</div>
-
-<div class="toast" role="status" aria-live="polite" id="toast">Thank you! We’ll be in touch shortly.</div>
-
-<script>
-const observer=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');observer.unobserve(e.target)}})},{threshold:.12});
-document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
-const year=document.getElementById('year');if(year)year.textContent=new Date().getFullYear();
-const form=document.getElementById('tourForm');
-const toast=document.getElementById('toast');
-if(form){
-  form.addEventListener('submit',e=>{
-    e.preventDefault();
-    const fd=new FormData(form);
-    const name=fd.get('name')?.toString().trim();
-    const email=fd.get('email')?.toString().trim();
-    if(!name||!email){showToast('Please provide your name and email.');return}
-    form.reset();
-    showToast('Thank you! We’ll be in touch shortly.');
-  });
-}
-function showToast(msg){
-  if(!toast)return;
-  toast.textContent=msg;
-  toast.classList.add('show');
-  setTimeout(()=>toast.classList.remove('show'),3500);
-}
-  const menuBtn=document.querySelector('.menu-btn');
-const nav=document.querySelector('nav[aria-label="Primary"]');
-if(menuBtn&&nav){
-menuBtn.addEventListener('click',()=>{
-const expanded=menuBtn.getAttribute('aria-expanded')==='true';
-menuBtn.setAttribute('aria-expanded',(!expanded).toString());
-menuBtn.setAttribute('aria-label',expanded?'Open menu':'Close menu');
-nav.classList.toggle('open',!expanded);
-});
-}
-</script>
+	function showToast(msg) {
+		if(!toast) return;
+		toast.textContent = msg;
+		toast.classList.add('show');
+		setTimeout(() => toast.classList.remove('show'), 3500);
+	}
+	const menuBtn = document.querySelector('.menu-btn');
+	const nav = document.querySelector('nav[aria-label="Primary"]');
+	if(menuBtn && nav) {
+		menuBtn.addEventListener('click', () => {
+			const expanded = menuBtn.getAttribute('aria-expanded') === 'true';
+			menuBtn.setAttribute('aria-expanded', (!expanded).toString());
+			menuBtn.setAttribute('aria-label', expanded ? 'Open menu' : 'Close menu');
+			nav.classList.toggle('open', !expanded);
+		});
+	}
+	</script>
 </body>
