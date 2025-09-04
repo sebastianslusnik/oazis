@@ -1,9 +1,8 @@
 <!doctype html>
 <html lang="en">
-
 <head>
 	<meta charset="utf-8" />
-	<title>Supabase Storage PDF Upload + Display</title>
+	<title>Supabase Storage PDF Upload + Folder Manager</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<style>
 	:root {
@@ -16,7 +15,6 @@
 		--success: #16a34a;
 		--border: #e5e7eb;
 	}
-
 	body {
 		margin: 0;
 		background: var(--bg);
@@ -24,127 +22,146 @@
 		font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
 		min-height: 100vh;
 	}
-
 	.container {
-		max-width: 940px;
-		margin: 48px auto;
+		max-width: 1100px;
+		margin: 32px auto;
 		padding: 0 20px;
 	}
-
 	h1 {
 		font-size: 1.6rem;
 		margin: 0 0 8px;
 	}
-
 	p {
 		color: var(--muted);
-		margin: 0 0 20px;
+		margin: 0 0 18px;
 	}
-
 	.panel {
 		background: var(--panel);
 		border: 1px solid var(--border);
-		border-radius: 16px;
+		border-radius: 12px;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-		padding: 18px;
+		padding: 16px;
 	}
-
 	.grid {
 		display: grid;
 		grid-template-columns: 1fr;
 		gap: 16px;
 	}
-
-	@media (min-width: 900px) {
+	@media (min-width: 1100px) {
 		.grid {
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: 360px 1fr;
 		}
 	}
-
-	.dropzone {
-		border: 2px dashed var(--border);
-		border-radius: 14px;
-		padding: 28px;
-		text-align: center;
-		transition: border-color .2s, background .2s;
-		cursor: pointer;
-		background: #fafafa;
-	}
-
-	.dropzone.dragover {
-		border-color: var(--accent);
-		background: #f3f4f6;
-	}
-
-	.hint {
-		color: var(--muted);
-		font-size: .95rem;
-		margin-top: 6px;
-	}
-
 	.controls {
-		margin-top: 14px;
+		margin-top: 12px;
 		display: flex;
 		gap: 10px;
 		justify-content: center;
 		flex-wrap: wrap;
 	}
-
 	.btn {
 		appearance: none;
 		border: 1px solid var(--border);
 		background: #ffffff;
 		color: var(--text);
-		padding: 10px 14px;
+		padding: 8px 12px;
 		border-radius: 10px;
 		cursor: pointer;
 		font-weight: 600;
-		transition: transform .06s ease, background .2s, box-shadow .2s;
+		transition: transform .06s ease, background .12s, box-shadow .12s;
 	}
-
 	.btn:hover {
 		background: #f9fafb;
 		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 	}
-
-	.btn:active {
-		transform: translateY(1px);
-	}
-
 	.btn.primary {
 		border-color: var(--accent);
 		background: var(--accent);
 		color: #ffffff;
 	}
-
+	.small {
+		font-size: .9rem;
+		color: var(--muted);
+	}
+	.dropzone {
+		border: 2px dashed var(--border);
+		border-radius: 10px;
+		padding: 18px;
+		text-align: center;
+		transition: border-color .2s, background .2s;
+		cursor: pointer;
+		background: #fafafa;
+	}
+	.dropzone.dragover {
+		border-color: var(--accent);
+		background: #f3f4f6;
+	}
+	.hint {
+		color: var(--muted);
+		font-size: .95rem;
+		margin-top: 6px;
+	}
 	.status {
 		margin-top: 10px;
 		min-height: 18px;
 		font-size: .95rem;
 	}
-
 	.status.ok {
 		color: var(--success);
 	}
-
 	.status.err {
 		color: var(--danger);
 	}
-
+	.panel-title {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 10px;
+	}
+	.folder-tree {
+		max-height: 520px;
+		overflow: auto;
+		margin-top: 8px;
+	}
+	.folder-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 6px 8px;
+		border-radius: 8px;
+	}
+	.folder-row:hover {
+		background: #f9fafb;
+	}
+	.folder-name {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-weight: 600;
+	}
+	.folder-actions {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+	.input, .select {
+		padding: 8px;
+		border-radius: 8px;
+		border: 1px solid var(--border);
+		font-size: .95rem;
+	}
 	.gallery {
 		display: grid;
 		grid-template-columns: 1fr;
 		gap: 14px;
 		margin-top: 8px;
 	}
-
 	.card {
 		background: var(--panel);
 		border: 1px solid var(--border);
-		border-radius: 12px;
+		border-radius: 10px;
 		overflow: hidden;
 	}
-
 	.card-header {
 		display: flex;
 		align-items: center;
@@ -154,7 +171,6 @@
 		border-bottom: 1px solid var(--border);
 		background: #f9fafb;
 	}
-
 	.name {
 		overflow: hidden;
 		white-space: nowrap;
@@ -162,14 +178,12 @@
 		font-weight: 600;
 		font-size: .95rem;
 	}
-
 	.links a {
 		color: var(--accent);
 		text-decoration: none;
 		font-weight: 600;
 		margin-left: 10px;
 	}
-
 	.viewer {
 		width: 100%;
 		height: 380px;
@@ -177,48 +191,148 @@
 		display: none;
 		background: #f3f4f6;
 	}
-
+	.path-btn {
+		padding: 6px 8px;
+		border-radius: 8px;
+		border: 1px solid var(--border);
+		background: #fff;
+		cursor: pointer;
+		font-size: .85rem;
+	}
+	.modal {
+		position: fixed;
+		inset: 0;
+		display: none;
+		align-items: center;
+		justify-content: center;
+		background: rgba(0,0,0,0.35);
+		z-index: 1200;
+	}
+	.modal.open {
+		display: flex;
+	}
+	.modal-panel {
+		width: 720px;
+		max-width: calc(100% - 40px);
+		background: var(--panel);
+		border-radius: 10px;
+		padding: 16px;
+		box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+	}
+	.modal-row {
+		display: flex;
+		gap: 10px;
+		margin-bottom: 10px;
+		align-items: center;
+	}
+	.kv {
+		color: var(--muted);
+		font-size: .9rem;
+	}
 	.empty {
 		color: var(--muted);
 		padding: 10px;
 		font-style: italic;
 	}
-
-	.small {
-		font-size: .9rem;
-		color: var(--muted);
+	.search {
+		padding: 8px;
+		border-radius: 8px;
+		border: 1px solid var(--border);
+		width: 100%;
+	}
+	.footer {
+		margin-top: 12px;
+		display: flex;
+		gap: 8px;
+		justify-content: flex-end;
 	}
 	</style>
 </head>
-
 <body>
 	<div class="container">
-		<h1>PDF Uploader (Supabase Storage)</h1>
-		<p>Drop a PDF or choose a file. Uploaded PDFs appear below.</p>
+		<h1>PDF Uploader with Folder Manager</h1>
+		<p>Drop a PDF or choose a file. Use the folder manager to create and manage folders, assign PDFs to folders when uploading or later.</p>
 		<div class="grid">
 			<div class="panel">
-				<div id="dropzone" class="dropzone">
-					<div><strong>Drop PDF here</strong> or click to choose</div>
-					<div class="hint">Max 20 MB • Only application/pdf</div> <input id="fileInput" type="file" accept="application/pdf" hidden />
+				<div class="panel-title">
+					<div style="display:flex;align-items:center;gap:10px;">
+						<h2 style="margin:0;font-size:1.05rem;">Folders</h2>
+						<div class="small">Bucket: <code>pdfs</code></div>
+					</div>
+					<button id="refreshBtn" class="btn">Refresh</button>
 				</div>
-				<div class="controls"> <button id="chooseBtn" class="btn">Choose PDF</button> <button id="uploadBtn" class="btn primary">Upload</button> </div>
-				<div id="status" class="status"></div>
-				<div class="small">Bucket: <code>pdfs</code></div>
+				<div style="display:flex;gap:8px;margin-bottom:8px;">
+					<input id="newFolderName" class="input" placeholder="New folder name" />
+					<select id="newFolderParent" class="select"></select>
+					<button id="createFolderBtn" class="btn primary">Create</button>
+				</div>
+				<div style="display:flex;gap:8px;margin-bottom:8px;">
+					<input id="folderSearch" class="search" placeholder="Search folders" />
+				</div>
+				<div class="folder-tree" id="folderTree"></div>
+				<div style="margin-top:12px;display:flex;gap:8px;">
+					<button id="exportStructureBtn" class="btn">Export JSON</button>
+					<button id="importStructureBtn" class="btn">Import JSON</button>
+				</div>
 			</div>
 			<div class="panel">
 				<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-					<h2 style="margin:0;font-size:1.1rem;">Uploaded PDFs</h2> <button id="refreshBtn" class="btn">Refresh</button>
+					<div style="display:flex;flex-direction:column;">
+						<h2 style="margin:0;font-size:1.1rem;">Upload PDF</h2>
+						<div class="small">Choose a destination folder before uploading</div>
+					</div>
+					<div style="display:flex;gap:8px;align-items:center;">
+						<select id="uploadFolderSelect" class="select"></select>
+						<button id="chooseBtn" class="btn">Choose PDF</button>
+						<button id="uploadBtn" class="btn primary">Upload</button>
+					</div>
 				</div>
-				<div id="gallery" class="gallery"></div>
+				<div id="dropzone" class="dropzone">
+					<div><strong>Drop PDF here</strong> or click to choose</div>
+					<div class="hint">Max 20 MB • Only application/pdf</div>
+					<input id="fileInput" type="file" accept="application/pdf" hidden />
+				</div>
+				<div id="status" class="status"></div>
+				<div style="margin-top:12px;display:flex;gap:8px;align-items:center;">
+					<input id="searchInput" class="search" placeholder="Search PDFs by name or folder" />
+				</div>
+				<div class="gallery" id="gallery"></div>
 				<div id="emptyState" class="empty" style="display:none;">No PDFs yet.</div>
 			</div>
 		</div>
 	</div>
+
+	<div id="pathModal" class="modal">
+		<div class="modal-panel">
+			<h3 style="margin-top:0">Edit file path</h3>
+			<div class="modal-row">
+				<div style="flex:1">
+					<div class="kv">File</div>
+					<div id="modalFileName" style="font-weight:600"></div>
+				</div>
+				<div style="width:260px">
+					<div class="kv">Folder</div>
+					<select id="modalFolderSelect" class="select" style="width:100%"></select>
+				</div>
+			</div>
+			<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+				<button id="modalMoveBtn" class="btn primary">Move</button>
+				<button id="modalRemoveFromFolderBtn" class="btn">Remove from folder</button>
+				<button id="modalCloseBtn" class="btn">Close</button>
+			</div>
+			<div class="footer" style="justify-content:flex-start">
+				<div id="modalStatus" class="small kv"></div>
+			</div>
+		</div>
+	</div>
+
 	<script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" crossorigin="anonymous"></script>
 	<script>
 	const SUPABASE_URL = "https://vehpvfcjceglrftdjlje.supabase.co";
 	const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlaHB2ZmNqY2VnbHJmdGRqbGplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwMTQ5NDEsImV4cCI6MjA3MjU5MDk0MX0.yqZTnMDvCuCqTD9ptkj_Nc-qsvKne-06k8gaRtnYNxc";
 	const BUCKET = "pdfs";
+	const JSONBIN_ID = "68b9d3d8d0ea881f4071c182";
+	const JSONBIN_SECRET = "";
 	const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 	const dropzone = document.getElementById('dropzone');
 	const fileInput = document.getElementById('fileInput');
@@ -228,22 +342,59 @@
 	const galleryEl = document.getElementById('gallery');
 	const emptyStateEl = document.getElementById('emptyState');
 	const refreshBtn = document.getElementById('refreshBtn');
+	const uploadFolderSelect = document.getElementById('uploadFolderSelect');
+	const newFolderName = document.getElementById('newFolderName');
+	const newFolderParent = document.getElementById('newFolderParent');
+	const createFolderBtn = document.getElementById('createFolderBtn');
+	const folderTree = document.getElementById('folderTree');
+	const folderSearch = document.getElementById('folderSearch');
+	const searchInput = document.getElementById('searchInput');
+	const exportStructureBtn = document.getElementById('exportStructureBtn');
+	const importStructureBtn = document.getElementById('importStructureBtn');
+	const folderResults = [];
 	let selectedFile = null;
-
+	let structure = { folders: [""], files: {} };
+	let storageList = [];
+	async function safeFetchJson(url, opts) {
+		const res = await fetch(url, opts);
+		if(res.status === 404) return null;
+		const j = await res.json().catch(()=>null);
+		return { status: res.status, json: j };
+	}
+	async function loadStructure() {
+		const r = await safeFetchJson(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`);
+		if(r && r.status >= 200 && r.status < 300 && r.json && r.json.record) {
+			structure = r.json.record;
+			if(!structure.folders) structure.folders = [""];
+			if(!structure.files) structure.files = {};
+		} else {
+			structure = { folders: [""], files: {} };
+			await saveStructure();
+		}
+		renderFolderControls();
+	}
+	async function saveStructure() {
+		if(!JSONBIN_SECRET) return;
+		await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-Master-Key': '$2a$10$9sO/ja29sMebpWNvsWmp5.dJ6lv7CPeLBMRFaA/cAEwz42ii6qlCS'
+			},
+			body: JSON.stringify(structure)
+		});
+	}
 	function setStatus(msg, type) {
 		statusEl.className = 'status' + (type ? ' ' + type : '');
 		statusEl.textContent = msg || '';
 	}
-
 	function sanitizeName(name) {
 		const base = name.replace(/\s+/g, '_').replace(/[^\w.\-]/g, '');
 		return base.replace(/^\.+/, '');
 	}
-
 	function uid() {
 		return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
 	}
-
 	function formatDisplayName(filename) {
 		let name = filename.replace(/^[^_]+_/, '');
 		name = name.replace(/\.pdf$/i, '');
@@ -269,7 +420,6 @@
 		const file = e.target.files && e.target.files[0];
 		handleSelect(file);
 	});
-
 	function handleSelect(file) {
 		if(!file) return;
 		if(file.type !== 'application/pdf') {
@@ -292,39 +442,86 @@
 			return;
 		}
 		try {
-			await uploadPdf(selectedFile);
+			const targetFolder = uploadFolderSelect.value;
+			await uploadPdf(selectedFile, targetFolder);
 			selectedFile = null;
 			fileInput.value = '';
 			setStatus('Upload complete.', 'ok');
-			await loadPdfs();
+			await refreshAll();
 		} catch (err) {
 			setStatus(err.message || 'Upload failed.', 'err');
 		}
 	});
-	refreshBtn.addEventListener('click', loadPdfs);
-	async function uploadPdf(file) {
+	refreshBtn.addEventListener('click', refreshAll);
+	createFolderBtn.addEventListener('click', async () => {
+		const name = (newFolderName.value || '').trim();
+		const parent = newFolderParent.value || "";
+		if(!name) return;
+		let newPath = parent ? `${parent}/${name}` : name;
+		newPath = newPath.replace(/\/\/+/g, '/').replace(/^\//, '').replace(/\/$/, '');
+		if(structure.folders.includes(newPath)) {
+			newFolderName.value = '';
+			await renderFolderControls();
+			return;
+		}
+		structure.folders.push(newPath);
+		structure.folders.sort();
+		newFolderName.value = '';
+		await saveStructure();
+		await renderFolderControls();
+	});
+	folderSearch.addEventListener('input', ()=> renderFolderControls());
+	searchInput.addEventListener('input', ()=> renderGallery());
+	exportStructureBtn.addEventListener('click', ()=> {
+		const blob = new Blob([JSON.stringify(structure, null, 2)], {type:'application/json'});
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = 'folders-structure.json';
+		document.body.appendChild(a);
+		a.click();
+		a.remove();
+		URL.revokeObjectURL(url);
+	});
+	importStructureBtn.addEventListener('click', ()=> {
+		const inp = document.createElement('input');
+		inp.type = 'file';
+		inp.accept = 'application/json';
+		inp.onchange = async (e) => {
+			const f = e.target.files[0];
+			if(!f) return;
+			const text = await f.text();
+			try {
+				const obj = JSON.parse(text);
+				if(!obj.folders) obj.folders = [""];
+				if(!obj.files) obj.files = {};
+				structure = obj;
+				await saveStructure();
+				await renderFolderControls();
+				await refreshAll();
+			} catch(e) {}
+		};
+		inp.click();
+	});
+	async function uploadPdf(file, folder) {
 		setStatus('Uploading…');
 		const safeName = sanitizeName(file.name);
-		const filePath = `${uid()}_${safeName}`;
-		const {
-			data,
-			error
-		} = await supabase.storage.from(BUCKET).upload(filePath, file, {
+		const id = uid();
+		const baseName = `${id}_${safeName}`;
+		const filePath = folder ? `${folder}/${baseName}` : baseName;
+		const { data, error } = await supabase.storage.from(BUCKET).upload(filePath, file, {
 			contentType: file.type || 'application/pdf',
 			cacheControl: '3600',
 			upsert: false
 		});
 		if(error) throw error;
+		structure.files[id] = { filename: baseName, path: folder || "" };
+		await saveStructure();
 		return data;
 	}
-	async function loadPdfs() {
-		galleryEl.innerHTML = '';
-		setStatus('Loading…');
-		const {
-			data,
-			error
-		} = await supabase.storage.from(BUCKET).list('', {
-			limit: 100,
+	async function listStorage() {
+		const { data, error } = await supabase.storage.from(BUCKET).list('', {
+			limit: 1000,
 			offset: 0,
 			sortBy: {
 				column: 'updated_at',
@@ -333,20 +530,156 @@
 		});
 		if(error) {
 			setStatus(error.message, 'err');
-			emptyStateEl.style.display = 'block';
-			return;
+			return [];
 		}
-		if(!data || data.length === 0) {
+		return data || [];
+	}
+	function getIdFromName(name) {
+		const basename = name.split('/').pop();
+		const id = basename.split('_')[0];
+		return id;
+	}
+	function getFolderFromObject(objName) {
+		const id = getIdFromName(objName);
+		if(structure.files && structure.files[id] && typeof structure.files[id].path === 'string') {
+			return structure.files[id].path;
+		}
+		const parts = objName.split('/');
+		if(parts.length > 1) {
+			return parts.slice(0, -1).join('/');
+		}
+		return "";
+	}
+	async function moveFile(oldName, newFolder) {
+		const basename = oldName.split('/').pop();
+		const newName = newFolder ? `${newFolder}/${basename}` : basename;
+		let moveResult = null;
+		if(supabase.storage.from(BUCKET).move) {
+			try {
+				const { data, error } = await supabase.storage.from(BUCKET).move(oldName, newName);
+				if(error) throw error;
+				moveResult = data;
+			} catch(e) {
+				moveResult = null;
+			}
+		}
+		if(!moveResult) {
+			const { data: publicData, error: pubErr } = supabase.storage.from(BUCKET).getPublicUrl(oldName);
+			const url = publicData && publicData.publicUrl;
+			if(!url) throw new Error('Move failed');
+			const res = await fetch(url);
+			const blob = await res.blob();
+			const { data: up, error: upErr } = await supabase.storage.from(BUCKET).upload(newName, blob, { contentType: blob.type || 'application/pdf', upsert: false });
+			if(upErr) throw upErr;
+			const { error: delErr } = await supabase.storage.from(BUCKET).remove([oldName]);
+			if(delErr) throw delErr;
+		}
+	}
+	async function refreshAll() {
+		setStatus('Loading…');
+		await loadStructure();
+		storageList = await listStorage();
+		renderFolderControls();
+		renderGallery();
+		setStatus('');
+	}
+	function renderFolderControls() {
+		const q = (folderSearch.value || '').toLowerCase().trim();
+		const folders = Array.from(new Set(structure.folders)).sort((a,b)=> (a||'').localeCompare(b||''));
+		newFolderParent.innerHTML = '';
+		uploadFolderSelect.innerHTML = '';
+		const addOption = (sel, val) => {
+			const o = document.createElement('option');
+			o.value = val;
+			o.textContent = val || '(root)';
+			sel.appendChild(o);
+		};
+		addOption(newFolderParent, "");
+		addOption(uploadFolderSelect, "");
+		for(const f of folders) {
+			addOption(newFolderParent, f);
+			addOption(uploadFolderSelect, f);
+		}
+		folderTree.innerHTML = '';
+		for(const f of folders) {
+			if(q && !(f||'(root)').toLowerCase().includes(q)) continue;
+			const row = document.createElement('div');
+			row.className = 'folder-row';
+			const left = document.createElement('div');
+			left.className = 'folder-name';
+			const name = document.createElement('div');
+			name.style.fontWeight = '700';
+			name.textContent = f || '(root)';
+			const count = storageList.filter(s => getFolderFromObject(s.name) === f).length;
+			const small = document.createElement('div');
+			small.className = 'small';
+			small.textContent = `${count} file${count!==1?'s':''}`;
+			left.appendChild(name);
+			left.appendChild(small);
+			const actions = document.createElement('div');
+			actions.className = 'folder-actions';
+			const renameBtn = document.createElement('button');
+			renameBtn.className = 'btn';
+			renameBtn.textContent = 'Rename';
+			const delBtn = document.createElement('button');
+			delBtn.className = 'btn';
+			delBtn.textContent = 'Delete';
+			renameBtn.addEventListener('click', async () => {
+				const newName = prompt('New folder name', f || '');
+				if(newName === null) return;
+				const trimmed = (newName || '').trim();
+				if(trimmed === '') return;
+				const parent = "";
+				const newPath = parent ? `${parent}/${trimmed}` : trimmed;
+				const oldPath = f;
+				if(oldPath === newPath) return;
+				structure.folders = structure.folders.map(x => x === oldPath ? newPath : x);
+				for(const id of Object.keys(structure.files)) {
+					const p = structure.files[id].path || "";
+					if(p === oldPath || p.startsWith(oldPath + '/')) {
+						const suffix = p.slice(oldPath.length);
+						structure.files[id].path = (newPath + suffix).replace(/^\/+/,'');
+					}
+				}
+				await saveStructure();
+				await refreshAll();
+			});
+			delBtn.addEventListener('click', async () => {
+				const ok = confirm(`Delete folder "${f || '(root)'}"? Files in this folder will be moved to root.`);
+				if(!ok) return;
+				structure.folders = structure.folders.filter(x => x !== f);
+				for(const id of Object.keys(structure.files)) {
+					if(structure.files[id].path === f || (f && structure.files[id].path && structure.files[id].path.startsWith(f + '/'))) {
+						structure.files[id].path = "";
+					}
+				}
+				await saveStructure();
+				await refreshAll();
+			});
+			actions.appendChild(renameBtn);
+			if(f) actions.appendChild(delBtn);
+			row.appendChild(left);
+			row.appendChild(actions);
+			folderTree.appendChild(row);
+		}
+	}
+	function renderGallery() {
+		galleryEl.innerHTML = '';
+		const q = (searchInput.value || '').toLowerCase().trim();
+		if(!storageList || storageList.length === 0) {
 			emptyStateEl.style.display = 'block';
-			setStatus('');
 			return;
 		}
 		emptyStateEl.style.display = 'none';
-		for(const obj of data) {
-			const {
-				data: pub
-			} = supabase.storage.from(BUCKET).getPublicUrl(obj.name);
-			const publicUrl = pub.publicUrl;
+		for(const obj of storageList) {
+			const id = getIdFromName(obj.name);
+			const folder = getFolderFromObject(obj.name);
+			const displayName = formatDisplayName(obj.name.split('/').pop());
+			if(q) {
+				if(!displayName.toLowerCase().includes(q) && !(folder || '(root)').toLowerCase().includes(q)) continue;
+			}
+			const { data: pub } = supabase.storage.from(BUCKET).getPublicUrl(obj.name);
+			const publicUrl = pub && pub.publicUrl;
 			const card = document.createElement('div');
 			card.className = 'card';
 			const header = document.createElement('div');
@@ -354,7 +687,7 @@
 			const name = document.createElement('div');
 			name.className = 'name';
 			name.title = obj.name;
-			name.textContent = formatDisplayName(obj.name);
+			name.textContent = displayName;
 			const links = document.createElement('div');
 			links.className = 'links';
 			const aOpen = document.createElement('a');
@@ -369,18 +702,100 @@
 			links.appendChild(aOpen);
 			links.appendChild(aDownload);
 			header.appendChild(name);
-			header.appendChild(links);
+			const right = document.createElement('div');
+			right.style.display = 'flex';
+			right.style.alignItems = 'center';
+			right.style.gap = '8px';
+			const pathBtn = document.createElement('button');
+			pathBtn.className = 'path-btn';
+			pathBtn.textContent = folder || '(root)';
+			pathBtn.addEventListener('click', ()=> openPathModal(obj));
+			right.appendChild(pathBtn);
+			header.appendChild(right);
+			card.appendChild(header);
 			const iframe = document.createElement('iframe');
 			iframe.className = 'viewer';
 			iframe.src = publicUrl + '#view=FitH';
-			card.appendChild(header);
 			card.appendChild(iframe);
 			galleryEl.appendChild(card);
 		}
-		setStatus('');
 	}
-	loadPdfs();
+	const pathModal = document.getElementById('pathModal');
+	const modalFileName = document.getElementById('modalFileName');
+	const modalFolderSelect = document.getElementById('modalFolderSelect');
+	const modalMoveBtn = document.getElementById('modalMoveBtn');
+	const modalRemoveFromFolderBtn = document.getElementById('modalRemoveFromFolderBtn');
+	const modalCloseBtn = document.getElementById('modalCloseBtn');
+	const modalStatus = document.getElementById('modalStatus');
+	let modalCurrent = null;
+	function openPathModal(obj) {
+		modalCurrent = obj;
+		modalFileName.textContent = obj.name.split('/').pop();
+		populateModalFolderSelect();
+		const currentFolder = getFolderFromObject(obj.name);
+		modalFolderSelect.value = currentFolder || "";
+		modalStatus.textContent = '';
+		pathModal.classList.add('open');
+	}
+	function closePathModal() {
+		modalCurrent = null;
+		pathModal.classList.remove('open');
+	}
+	modalCloseBtn.addEventListener('click', ()=> closePathModal());
+	modalRemoveFromFolderBtn.addEventListener('click', async ()=> {
+		if(!modalCurrent) return;
+		const oldName = modalCurrent.name;
+		const id = getIdFromName(oldName);
+		try {
+			modalStatus.textContent = 'Moving…';
+			await moveFile(oldName, "");
+			if(structure.files[id]) structure.files[id].path = "";
+			await saveStructure();
+			await refreshAll();
+			closePathModal();
+		} catch(e) {
+			modalStatus.textContent = 'Error moving file';
+		}
+	});
+	modalMoveBtn.addEventListener('click', async ()=> {
+		if(!modalCurrent) return;
+		const newFolder = modalFolderSelect.value || "";
+		const oldName = modalCurrent.name;
+		const id = getIdFromName(oldName);
+		try {
+			modalStatus.textContent = 'Moving…';
+			await moveFile(oldName, newFolder);
+			if(!structure.files[id]) structure.files[id] = { filename: oldName.split('/').pop(), path: newFolder };
+			else structure.files[id].path = newFolder;
+			await saveStructure();
+			await refreshAll();
+			closePathModal();
+		} catch(e) {
+			modalStatus.textContent = 'Error moving file';
+		}
+	});
+	function populateModalFolderSelect() {
+		modalFolderSelect.innerHTML = '';
+		const folders = Array.from(new Set(structure.folders)).sort((a,b)=> (a||'').localeCompare(b||''));
+		const optRoot = document.createElement('option');
+		optRoot.value = "";
+		optRoot.textContent = '(root)';
+		modalFolderSelect.appendChild(optRoot);
+		for(const f of folders) {
+			if(!f) continue;
+			const o = document.createElement('option');
+			o.value = f;
+			o.textContent = f;
+			modalFolderSelect.appendChild(o);
+		}
+	}
+	async function init() {
+		await loadStructure();
+		storageList = await listStorage();
+		renderFolderControls();
+		renderGallery();
+	}
+	init();
 	</script>
 </body>
-
 </html>
