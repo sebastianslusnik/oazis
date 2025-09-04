@@ -333,7 +333,7 @@
 	<div class="container">
 		<h1>PDF Uploader (Supabase Storage)</h1>
 		<p>Drop a PDF or choose a file. Uploaded PDFs appear below.</p>
-		<div class="grid">
+		<div class="grid" style="grid-template-columns: 1fr !important;">
 			<div class="panel">
 				<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
 					<h2 style="margin:0;font-size:1.1rem;">Folders</h2>
@@ -344,14 +344,6 @@
 			</div>
 		</div>
 		<div class="grid">
-			<div class="panel">
-				<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-					<h2 style="margin:0;font-size:1.1rem;">Folders</h2>
-				</div>
-				<div class="explorer-toolbar"> <button id="newFolderBtn" class="btn">New Folder</button> <button id="renameFolderBtn" class="btn">Rename</button> <button id="deleteFolderBtn" class="btn">Delete</button> </div>
-				<div class="small">Selected: <span id="selectedFolderLabel">/</span></div>
-				<div id="tree" class="tree"></div>
-			</div>
 			<div class="panel">
 				<div id="dropzone" class="dropzone">
 					<div><strong>Drop PDF here</strong> or click to choose</div>
