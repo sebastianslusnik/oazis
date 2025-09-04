@@ -590,7 +590,8 @@
 	moveUpBtn.addEventListener('click', async () => {
 		if(!modalContext) return;
 		const fromPath = modalContext.filePath;
-		const parent = dirname(dirname(fromPath)) ? dirname(dirname(fromPath)) : '';
+		const parentFolder = dirname(dirname(fromPath));
+		const parent = parentFolder ? parentFolder : '';
 		const newPath = joinPath(parent, basename(fromPath));
 		if(newPath === fromPath) return;
 		await moveFile(fromPath, parent);
@@ -687,11 +688,36 @@
 		if(error) throw error;
 	}
 	async function moveFile(fromPath, toFolder) {
-		const to = joinPath(toFolder || '', basename(fromPath));
-		const {
-			error
-		} = await supabase.storage.from(BUCKET).move(fromPath, to);
-		if(error) throw error;
+		const src = normalizePath(fromPath);
+		const dst = joinPath(toFolder || '', basename(src));
+		if(src === dst) return;
+		const srcDir = dirname(src);
+		const srcName = basename(src);
+		const srcList = await supabase.storage.from(BUCKET).list(srcDir, {
+			limit: 1000
+		});
+		if(srcList.error) throw srcList.error;
+		const found = (srcList.data || []).find(x => x.name === srcName && x.id);
+		if(!found) throw new Error('Source not found: ' + src);
+		const dstDir = dirname(dst);
+		const dstName = basename(dst);
+		const dstList = await supabase.storage.from(BUCKET).list(dstDir, {
+			limit: 1000
+		});
+		if(dstList.error) throw dstList.error;
+		const conflict = (dstList.data || []).find(x => x.name === dstName && x.id);
+		if(conflict) throw new Error('A file with the same name exists in destination.');
+		const moved = await supabase.storage.from(BUCKET).move(src, dst);
+		if(moved.error) {
+			if(/Object not found/i.test(moved.error.message)) {
+				const copied = await supabase.storage.from(BUCKET).copy(src, dst);
+				if(copied.error) throw copied.error;
+				const removed = await supabase.storage.from(BUCKET).remove([src]);
+				if(removed.error) throw removed.error;
+			} else {
+				throw moved.error;
+			}
+		}
 	}
 	async function listOneLevel(prefix) {
 		const path = normalizePath(prefix || '');
