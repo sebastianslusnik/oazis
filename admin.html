@@ -57,7 +57,7 @@
 
 	@media (min-width: 1100px) {
 		.grid {
-			grid-template-columns: 320px 1fr 1fr;
+			grid-template-columns: 1fr 1fr;
 		}
 	}
 
@@ -333,6 +333,16 @@
 	<div class="container">
 		<h1>PDF Uploader (Supabase Storage)</h1>
 		<p>Drop a PDF or choose a file. Uploaded PDFs appear below.</p>
+		<div class="grid">
+			<div class="panel">
+				<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+					<h2 style="margin:0;font-size:1.1rem;">Folders</h2>
+				</div>
+				<div class="explorer-toolbar"> <button id="newFolderBtn" class="btn">New Folder</button> <button id="renameFolderBtn" class="btn">Rename</button> <button id="deleteFolderBtn" class="btn">Delete</button> </div>
+				<div class="small">Selected: <span id="selectedFolderLabel">/</span></div>
+				<div id="tree" class="tree"></div>
+			</div>
+		</div>
 		<div class="grid">
 			<div class="panel">
 				<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
@@ -821,7 +831,7 @@
 		icon.className = 'icon';
 		icon.textContent = '📁';
 		const label = document.createElement('span');
-		label.textContent = node.path ? basename(node.path) : 'Root';
+		label.textContent = node.path ? basename(node.path) : 'Zoznam súborov';
 		row.appendChild(caret);
 		row.appendChild(icon);
 		row.appendChild(label);
