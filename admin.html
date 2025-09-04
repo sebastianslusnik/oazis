@@ -672,7 +672,8 @@
 			setStatus(String(e))
 		}
 	}
-	document.getElementById('btnUpload').onclick = () => fileInput.click() fileInput.onchange = async (e) => {
+	document.getElementById('btnUpload').onclick = () => fileInput.click()
+	 fileInput.onchange = async (e) => {
 		let files = [...e.target.files];
 		if(!files.length) return;
 		let total = files.reduce((a, f) => a + f.size, 0);
