@@ -37,16 +37,14 @@
   .btn.primary:hover{background:var(--accent-2);border-color:var(--accent-2)}
   .btn.danger{border-color:#fecaca;background:#fee2e2;color:#b91c1c}
   .row{display:flex;gap:8px;flex-wrap:wrap}
-  input[type="text"], textarea, select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px}
+  input[type="text"], input[type="password"], textarea, select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px}
   .muted{color:var(--muted);font-size:12px}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   @media (max-width:640px){.grid{grid-template-columns:1fr}}
   .file{border:1px solid var(--border);border-radius:10px;padding:10px;background:#fff;display:flex;flex-direction:column;gap:6px}
   .file .title{font-weight:700}
   .file .meta{font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
-  .drop{
-    border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;background:#fafcff;color:var(--muted)
-  }
+  .drop{border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;background:#fafcff;color:var(--muted)}
   .drop.drag{border-color:var(--accent);background:#eef2ff;color:#1e3a8a}
   .empty{padding:12px;border:1px dashed var(--border);border-radius:8px;text-align:center;color:var(--muted);background:#fafcff}
   .sticky{position:sticky;top:10px}
@@ -150,11 +148,15 @@
   const MASTER_KEY = "$2a$10$9sO/ja29sMebpWNvsWmp5.dJ6lv7CPeLBMRFaA/cAEwz42ii6qlCS"; // Keep in admin only
   const JSONBIN_READ_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`;
   const JSONBIN_WRITE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-  // Toggle host: "fileio" or "cloudinary"
-  const FILE_HOST = "fileio";
+
+  // Cloudinary unsigned upload settings
+  // Replace CLOUD_NAME with your Cloudinary cloud name (from dashboard).
+  const CLOUD_NAME = "djf49hhfr"; // TODO: set your cloud name
+  const UPLOAD_PRESET = "theoazis";     // your unsigned preset
+  const CLOUDINARY_FOLDER = "documents"; // target folder in Cloudinary
 
   // Optional simple password gate for this page
-  const ADMIN_LOCK_KEY = "admin";
+  const ADMIN_LOCK_KEY = "evergreen_admin_lock";
   function applyLock() {
     const saved = localStorage.getItem(ADMIN_LOCK_KEY);
     if (!saved) return;
@@ -166,19 +168,9 @@
   }
 
   // Data state
-  const state = {
-    data: null,
-    selectedCatId: null,
-    selectedSubId: null,
-    selectedListId: null,
-    dirty: false
-  };
+  const state = { data: null, selectedCatId: null, selectedSubId: null, selectedListId: null, dirty: false };
 
-  const schema = () => ({
-    version: 1,
-    lastUpdated: new Date().toISOString(),
-    categories: []
-  });
+  const schema = () => ({ version: 1, lastUpdated: new Date().toISOString(), categories: [] });
 
   // JSONBin helpers
   async function fetchData() {
@@ -192,48 +184,29 @@
     const payload = JSON.stringify(state.data);
     const res = await fetch(JSONBIN_WRITE_URL, {
       method:"PUT",
-      headers:{
-        "Content-Type":"application/json",
-        "X-Master-Key": MASTER_KEY
-      },
+      headers:{ "Content-Type":"application/json", "X-Master-Key": MASTER_KEY },
       body: payload
     });
-    if (!res.ok) {
-      setStatus("Save failed");
-      throw new Error("Failed to save JSONBin");
-    }
-    setStatus("Saved");
-    state.dirty = false;
+    if (!res.ok) { setStatus("Save failed"); throw new Error("Failed to save JSONBin"); }
+    setStatus("Saved"); state.dirty = false;
   }
 
-  // File upload host implementations
+  // Cloudinary upload (unsigned)
   async function uploadFile(file) {
-    if (FILE_HOST === "fileio") {
-      // File.io (note: ensure persistence settings; free tier limits apply)
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("expires", "never"); // keep forever
-      formData.append("maxDownloads", "0"); // unlimited
-      const res = await fetch("https://file.io", { method:"POST", body: formData });
-      if (!res.ok) throw new Error("Upload failed");
-      const data = await res.json();
-      if (!data.link) throw new Error("Upload did not return a link");
-      // File.io reports size and other meta only partially
-      return { url: data.link, sizeBytes: file.size, filename: file.name };
-    } else if (FILE_HOST === "cloudinary") {
-      // Replace with your Cloudinary unsigned upload preset and cloud name
-      const CLOUD_NAME = "your_cloud_name";
-      const UPLOAD_PRESET = "unsigned_preset";
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", UPLOAD_PRESET);
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, { method:"POST", body: formData });
-      if (!res.ok) throw new Error("Cloudinary upload failed");
-      const data = await res.json();
-      return { url: data.secure_url, sizeBytes: file.size, filename: file.name };
-    } else {
-      throw new Error("Unknown FILE_HOST");
-    }
+    // PDFs are best uploaded as resource_type=raw
+    const endpoint = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload`;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+    formData.append("folder", CLOUDINARY_FOLDER);
+    // Optional: ensure unique filename and keep original extension
+    formData.append("use_filename", "true");
+    formData.append("unique_filename", "true");
+    const res = await fetch(endpoint, { method: "POST", body: formData });
+    if (!res.ok) throw new Error("Cloudinary upload failed");
+    const data = await res.json();
+    // data.secure_url is permanent/versioned; bytes may be undefined for raw, fall back to file.size
+    return { url: data.secure_url, sizeBytes: data.bytes || file.size, filename: file.name };
   }
 
   // UI rendering
@@ -435,8 +408,7 @@
 
   function updateCategoryName(id, val){
     const cat = state.data.categories.find(c=>c.id===id);
-    cat.name = val; state.dirty = true; setStatus("Unsaved changes");
-    renderSelectors();
+    cat.name = val; state.dirty = true; setStatus("Unsaved changes"); renderSelectors();
   }
   function updateCategoryDesc(id, val){
     const cat = state.data.categories.find(c=>c.id===id);
@@ -522,17 +494,10 @@
     document.getElementById("renameListBtn").onclick = renameList;
     document.getElementById("deleteListBtn").onclick = deleteList;
 
-    document.getElementById("refreshBtn").onclick = async ()=>{
-      await load();
-      setStatus("Refreshed");
-    };
+    document.getElementById("refreshBtn").onclick = async ()=>{ await load(); setStatus("Refreshed"); };
     document.getElementById("saveBtn").onclick = async ()=>{
-      try{
-        state.data.lastUpdated = new Date().toISOString();
-        await saveData();
-      }catch(err){
-        alert("Save failed: " + err.message);
-      }
+      try{ state.data.lastUpdated = new Date().toISOString(); await saveData(); }
+      catch(err){ alert("Save failed: " + err.message); }
     };
 
     document.getElementById("catSelect").onchange = (e)=>{
@@ -550,7 +515,6 @@
       renderColumns();
     };
 
-    // Inline edits and actions
     document.getElementById("catsList").addEventListener("input", (e)=>{
       if (e.target.classList.contains("cat-name")) updateCategoryName(e.target.dataset.id, e.target.value);
       if (e.target.classList.contains("cat-desc")) updateCategoryDesc(e.target.dataset.id, e.target.value);
@@ -582,7 +546,6 @@
       if (btn.dataset.act==="delete-file") deleteFile(id);
     });
 
-    // Dropzone
     const drop = document.getElementById("dropzone");
     const input = document.getElementById("fileInput");
     drop.addEventListener("click", ()=> input.click());
@@ -594,7 +557,6 @@
     });
     input.addEventListener("change", ()=> handleFiles(input.files));
 
-    // Simple lock
     document.getElementById("lockBtn").onclick = ()=>{
       const v = document.getElementById("adminPwd").value;
       if (!v) { localStorage.removeItem(ADMIN_LOCK_KEY); alert("Lock disabled"); return; }
@@ -615,9 +577,7 @@
       }
     }
   }
-  function uid(prefix){
-    return `${prefix}-${Math.random().toString(36).slice(2,8)}-${Date.now().toString(36).slice(-4)}`;
-  }
+  function uid(prefix){ return `${prefix}-${Math.random().toString(36).slice(2,8)}-${Date.now().toString(36).slice(-4)}`; }
   function humanFileSize(bytes){
     const thresh=1024;if(Math.abs(bytes)<thresh)return bytes+" B";
     const units=["KB","MB","GB","TB"];let u=-1;do{bytes/=thresh;++u}while(Math.abs(bytes)>=thresh&&u<units.length-1);
@@ -642,13 +602,9 @@
   }
 
   window.addEventListener("beforeunload", (e)=>{
-    if (state.dirty) {
-      e.preventDefault();
-      e.returnValue = "";
-    }
+    if (state.dirty) { e.preventDefault(); e.returnValue = ""; }
   });
 
-  // Init
   document.getElementById("year").textContent = new Date().getFullYear();
   applyLock();
   wireEvents();
