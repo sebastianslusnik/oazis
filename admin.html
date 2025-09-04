@@ -255,8 +255,12 @@
 		root: '/1164453/'
 	}
 	const API = 'https://storage.bunnycdn.com'
-	let currentPath = CONFIG.root.endsWith('/') ? CONFIG.root : CONFIG.root + '/'
-	const tbody = document.getElementById('tbody') const breadcrumbEl = document.getElementById('breadcrumb') const statusEl = document.getElementById('status') const fileInput = document.getElementById('fileInput') const globalProgress = document.getElementById('globalProgress')
+	let currentPath = CONFIG.root.endsWith('/') ? CONFIG.root : CONFIG.root + '/';
+	const tbody = document.getElementById('tbody');
+	const breadcrumbEl = document.getElementById('breadcrumb');
+	const statusEl = document.getElementById('status');
+	const fileInput = document.getElementById('fileInput');
+	const globalProgress = document.getElementById('globalProgress');
 	function setStatus(t, ok) {
 		statusEl.textContent = t || '';
 		statusEl.style.color = ok ? '#8fd18f' : '#bbb'
