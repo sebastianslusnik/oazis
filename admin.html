@@ -612,7 +612,8 @@
 			tbody.appendChild(tr);
 			return
 		}
-		items.sort((a, b) => Number(b.IsDirectory) - Number(a.IsDirectory) || a.ObjectName.localeCompare(b.ObjectName)) for(let it of items) {
+		items.sort((a, b) => Number(b.IsDirectory) - Number(a.IsDirectory) || a.ObjectName.localeCompare(b.ObjectName))
+		 for(let it of items) {
 			let tr = document.createElement('tr');
 			let nameTd = document.createElement('td');
 			let row = document.createElement('div');
