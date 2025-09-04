@@ -592,9 +592,9 @@
 		const fromPath = modalContext.filePath;
 		const parentFolder = dirname(dirname(fromPath));
 		const parent = parentFolder ? parentFolder : '';
-		const newPath = joinPath(parent, basename(fromPath));
-		if(newPath === fromPath) return;
-		await moveFile(fromPath, parent);
+		const dst = joinPath(parent, basename(fromPath));
+		if(dst === fromPath) return;
+		await moveFileCopyRemove(fromPath, dst);
 		closePathModal();
 		await reloadAll();
 		setStatus('Moved up.', 'ok');
@@ -602,9 +602,9 @@
 	moveRootBtn.addEventListener('click', async () => {
 		if(!modalContext) return;
 		const fromPath = modalContext.filePath;
-		const newPath = basename(fromPath);
-		if(newPath === fromPath) return;
-		await moveFile(fromPath, '');
+		const dst = basename(fromPath);
+		if(dst === fromPath) return;
+		await moveFileCopyRemove(fromPath, dst);
 		closePathModal();
 		await reloadAll();
 		setStatus('Moved to root.', 'ok');
@@ -619,7 +619,8 @@
 		}
 		if(modalContext.mode === 'move-file') {
 			const target = modalContext.selectedFolder || '';
-			await moveFile(modalContext.filePath, target);
+			const dst = joinPath(target, basename(modalContext.filePath));
+			await moveFileCopyRemove(modalContext.filePath, dst);
 			closePathModal();
 			await reloadAll();
 			setStatus('File moved.', 'ok');
@@ -652,18 +653,13 @@
 	}
 	async function createFolder(path) {
 		const key = joinPath(path, '.keep');
-		const {
-			error
-		} = await supabase.storage.from(BUCKET).upload(key, new Blob(['keep']), {
+		await supabase.storage.from(BUCKET).upload(key, new Blob(['keep']), {
 			contentType: 'text/plain',
-			upsert: false
+			upsert: true
 		});
-		if(error && error.message && !/The resource already exists/i.test(error.message)) throw error;
 	}
 	async function renameFolder(oldPrefix, newPrefix) {
-		const exists = await listOneLevel(newPrefix);
-		if(exists.items.length > 0) throw new Error('Target folder already exists.');
-		const files = await listAllFiles(oldPrefix);
+		const files = await listAllFiles(oldPrefix, true);
 		if(files.length === 0) {
 			await createFolder(newPrefix);
 			await deleteFolder(oldPrefix);
@@ -672,10 +668,8 @@
 		for(const f of files) {
 			const rel = f.path.slice(oldPrefix.length ? oldPrefix.length + 1 : 0);
 			const to = joinPath(newPrefix, rel);
-			const {
-				error
-			} = await supabase.storage.from(BUCKET).move(f.path, to);
-			if(error) throw error;
+			if(f.path === to) continue;
+			await copyThenRemove(f.path, to);
 		}
 		await deleteFolder(oldPrefix);
 	}
@@ -687,9 +681,11 @@
 		} = await supabase.storage.from(BUCKET).remove(files.map(f => f.path));
 		if(error) throw error;
 	}
-	async function moveFile(fromPath, toFolder) {
+	async function moveFileCopyRemove(fromPath, toPath) {
 		const src = normalizePath(fromPath);
-		const dst = joinPath(toFolder || '', basename(src));
+		const dst = normalizePath(toPath);
+		if(!src) throw new Error('Invalid source path');
+		if(!dst) throw new Error('Invalid destination path');
 		if(src === dst) return;
 		const srcDir = dirname(src);
 		const srcName = basename(src);
@@ -707,17 +703,17 @@
 		if(dstList.error) throw dstList.error;
 		const conflict = (dstList.data || []).find(x => x.name === dstName && x.id);
 		if(conflict) throw new Error('A file with the same name exists in destination.');
-		const moved = await supabase.storage.from(BUCKET).move(src, dst);
-		if(moved.error) {
-			if(/Object not found/i.test(moved.error.message)) {
-				const copied = await supabase.storage.from(BUCKET).copy(src, dst);
-				if(copied.error) throw copied.error;
-				const removed = await supabase.storage.from(BUCKET).remove([src]);
-				if(removed.error) throw removed.error;
-			} else {
-				throw moved.error;
-			}
+		await copyThenRemove(src, dst);
+	}
+	async function copyThenRemove(src, dst) {
+		const copied = await supabase.storage.from(BUCKET).copy(src, dst);
+		if(copied.error) {
+			const msg = (copied.error.message || '').toLowerCase();
+			if(msg.includes('already exists')) throw new Error('Destination already exists.');
+			throw copied.error;
 		}
+		const removed = await supabase.storage.from(BUCKET).remove([src]);
+		if(removed.error) throw removed.error;
 	}
 	async function listOneLevel(prefix) {
 		const path = normalizePath(prefix || '');
@@ -735,15 +731,17 @@
 		const folders = [];
 		const files = [];
 		for(const it of data) {
-			const isFolder = !it.id;
-			if(isFolder) folders.push({
-				name: it.name
-			});
-			else files.push({
-				name: it.name,
-				updated_at: it.updated_at,
-				metadata: it.metadata
-			});
+			if(it.id) {
+				files.push({
+					name: it.name,
+					updated_at: it.updated_at,
+					metadata: it.metadata
+				});
+			} else {
+				folders.push({
+					name: it.name
+				});
+			}
 		}
 		return {
 			folders,
