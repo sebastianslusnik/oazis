@@ -1,1012 +1,1067 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-	<meta charset="utf-8" />
-	<title>Supabase Storage PDF Upload + Display</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<style>
-	:root {
-		--bg: #f7f7f8;
-		--panel: #ffffff;
-		--accent: #111827;
-		--text: #111827;
-		--muted: #6b7280;
-		--danger: #dc2626;
-		--success: #16a34a;
-		--border: #e5e7eb;
-	}
-
-	body {
-		margin: 0;
-		background: var(--bg);
-		color: var(--text);
-		font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
-		min-height: 100vh;
-	}
-
-	.container {
-		max-width: 1200px;
-		margin: 48px auto;
-		padding: 0 20px;
-	}
-
-	h1 {
-		font-size: 1.6rem;
-		margin: 0 0 8px;
-	}
-
-	p {
-		color: var(--muted);
-		margin: 0 0 20px;
-	}
-
-	.panel {
-		background: var(--panel);
-		border: 1px solid var(--border);
-		border-radius: 16px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-		padding: 18px;
-	}
-
-	.grid {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 16px;
-	}
-
-	@media (min-width: 1100px) {
-		.grid {
-			grid-template-columns: 1fr 1fr;
-		}
-	}
-
-	.dropzone {
-		border: 2px dashed var(--border);
-		border-radius: 14px;
-		padding: 28px;
-		text-align: center;
-		transition: border-color .2s, background .2s;
-		cursor: pointer;
-		background: #fafafa;
-	}
-
-	.dropzone.dragover {
-		border-color: var(--accent);
-		background: #f3f4f6;
-	}
-
-	.hint {
-		color: var(--muted);
-		font-size: .95rem;
-		margin-top: 6px;
-	}
-
-	.controls {
-		margin-top: 14px;
-		display: flex;
-		gap: 10px;
-		justify-content: center;
-		flex-wrap: wrap;
-	}
-
-	.btn {
-		appearance: none;
-		border: 1px solid var(--border);
-		background: #ffffff;
-		color: var(--text);
-		padding: 10px 14px;
-		border-radius: 10px;
-		cursor: pointer;
-		font-weight: 600;
-		transition: transform .06s ease, background .2s, box-shadow .2s;
-	}
-
-	.btn:hover {
-		background: #f9fafb;
-		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-	}
-
-	.btn:active {
-		transform: translateY(1px);
-	}
-
-	.btn.primary {
-		border-color: var(--accent);
-		background: var(--accent);
-		color: #ffffff;
-	}
-
-	.status {
-		margin-top: 10px;
-		min-height: 18px;
-		font-size: .95rem;
-	}
-
-	.status.ok {
-		color: var(--success);
-	}
-
-	.status.err {
-		color: var(--danger);
-	}
-
-	.gallery {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 14px;
-		margin-top: 8px;
-	}
-
-	.card {
-		background: var(--panel);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		overflow: hidden;
-	}
-
-	.card-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 10px;
-		padding: 10px 12px;
-		border-bottom: 1px solid var(--border);
-		background: #f9fafb;
-	}
-
-	.name {
-		overflow: hidden;
-		white-space: nowrap;
-		text-overflow: ellipsis;
-		font-weight: 600;
-		font-size: .95rem;
-	}
-
-	.links a {
-		color: var(--accent);
-		text-decoration: none;
-		font-weight: 600;
-		margin-left: 10px;
-	}
-
-	.viewer {
-		width: 100%;
-		height: 380px;
-		border: 0;
-		display: none;
-		background: #f3f4f6;
-	}
-
-	.empty {
-		color: var(--muted);
-		padding: 10px;
-		font-style: italic;
-	}
-
-	.small {
-		font-size: .9rem;
-		color: var(--muted);
-	}
-
-	.flex-row {
-		display: flex;
-		gap: 8px;
-		align-items: center;
-		flex-wrap: wrap;
-	}
-
-	.explorer-toolbar {
-		display: flex;
-		gap: 8px;
-		margin-bottom: 10px;
-		flex-wrap: wrap;
-	}
-
-	.tree {
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		padding: 10px;
-		background: #fafafa;
-		max-height: 520px;
-		overflow: auto;
-	}
-
-	.node {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 4px 6px;
-		border-radius: 8px;
-		cursor: default;
-		user-select: none;
-	}
-
-	.node:hover {
-		background: #f3f4f6;
-	}
-
-	.node.folder {
-		cursor: pointer;
-	}
-
-	.node.selected {
-		background: #e5e7eb;
-	}
-
-	.caret {
-		width: 12px;
-		height: 12px;
-		display: inline-block;
-		transform: rotate(-90deg);
-		transition: transform .15s;
-	}
-
-	.caret.open {
-		transform: rotate(0deg);
-	}
-
-	.icon {
-		width: 16px;
-		height: 16px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 14px;
-	}
-
-	.children {
-		margin-left: 18px;
-		padding-left: 8px;
-		border-left: 1px dashed var(--border);
-	}
-
-	.path {
-		color: var(--muted);
-		font-size: .85rem;
-	}
-
-	.modal {
-		position: fixed;
-		inset: 0;
-		display: none;
-		align-items: center;
-		justify-content: center;
-		z-index: 20;
-	}
-
-	.modal.show {
-		display: flex;
-	}
-
-	.modal-backdrop {
-		position: absolute;
-		inset: 0;
-		background: rgba(0, 0, 0, .28);
-	}
-
-	.modal-panel {
-		position: relative;
-		background: var(--panel);
-		border: 1px solid var(--border);
-		border-radius: 14px;
-		padding: 16px;
-		width: min(720px, 96vw);
-		max-height: 86vh;
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-	}
-
-	.modal-title {
-		margin: 0;
-		font-size: 1.1rem;
-	}
-
-	.modal-body {
-		overflow: auto;
-	}
-
-	.tree-compact {
-		max-height: 380px;
-	}
-
-	.badge {
-		display: inline-block;
-		padding: 2px 6px;
-		border: 1px solid var(--border);
-		border-radius: 999px;
-		background: #f3f4f6;
-		font-size: .8rem;
-	}
-
-	.row {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 8px;
-	}
-	</style>
+<meta charset="utf-8" />
+<title>Supabase Storage Uploader + File Manager</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+:root {
+  --bg: #f7f7f8;
+  --panel: #ffffff;
+  --accent: #111827;
+  --text: #111827;
+  --muted: #6b7280;
+  --danger: #dc2626;
+  --success: #16a34a;
+  --border: #e5e7eb;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  min-height: 100vh;
+}
+.container {
+  max-width: 1200px;
+  margin: 48px auto;
+  padding: 0 20px;
+}
+h1 {
+  font-size: 1.6rem;
+  margin: 0 0 8px;
+}
+p {
+  color: var(--muted);
+  margin: 0 0 20px;
+}
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  padding: 18px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 1100px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  text-align: center;
+  transition: border-color .2s, background .2s;
+  cursor: pointer;
+  background: #fafafa;
+}
+.dropzone.dragover {
+  border-color: var(--accent);
+  background: #f3f4f6;
+}
+.hint {
+  color: var(--muted);
+  font-size: .95rem;
+  margin-top: 6px;
+}
+.controls {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.btn {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform .06s ease, background .2s, box-shadow .2s;
+}
+.btn:hover {
+  background: #f9fafb;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+}
+.status {
+  margin-top: 10px;
+  min-height: 18px;
+  font-size: .95rem;
+}
+.status.ok {
+  color: var(--success);
+}
+.status.err {
+  color: var(--danger);
+}
+.gallery {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 8px;
+}
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  background: #f9fafb;
+}
+.name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  font-size: .95rem;
+}
+.links a, .links button.link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.viewer {
+  width: 100%;
+  height: 380px;
+  border: 0;
+  display: none;
+  background: #f3f4f6;
+}
+.empty {
+  color: var(--muted);
+  padding: 10px;
+  font-style: italic;
+}
+.small {
+  font-size: .9rem;
+  color: var(--muted);
+}
+.flex-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.explorer-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.tree {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px;
+  background: #fafafa;
+  max-height: 520px;
+  overflow: auto;
+}
+.node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  cursor: default;
+  user-select: none;
+}
+.node:hover {
+  background: #f3f4f6;
+}
+.node.folder {
+  cursor: pointer;
+}
+.node.selected {
+  background: #e5e7eb;
+}
+.caret {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  transform: rotate(-90deg);
+  transition: transform .15s;
+}
+.caret.open {
+  transform: rotate(0deg);
+}
+.icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+.children {
+  margin-left: 18px;
+  padding-left: 8px;
+  border-left: 1px dashed var(--border);
+}
+.path {
+  color: var(--muted);
+  font-size: .85rem;
+}
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+}
+.modal.show {
+  display: flex;
+}
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, .28);
+}
+.modal-panel {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  width: min(720px, 96vw);
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.modal-title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.modal-body {
+  overflow: auto;
+}
+.tree-compact {
+  max-height: 380px;
+}
+.badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #f3f4f6;
+  font-size: .8rem;
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.form-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 6px 0;
+}
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fff;
+  font-size: .95rem;
+}
+.label {
+  font-weight: 600;
+  font-size: .95rem;
+}
+</style>
 </head>
-
 <body>
-	<div class="container">
-		<h1>PDF Uploader (Supabase Storage)</h1>
-		<p>Drop a PDF or choose a file. Uploaded PDFs appear below.</p>
-		<div class="grid" style="grid-template-columns: 1fr !important;margin-bottom: 15px;">
-			<div class="panel">
-				<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-					<h2 style="margin:0;font-size:1.1rem;">Folders</h2>
-				</div>
-				<div class="explorer-toolbar"> <button id="newFolderBtn" class="btn">New Folder</button> <button id="renameFolderBtn" class="btn">Rename</button> <button id="deleteFolderBtn" class="btn">Delete</button> </div>
-				<div class="small">Selected: <span id="selectedFolderLabel">/</span></div>
-				<div id="tree" class="tree"></div>
-			</div>
-		</div>
-		<div class="grid">
-			<div class="panel">
-				<div id="dropzone" class="dropzone">
-					<div><strong>Drop PDF here</strong> or click to choose</div>
-					<div class="hint">Max 20 MB • Only application/pdf</div> <input id="fileInput" type="file" accept="application/pdf" hidden />
-				</div>
-				<div class="controls"> <button id="chooseBtn" class="btn">Choose PDF</button> <button id="uploadBtn" class="btn primary">Upload</button> </div>
-				<div class="row" style="margin-top:8px;">
-					<div class="small">Bucket: <code>pdfs</code></div>
-					<div class="small">Destination: <span id="uploadDestLabel">/</span> <button id="pickUploadDestBtn" class="btn" style="margin-left:8px;">Choose Folder</button></div>
-				</div>
-				<div id="status" class="status"></div>
-			</div>
-			<div class="panel">
-				<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-					<h2 style="margin:0;font-size:1.1rem;">Uploaded PDFs</h2> <button id="refreshBtn" class="btn">Refresh</button>
-				</div>
-				<div id="gallery" class="gallery"></div>
-				<div id="emptyState" class="empty" style="display:none;">No PDFs yet.</div>
-			</div>
-		</div>
-	</div>
-	<div id="pathModal" class="modal">
-		<div class="modal-backdrop"></div>
-		<div class="modal-panel">
-			<h3 id="modalTitle" class="modal-title"></h3>
-			<div class="small">Current path: <span id="currentPathLabel" class="badge">/</span></div>
-			<div class="modal-body">
-				<div id="pickerTree" class="tree tree-compact"></div>
-			</div>
-			<div class="controls"> <button id="moveUpBtn" class="btn">Move Up</button> <button id="moveRootBtn" class="btn">Move to Root</button>
-				<div style="flex:1"></div> <button id="cancelModalBtn" class="btn">Cancel</button> <button id="selectFolderBtn" class="btn primary">Move Here</button>
-			</div>
-		</div>
-	</div>
-	<script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" crossorigin="anonymous"></script>
-	<script>
-	const SUPABASE_URL = "https://vehpvfcjceglrftdjlje.supabase.co";
-	const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlaHB2ZmNqY2VnbHJmdGRqbGplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwMTQ5NDEsImV4cCI6MjA3MjU5MDk0MX0.yqZTnMDvCuCqTD9ptkj_Nc-qsvKne-06k8gaRtnYNxc";
-	const BUCKET = "pdfs";
-	const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-	const dropzone = document.getElementById('dropzone');
-	const fileInput = document.getElementById('fileInput');
-	const chooseBtn = document.getElementById('chooseBtn');
-	const uploadBtn = document.getElementById('uploadBtn');
-	const statusEl = document.getElementById('status');
-	const galleryEl = document.getElementById('gallery');
-	const emptyStateEl = document.getElementById('emptyState');
-	const refreshBtn = document.getElementById('refreshBtn');
-	const treeEl = document.getElementById('tree');
-	const selectedFolderLabel = document.getElementById('selectedFolderLabel');
-	const newFolderBtn = document.getElementById('newFolderBtn');
-	const renameFolderBtn = document.getElementById('renameFolderBtn');
-	const deleteFolderBtn = document.getElementById('deleteFolderBtn');
-	const uploadDestLabel = document.getElementById('uploadDestLabel');
-	const pickUploadDestBtn = document.getElementById('pickUploadDestBtn');
-	const pathModal = document.getElementById('pathModal');
-	const pickerTree = document.getElementById('pickerTree');
-	const modalTitle = document.getElementById('modalTitle');
-	const currentPathLabel = document.getElementById('currentPathLabel');
-	const moveUpBtn = document.getElementById('moveUpBtn');
-	const moveRootBtn = document.getElementById('moveRootBtn');
-	const cancelModalBtn = document.getElementById('cancelModalBtn');
-	const selectFolderBtn = document.getElementById('selectFolderBtn');
-	let selectedFile = null;
-	let tree = null;
-	let selectedFolder = '';
-	let uploadDest = '';
-	let modalContext = null;
+<div class="container">
+  <h1>File Uploader (Supabase Storage)</h1>
+  <p>Drop files or choose a file. Uploaded files appear below.</p>
 
-	function setStatus(msg, type) {
-		statusEl.className = 'status' + (type ? ' ' + type : '');
-		statusEl.textContent = msg || '';
-	}
+  <div class="grid" style="grid-template-columns: 1fr !important;margin-bottom: 15px;">
+    <div class="panel">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <h2 style="margin:0;font-size:1.1rem;">Folders</h2>
+      </div>
+      <div class="explorer-toolbar">
+        <button id="newFolderBtn" class="btn">New Folder</button>
+        <button id="renameFolderBtn" class="btn">Rename</button>
+        <button id="deleteFolderBtn" class="btn">Delete</button>
+      </div>
+      <div class="small">Selected: <span id="selectedFolderLabel">/</span></div>
+      <div id="tree" class="tree"></div>
+    </div>
+  </div>
 
-	function sanitizeName(name) {
-		const base = name.replace(/\s+/g, '_').replace(/[^\w.\-]/g, '');
-		return base.replace(/^\.+/, '');
-	}
+  <div class="grid">
+    <div class="panel">
+      <div id="dropzone" class="dropzone">
+        <div><strong>Drop files here</strong> or click to choose</div>
+        <div class="hint">Max 20 MB • PDF, Word, Excel, PowerPoint, Text</div>
+        <input id="fileInput" type="file" multiple hidden />
+      </div>
+      <div class="controls">
+        <button id="chooseBtn" class="btn">Choose Files</button>
+        <button id="uploadBtn" class="btn primary">Upload</button>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <div class="small">Bucket: <code>pdfs</code></div>
+        <div class="small">Destination: <span id="uploadDestLabel">/</span> <button id="pickUploadDestBtn" class="btn" style="margin-left:8px;">Choose Folder</button></div>
+      </div>
+      <div id="status" class="status"></div>
+    </div>
 
-	function sanitizeFolderName(name) {
-		const base = name.trim().replace(/\s+/g, '_').replace(/[^\w\-]/g, '');
-		return base.replace(/^\.+/, '');
-	}
+    <div class="panel">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <h2 style="margin:0;font-size:1.1rem;">Uploaded Files</h2>
+        <button id="refreshBtn" class="btn">Refresh</button>
+      </div>
+      <div id="gallery" class="gallery"></div>
+      <div id="emptyState" class="empty" style="display:none;">No files yet.</div>
+    </div>
+  </div>
+</div>
 
-	function uid() {
-		return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
-	}
+<div id="pathModal" class="modal">
+  <div class="modal-backdrop"></div>
+  <div class="modal-panel">
+    <h3 id="modalTitle" class="modal-title"></h3>
+    <div class="small">Current path: <span id="currentPathLabel" class="badge">/</span></div>
+    <div class="modal-body">
+      <div id="pickerTree" class="tree tree-compact"></div>
+    </div>
+    <div class="controls">
+      <button id="moveUpBtn" class="btn">Move Up</button>
+      <button id="moveRootBtn" class="btn">Move to Root</button>
+      <div style="flex:1"></div>
+      <button id="cancelModalBtn" class="btn">Cancel</button>
+      <button id="selectFolderBtn" class="btn primary">Move Here</button>
+    </div>
+  </div>
+</div>
 
-	function formatDisplayName(filename) {
-		let name = filename.replace(/^[^_]+_/, '');
-		name = name.replace(/\.pdf$/i, '');
-		name = name.replace(/_/g, ' ');
-		name = name.replace(/\s+/g, ' ').trim();
-		return name;
-	}
+<div id="folderModal" class="modal">
+  <div class="modal-backdrop"></div>
+  <div class="modal-panel" style="width:min(520px,96vw);">
+    <h3 id="folderModalTitle" class="modal-title"></h3>
+    <div class="modal-body">
+      <div class="form-row">
+        <label class="label" for="folderNameInput">Folder name</label>
+      </div>
+      <input id="folderNameInput" type="text" class="input" placeholder="Enter folder name" />
+      <div class="small" id="folderError" style="color:var(--danger);min-height:18px;margin-top:6px;"></div>
+    </div>
+    <div class="controls">
+      <div style="flex:1"></div>
+      <button id="folderCancelBtn" class="btn">Cancel</button>
+      <button id="folderSaveBtn" class="btn primary">Save</button>
+    </div>
+  </div>
+</div>
 
-	function normalizePath(p) {
-		if(!p) return '';
-		return p.replace(/\/+/g, '/').replace(/^\/|\/$/g, '');
-	}
+<script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" crossorigin="anonymous"></script>
+<script>
+const SUPABASE_URL = "https://vehpvfcjceglrftdjlje.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlaHB2ZmNqY2VnbHJmdGRqbGplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwMTQ5NDEsImV4cCI6MjA3MjU5MDk0MX0.yqZTnMDvCuCqTD9ptkj_Nc-qsvKne-06k8gaRtnYNxc";
+const BUCKET = "pdfs";
 
-	function joinPath(a, b) {
-		a = normalizePath(a);
-		b = normalizePath(b);
-		if(!a) return b;
-		if(!b) return a;
-		return a + '/' + b;
-	}
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-	function dirname(p) {
-		p = normalizePath(p);
-		if(!p) return '';
-		const idx = p.lastIndexOf('/');
-		return idx === -1 ? '' : p.slice(0, idx);
-	}
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const chooseBtn = document.getElementById('chooseBtn');
+const uploadBtn = document.getElementById('uploadBtn');
+const statusEl = document.getElementById('status');
+const galleryEl = document.getElementById('gallery');
+const emptyStateEl = document.getElementById('emptyState');
+const refreshBtn = document.getElementById('refreshBtn');
 
-	function basename(p) {
-		p = normalizePath(p);
-		const idx = p.lastIndexOf('/');
-		return idx === -1 ? p : p.slice(idx + 1);
-	}
+const treeEl = document.getElementById('tree');
+const selectedFolderLabel = document.getElementById('selectedFolderLabel');
+const newFolderBtn = document.getElementById('newFolderBtn');
+const renameFolderBtn = document.getElementById('renameFolderBtn');
+const deleteFolderBtn = document.getElementById('deleteFolderBtn');
 
-	function isKeep(name) {
-		return name === '.keep' || name === '_keep' || name === '_placeholder';
-	}
-	dropzone.addEventListener('click', () => fileInput.click());
-	chooseBtn.addEventListener('click', () => fileInput.click());
-	dropzone.addEventListener('dragover', (e) => {
-		e.preventDefault();
-		dropzone.classList.add('dragover');
-	});
-	dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
-	dropzone.addEventListener('drop', (e) => {
-		e.preventDefault();
-		dropzone.classList.remove('dragover');
-		if(!e.dataTransfer.files || !e.dataTransfer.files.length) return;
-		const file = e.dataTransfer.files[0];
-		handleSelect(file);
-	});
-	fileInput.addEventListener('change', (e) => {
-		const file = e.target.files && e.target.files[0];
-		handleSelect(file);
-	});
+const uploadDestLabel = document.getElementById('uploadDestLabel');
+const pickUploadDestBtn = document.getElementById('pickUploadDestBtn');
 
-	function handleSelect(file) {
-		if(!file) return;
-		if(file.type !== 'application/pdf') {
-			setStatus('Only PDFs are allowed.', 'err');
-			selectedFile = null;
-			return;
-		}
-		const maxBytes = 20 * 1024 * 1024;
-		if(file.size > maxBytes) {
-			setStatus('File too large. Max 20 MB.', 'err');
-			selectedFile = null;
-			return;
-		}
-		selectedFile = file;
-		setStatus(`Selected: ${file.name} (${(file.size/1024/1024).toFixed(2)} MB)`);
-	}
-	uploadBtn.addEventListener('click', async () => {
-		if(!selectedFile) {
-			setStatus('Pick a PDF first.', 'err');
-			return;
-		}
-		try {
-			await uploadPdf(selectedFile, uploadDest);
-			selectedFile = null;
-			fileInput.value = '';
-			setStatus('Upload complete.', 'ok');
-			await reloadAll();
-		} catch (err) {
-			setStatus(err.message || 'Upload failed.', 'err');
-		}
-	});
-	refreshBtn.addEventListener('click', async () => {
-		await reloadAll();
-	});
-	pickUploadDestBtn.addEventListener('click', () => {
-		openPathModal({
-			mode: 'pick-destination'
-		});
-	});
-	newFolderBtn.addEventListener('click', async () => {
-		const name = prompt('New folder name');
-		if(name === null) return;
-		const clean = sanitizeFolderName(name);
-		if(!clean) {
-			setStatus('Invalid folder name.', 'err');
-			return;
-		}
-		const path = joinPath(selectedFolder, clean);
-		try {
-			await createFolder(path);
-			await reloadAll();
-			selectFolder(path);
-			setStatus('Folder created.', 'ok');
-		} catch (e) {
-			setStatus(e.message || 'Failed to create folder.', 'err');
-		}
-	});
-	renameFolderBtn.addEventListener('click', async () => {
-		if(!selectedFolder) {
-			setStatus('Select a folder to rename.', 'err');
-			return;
-		}
-		const base = basename(selectedFolder);
-		const pre = dirname(selectedFolder);
-		const name = prompt('New folder name', base);
-		if(name === null) return;
-		const clean = sanitizeFolderName(name);
-		if(!clean) {
-			setStatus('Invalid folder name.', 'err');
-			return;
-		}
-		const newPrefix = joinPath(pre, clean);
-		if(newPrefix === selectedFolder) {
-			return;
-		}
-		try {
-			await renameFolder(selectedFolder, newPrefix);
-			await reloadAll();
-			selectFolder(newPrefix);
-			setStatus('Folder renamed.', 'ok');
-		} catch (e) {
-			setStatus(e.message || 'Failed to rename folder.', 'err');
-		}
-	});
-	deleteFolderBtn.addEventListener('click', async () => {
-		if(!selectedFolder) {
-			setStatus('Select a folder to delete.', 'err');
-			return;
-		}
-		const ok = confirm(`Delete folder "${selectedFolder}" and all its contents?`);
-		if(!ok) return;
-		try {
-			await deleteFolder(selectedFolder);
-			await reloadAll();
-			selectFolder(dirname(selectedFolder));
-			setStatus('Folder deleted.', 'ok');
-		} catch (e) {
-			setStatus(e.message || 'Failed to delete folder.', 'err');
-		}
-	});
-	cancelModalBtn.addEventListener('click', closePathModal);
-	moveUpBtn.addEventListener('click', async () => {
-		if(!modalContext) return;
-		const fromPath = modalContext.filePath;
-		const parentFolder = dirname(dirname(fromPath));
-		const parent = parentFolder ? parentFolder : '';
-		const dst = joinPath(parent, basename(fromPath));
-		if(dst === fromPath) return;
-		await moveFileCopyRemove(fromPath, dst);
-		closePathModal();
-		await reloadAll();
-		setStatus('Moved up.', 'ok');
-	});
-	moveRootBtn.addEventListener('click', async () => {
-		if(!modalContext) return;
-		const fromPath = modalContext.filePath;
-		const dst = basename(fromPath);
-		if(dst === fromPath) return;
-		await moveFileCopyRemove(fromPath, dst);
-		closePathModal();
-		await reloadAll();
-		setStatus('Moved to root.', 'ok');
-	});
-	selectFolderBtn.addEventListener('click', async () => {
-		if(!modalContext) return;
-		if(modalContext.mode === 'pick-destination') {
-			uploadDest = modalContext.selectedFolder || '';
-			updateUploadDestLabel();
-			closePathModal();
-			return;
-		}
-		if(modalContext.mode === 'move-file') {
-			const target = modalContext.selectedFolder || '';
-			const dst = joinPath(target, basename(modalContext.filePath));
-			await moveFileCopyRemove(modalContext.filePath, dst);
-			closePathModal();
-			await reloadAll();
-			setStatus('File moved.', 'ok');
-		}
-	});
+const pathModal = document.getElementById('pathModal');
+const pickerTree = document.getElementById('pickerTree');
+const modalTitle = document.getElementById('modalTitle');
+const currentPathLabel = document.getElementById('currentPathLabel');
+const moveUpBtn = document.getElementById('moveUpBtn');
+const moveRootBtn = document.getElementById('moveRootBtn');
+const cancelModalBtn = document.getElementById('cancelModalBtn');
+const selectFolderBtn = document.getElementById('selectFolderBtn');
 
-	function updateUploadDestLabel() {
-		uploadDestLabel.textContent = uploadDest ? '/' + uploadDest : '/';
-	}
+const folderModal = document.getElementById('folderModal');
+const folderModalTitle = document.getElementById('folderModalTitle');
+const folderNameInput = document.getElementById('folderNameInput');
+const folderError = document.getElementById('folderError');
+const folderCancelBtn = document.getElementById('folderCancelBtn');
+const folderSaveBtn = document.getElementById('folderSaveBtn');
 
-	function selectFolder(path) {
-		selectedFolder = normalizePath(path || '');
-		selectedFolderLabel.textContent = selectedFolder ? '/' + selectedFolder : '/';
-		highlightSelectedFolder(selectedFolder);
-	}
-	async function uploadPdf(file, destPath) {
-		setStatus('Uploading…');
-		const safeName = sanitizeName(file.name);
-		const filePath = joinPath(destPath || '', `${uid()}_${safeName}`);
-		const {
-			data,
-			error
-		} = await supabase.storage.from(BUCKET).upload(filePath, file, {
-			contentType: file.type || 'application/pdf',
-			cacheControl: '3600',
-			upsert: false
-		});
-		if(error) throw error;
-		return data;
-	}
-	async function createFolder(path) {
-		const key = joinPath(path, '.keep');
-		await supabase.storage.from(BUCKET).upload(key, new Blob(['keep']), {
-			contentType: 'text/plain',
-			upsert: true
-		});
-	}
-	async function renameFolder(oldPrefix, newPrefix) {
-		const files = await listAllFiles(oldPrefix, true);
-		if(files.length === 0) {
-			await createFolder(newPrefix);
-			await deleteFolder(oldPrefix);
-			return;
-		}
-		for(const f of files) {
-			const rel = f.path.slice(oldPrefix.length ? oldPrefix.length + 1 : 0);
-			const to = joinPath(newPrefix, rel);
-			if(f.path === to) continue;
-			await copyThenRemove(f.path, to);
-		}
-		await deleteFolder(oldPrefix);
-	}
-	async function deleteFolder(prefix) {
-		const files = await listAllFiles(prefix, true);
-		if(files.length === 0) return;
-		const {
-			error
-		} = await supabase.storage.from(BUCKET).remove(files.map(f => f.path));
-		if(error) throw error;
-	}
-	async function moveFileCopyRemove(fromPath, toPath) {
-		const src = normalizePath(fromPath);
-		const dst = normalizePath(toPath);
-		if(!src) throw new Error('Invalid source path');
-		if(!dst) throw new Error('Invalid destination path');
-		if(src === dst) return;
-		const srcDir = dirname(src);
-		const srcName = basename(src);
-		const srcList = await supabase.storage.from(BUCKET).list(srcDir, {
-			limit: 1000
-		});
-		if(srcList.error) throw srcList.error;
-		const found = (srcList.data || []).find(x => x.name === srcName && x.id);
-		if(!found) throw new Error('Source not found: ' + src);
-		const dstDir = dirname(dst);
-		const dstName = basename(dst);
-		const dstList = await supabase.storage.from(BUCKET).list(dstDir, {
-			limit: 1000
-		});
-		if(dstList.error) throw dstList.error;
-		const conflict = (dstList.data || []).find(x => x.name === dstName && x.id);
-		if(conflict) throw new Error('A file with the same name exists in destination.');
-		await copyThenRemove(src, dst);
-	}
-	async function copyThenRemove(src, dst) {
-		const copied = await supabase.storage.from(BUCKET).copy(src, dst);
-		if(copied.error) {
-			const msg = (copied.error.message || '').toLowerCase();
-			if(msg.includes('already exists')) throw new Error('Destination already exists.');
-			throw copied.error;
-		}
-		const removed = await supabase.storage.from(BUCKET).remove([src]);
-		if(removed.error) throw removed.error;
-	}
-	async function listOneLevel(prefix) {
-		const path = normalizePath(prefix || '');
-		const {
-			data,
-			error
-		} = await supabase.storage.from(BUCKET).list(path, {
-			limit: 1000,
-			sortBy: {
-				column: 'name',
-				order: 'asc'
-			}
-		});
-		if(error) throw error;
-		const folders = [];
-		const files = [];
-		for(const it of data) {
-			if(it.id) {
-				files.push({
-					name: it.name,
-					updated_at: it.updated_at,
-					metadata: it.metadata
-				});
-			} else {
-				folders.push({
-					name: it.name
-				});
-			}
-		}
-		return {
-			folders,
-			files,
-			items: data
-		};
-	}
-	async function listAll(prefix) {
-		const path = normalizePath(prefix || '');
-		const lvl = await listOneLevel(path);
-		const node = {
-			name: path ? basename(path) : '/',
-			path,
-			folders: [],
-			files: []
-		};
-		for(const f of lvl.files) {
-			if(isKeep(f.name)) continue;
-			node.files.push({
-				name: f.name,
-				path: joinPath(path, f.name),
-				updated_at: f.updated_at,
-				size: f.metadata && f.metadata.size ? f.metadata.size : undefined
-			});
-		}
-		for(const fd of lvl.folders) {
-			const child = await listAll(joinPath(path, fd.name));
-			node.folders.push(child);
-		}
-		return node;
-	}
-	async function listAllFiles(prefix, includeKeeps) {
-		const root = await listAll(prefix || '');
-		const arr = [];
-		(function walk(n) {
-			for(const f of n.files) {
-				if(!includeKeeps && isKeep(f.name)) continue;
-				arr.push({
-					path: f.path,
-					updated_at: f.updated_at
-				});
-			}
-			for(const c of n.folders) walk(c);
-		})(root);
-		return arr;
-	}
+let selectedFiles = [];
+let tree = null;
+let selectedFolder = '';
+let uploadDest = '';
+let modalContext = null;
+let folderModalContext = null;
 
-	function renderExplorerTree() {
-		treeEl.innerHTML = '';
-		const el = renderTreeNode(tree, {
-			selectable: true,
-			showFiles: true
-		});
-		treeEl.appendChild(el);
-		highlightSelectedFolder(selectedFolder);
-	}
+function setStatus(msg, type) {
+  statusEl.className = 'status' + (type ? ' ' + type : '');
+  statusEl.textContent = msg || '';
+}
 
-	function renderPickerTree(selected) {
-		pickerTree.innerHTML = '';
-		const el = renderTreeNode(tree, {
-			selectable: true,
-			showFiles: false,
-			forPicker: true,
-			selectedFolder: selected || ''
-		});
-		pickerTree.appendChild(el);
-	}
+function sanitizeFileName(name) {
+  return name.replace(/\s+/g, '_');
+}
 
-	function renderTreeNode(node, opts) {
-		const container = document.createElement('div');
-		const row = document.createElement('div');
-		row.className = 'node folder';
-		const caret = document.createElement('span');
-		caret.className = 'caret open';
-		caret.textContent = '▾';
-		const icon = document.createElement('span');
-		icon.className = 'icon';
-		icon.textContent = '📁';
-		const label = document.createElement('span');
-		label.textContent = node.path ? basename(node.path) : 'Zoznam súborov';
-		row.appendChild(caret);
-		row.appendChild(icon);
-		row.appendChild(label);
-		row.dataset.path = node.path;
-		row.addEventListener('click', (e) => {
-			e.stopPropagation();
-			const content = container.querySelector(':scope > .children');
-			const open = caret.classList.contains('open');
-			if(open) {
-				caret.classList.remove('open');
-				content.style.display = 'none';
-			} else {
-				caret.classList.add('open');
-				content.style.display = 'block';
-			}
-			if(opts.forPicker) {
-				setModalSelectedFolder(row.dataset.path);
-			} else {
-				selectFolder(row.dataset.path);
-			}
-		});
-		container.appendChild(row);
-		const children = document.createElement('div');
-		children.className = 'children';
-		for(const f of node.folders) {
-			children.appendChild(renderTreeNode(f, opts));
-		}
-		if(opts.showFiles) {
-			for(const file of node.files) {
-				const fr = document.createElement('div');
-				fr.className = 'node';
-				const ic = document.createElement('span');
-				ic.className = 'icon';
-				ic.textContent = '📄';
-				const nm = document.createElement('span');
-				nm.textContent = file.name;
-				const small = document.createElement('span');
-				small.className = 'path';
-				small.textContent = ' /' + node.path;
-				fr.appendChild(document.createElement('span'));
-				fr.appendChild(ic);
-				fr.appendChild(nm);
-				fr.appendChild(small);
-				children.appendChild(fr);
-			}
-		}
-		container.appendChild(children);
-		return container;
-	}
+function uid() {
+  return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+}
 
-	function highlightSelectedFolder(path) {
-		const nodes = treeEl.querySelectorAll('.node.folder');
-		nodes.forEach(n => {
-			if(n.dataset.path === path) {
-				n.classList.add('selected');
-			} else {
-				n.classList.remove('selected');
-			}
-		});
-	}
+function formatDisplayName(filename) {
+  let name = filename.replace(/^[^_]+_/, '');
+  name = name.replace(/\.(pdf|docx?|xlsx?|pptx?|txt|rtf|odt|ods|odp)$/i, '');
+  name = name.replace(/_/g, ' ');
+  name = name.replace(/\s+/g, ' ').trim();
+  return name;
+}
 
-	function openPathModal(ctx) {
-		modalContext = {
-			...ctx,
-			selectedFolder: ctx.mode === 'pick-destination' ? uploadDest : (ctx.filePath ? dirname(ctx.filePath) : '')
-		};
-		modalTitle.textContent = ctx.mode === 'pick-destination' ? 'Choose destination folder' : 'Move file';
-		currentPathLabel.textContent = ctx.mode === 'pick-destination' ? (uploadDest ? '/' + uploadDest : '/') : (ctx.filePath ? '/' + dirname(ctx.filePath) : '/');
-		renderPickerTree(modalContext.selectedFolder);
-		pathModal.classList.add('show');
-	}
+function normalizePath(p) {
+  if (!p) return '';
+  return p.replace(/\/+/g, '/').replace(/^\/|\/$/g, '');
+}
 
-	function closePathModal() {
-		pathModal.classList.remove('show');
-		modalContext = null;
-	}
+function joinPath(a, b) {
+  a = normalizePath(a);
+  b = normalizePath(b);
+  if (!a) return b;
+  if (!b) return a;
+  return a + '/' + b;
+}
 
-	function setModalSelectedFolder(path) {
-		if(!modalContext) return;
-		modalContext.selectedFolder = path;
-		currentPathLabel.textContent = path ? '/' + path : '/';
-		const nodes = pickerTree.querySelectorAll('.node.folder');
-		nodes.forEach(n => {
-			if(n.dataset.path === path) {
-				n.classList.add('selected');
-			} else {
-				n.classList.remove('selected');
-			}
-		});
-	}
-	async function buildTree() {
-		tree = await listAll('');
-	}
+function dirname(p) {
+  p = normalizePath(p);
+  if (!p) return '';
+  const idx = p.lastIndexOf('/');
+  return idx === -1 ? '' : p.slice(0, idx);
+}
 
-	function flattenFilesFromTree(node) {
-		const arr = [];
-		(function walk(n) {
-			for(const f of n.files) {
-				arr.push({
-					...f
-				});
-			}
-			for(const c of n.folders) walk(c);
-		})(node);
-		return arr;
-	}
-	async function loadPdfs() {
-		galleryEl.innerHTML = '';
-		setStatus('Loading…');
-		await buildTree();
-		renderExplorerTree();
-		const files = flattenFilesFromTree(tree).filter(f => /\.pdf$/i.test(f.name) && !isKeep(f.name));
-		if(files.length === 0) {
-			emptyStateEl.style.display = 'block';
-			setStatus('');
-			return;
-		}
-		emptyStateEl.style.display = 'none';
-		files.sort((a, b) => {
-			const da = a.updated_at || '';
-			const db = b.updated_at || '';
-			return db.localeCompare(da);
-		});
-		for(const f of files) {
-			const {
-				data: pub
-			} = supabase.storage.from(BUCKET).getPublicUrl(f.path);
-			const publicUrl = pub.publicUrl;
-			const card = document.createElement('div');
-			card.className = 'card';
-			const header = document.createElement('div');
-			header.className = 'card-header';
-			const name = document.createElement('div');
-			name.className = 'name';
-			name.title = f.path;
-			name.textContent = formatDisplayName(f.name);
-			const links = document.createElement('div');
-			links.className = 'links';
-			const aOpen = document.createElement('a');
-			aOpen.href = publicUrl;
-			aOpen.target = '_blank';
-			aOpen.rel = 'noopener';
-			aOpen.textContent = 'Open';
-			const aDownload = document.createElement('a');
-			aDownload.href = publicUrl;
-			aDownload.download = '';
-			aDownload.textContent = 'Download';
-			const aPath = document.createElement('a');
-			aPath.href = 'javascript:void(0)';
-			aPath.textContent = 'Path';
-			aPath.addEventListener('click', () => {
-				openPathModal({
-					mode: 'move-file',
-					filePath: f.path
-				});
-			});
-			links.appendChild(aOpen);
-			links.appendChild(aDownload);
-			links.appendChild(aPath);
-			header.appendChild(name);
-			header.appendChild(links);
-			const meta = document.createElement('div');
-			meta.style.padding = '8px 12px';
-			meta.className = 'small';
-			meta.textContent = '/' + dirname(f.path);
-			const iframe = document.createElement('iframe');
-			iframe.className = 'viewer';
-			iframe.src = publicUrl + '#view=FitH';
-			card.appendChild(header);
-			card.appendChild(meta);
-			card.appendChild(iframe);
-			galleryEl.appendChild(card);
-		}
-		setStatus('');
-	}
-	async function reloadAll() {
-		await loadPdfs();
-	}
-	loadPdfs().then(() => {
-		selectFolder('');
-		updateUploadDestLabel();
-	});
-	</script>
+function basename(p) {
+  p = normalizePath(p);
+  const idx = p.lastIndexOf('/');
+  return idx === -1 ? p : p.slice(idx + 1);
+}
+
+function isKeep(name) {
+  return name === '.keep' || name === '_keep' || name === '_placeholder';
+}
+
+function isAllowedFile(file) {
+  const allowedExtensions = ['pdf','doc','docx','xls','xlsx','ppt','pptx','txt','rtf','odt','ods','odp'];
+  const name = file.name || '';
+  const ext = (name.split('.').pop() || '').toLowerCase();
+  const allowedTypes = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'text/plain',
+    'application/rtf',
+    'application/vnd.oasis.opendocument.text',
+    'application/vnd.oasis.opendocument.spreadsheet',
+    'application/vnd.oasis.opendocument.presentation'
+  ];
+  return allowedExtensions.includes(ext) || allowedTypes.includes(file.type);
+}
+
+dropzone.addEventListener('click', () => fileInput.click());
+chooseBtn.addEventListener('click', () => fileInput.click());
+
+dropzone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropzone.classList.add('dragover');
+});
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropzone.classList.remove('dragover');
+  if (!e.dataTransfer.files || !e.dataTransfer.files.length) return;
+  handleSelect(Array.from(e.dataTransfer.files));
+});
+fileInput.addEventListener('change', (e) => {
+  const files = e.target.files ? Array.from(e.target.files) : [];
+  handleSelect(files);
+});
+
+function handleSelect(files) {
+  const maxBytes = 20 * 1024 * 1024;
+  const valid = [];
+  for (const f of files) {
+    if (!isAllowedFile(f)) {
+      setStatus('Unsupported file: ' + f.name, 'err');
+      continue;
+    }
+    if (f.size > maxBytes) {
+      setStatus('File too large: ' + f.name + ' (max 20 MB)', 'err');
+      continue;
+    }
+    valid.push(f);
+  }
+  if (valid.length === 0) {
+    selectedFiles = [];
+    return;
+  }
+  selectedFiles = valid;
+  const total = valid.reduce((s, f) => s + f.size, 0);
+  setStatus('Selected ' + valid.length + ' file(s), total ' + (total/1024/1024).toFixed(2) + ' MB');
+}
+
+uploadBtn.addEventListener('click', async () => {
+  if (!selectedFiles.length) {
+    setStatus('Pick files first.', 'err');
+    return;
+  }
+  try {
+    setStatus('Uploading…');
+    for (const f of selectedFiles) {
+      await uploadFile(f, uploadDest);
+    }
+    selectedFiles = [];
+    fileInput.value = '';
+    setStatus('Upload complete.', 'ok');
+    await reloadAll();
+  } catch (err) {
+    setStatus(err.message || 'Upload failed.', 'err');
+  }
+});
+
+refreshBtn.addEventListener('click', async () => {
+  await reloadAll();
+});
+
+pickUploadDestBtn.addEventListener('click', () => {
+  openPathModal({ mode: 'pick-destination' });
+});
+
+newFolderBtn.addEventListener('click', () => {
+  openFolderModal({ mode: 'create', basePath: selectedFolder });
+});
+renameFolderBtn.addEventListener('click', () => {
+  if (!selectedFolder) {
+    setStatus('Select a folder to rename.', 'err');
+    return;
+  }
+  openFolderModal({ mode: 'rename', basePath: dirname(selectedFolder), oldPath: selectedFolder, currentName: basename(selectedFolder) });
+});
+deleteFolderBtn.addEventListener('click', async () => {
+  if (!selectedFolder) {
+    setStatus('Select a folder to delete.', 'err');
+    return;
+  }
+  const ok = confirm('Delete folder "' + selectedFolder + '" and all its contents?');
+  if (!ok) return;
+  try {
+    await deleteFolder(selectedFolder);
+    await reloadAll();
+    selectFolder(dirname(selectedFolder));
+    setStatus('Folder deleted.', 'ok');
+  } catch (e) {
+    setStatus(e.message || 'Failed to delete folder.', 'err');
+  }
+});
+
+cancelModalBtn.addEventListener('click', closePathModal);
+moveUpBtn.addEventListener('click', async () => {
+  if (!modalContext) return;
+  const fromPath = modalContext.filePath;
+  const parentFolder = dirname(dirname(fromPath));
+  const parent = parentFolder ? parentFolder : '';
+  const dst = joinPath(parent, basename(fromPath));
+  if (dst === fromPath) return;
+  await moveFileCopyRemove(fromPath, dst);
+  closePathModal();
+  await reloadAll();
+  setStatus('Moved up.', 'ok');
+});
+moveRootBtn.addEventListener('click', async () => {
+  if (!modalContext) return;
+  const fromPath = modalContext.filePath;
+  const dst = basename(fromPath);
+  if (dst === fromPath) return;
+  await moveFileCopyRemove(fromPath, dst);
+  closePathModal();
+  await reloadAll();
+  setStatus('Moved to root.', 'ok');
+});
+selectFolderBtn.addEventListener('click', async () => {
+  if (!modalContext) return;
+  if (modalContext.mode === 'pick-destination') {
+    uploadDest = modalContext.selectedFolder || '';
+    updateUploadDestLabel();
+    closePathModal();
+    return;
+  }
+  if (modalContext.mode === 'move-file') {
+    const target = modalContext.selectedFolder || '';
+    const dst = joinPath(target, basename(modalContext.filePath));
+    await moveFileCopyRemove(modalContext.filePath, dst);
+    closePathModal();
+    await reloadAll();
+    setStatus('File moved.', 'ok');
+  }
+});
+
+folderCancelBtn.addEventListener('click', closeFolderModal);
+folderSaveBtn.addEventListener('click', async () => {
+  const val = folderNameInput.value;
+  if (!val || !val.trim()) {
+    folderError.textContent = 'Please enter a folder name.';
+    return;
+  }
+  const clean = sanitizeFolderName(val);
+  if (!clean) {
+    folderError.textContent = 'Invalid folder name.';
+    return;
+  }
+  try {
+    if (folderModalContext.mode === 'create') {
+      const path = joinPath(folderModalContext.basePath || '', clean);
+      await createFolder(path);
+      await reloadAll();
+      selectFolder(path);
+      setStatus('Folder created.', 'ok');
+    } else if (folderModalContext.mode === 'rename') {
+      const pre = folderModalContext.basePath || '';
+      const newPrefix = joinPath(pre, clean);
+      if (newPrefix !== folderModalContext.oldPath) {
+        await renameFolder(folderModalContext.oldPath, newPrefix);
+        await reloadAll();
+        selectFolder(newPrefix);
+        setStatus('Folder renamed.', 'ok');
+      }
+    }
+    closeFolderModal();
+  } catch (e) {
+    folderError.textContent = e.message || 'Operation failed.';
+  }
+});
+
+function updateUploadDestLabel() {
+  uploadDestLabel.textContent = uploadDest ? '/' + uploadDest : '/';
+}
+
+function selectFolder(path) {
+  selectedFolder = normalizePath(path || '');
+  selectedFolderLabel.textContent = selectedFolder ? '/' + selectedFolder : '/';
+  highlightSelectedFolder(selectedFolder);
+}
+
+async function uploadFile(file, destPath) {
+  const safeName = sanitizeFileName(file.name);
+  const filePath = joinPath(destPath || '', uid() + '_' + safeName);
+  const { data, error } = await supabase.storage.from(BUCKET).upload(filePath, file, {
+    contentType: file.type || undefined,
+    cacheControl: '3600',
+    upsert: false
+  });
+  if (error) throw error;
+  return data;
+}
+
+async function createFolder(path) {
+  const key = joinPath(path, '.keep');
+  await supabase.storage.from(BUCKET).upload(key, new Blob(['keep']), {
+    contentType: 'text/plain',
+    upsert: true
+  });
+}
+
+async function renameFolder(oldPrefix, newPrefix) {
+  const files = await listAllFiles(oldPrefix, true);
+  if (files.length === 0) {
+    await createFolder(newPrefix);
+    await deleteFolder(oldPrefix);
+    return;
+  }
+  for (const f of files) {
+    const rel = f.path.slice(oldPrefix.length ? oldPrefix.length + 1 : 0);
+    const to = joinPath(newPrefix, rel);
+    if (f.path === to) continue;
+    await copyThenRemove(f.path, to);
+  }
+  await deleteFolder(oldPrefix);
+}
+
+async function deleteFolder(prefix) {
+  const files = await listAllFiles(prefix, true);
+  if (files.length === 0) return;
+  const { error } = await supabase.storage.from(BUCKET).remove(files.map(f => f.path));
+  if (error) throw error;
+}
+
+async function moveFileCopyRemove(fromPath, toPath) {
+  const src = normalizePath(fromPath);
+  const dst = normalizePath(toPath);
+  if (!src) throw new Error('Invalid source path');
+  if (!dst) throw new Error('Invalid destination path');
+  if (src === dst) return;
+  const srcDir = dirname(src);
+  const srcName = basename(src);
+  const srcList = await supabase.storage.from(BUCKET).list(srcDir, { limit: 1000 });
+  if (srcList.error) throw srcList.error;
+  const found = (srcList.data || []).find(x => x.name === srcName && x.id);
+  if (!found) throw new Error('Source not found: ' + src);
+  const dstDir = dirname(dst);
+  const dstName = basename(dst);
+  const dstList = await supabase.storage.from(BUCKET).list(dstDir, { limit: 1000 });
+  if (dstList.error) throw dstList.error;
+  const conflict = (dstList.data || []).find(x => x.name === dstName && x.id);
+  if (conflict) throw new Error('A file with the same name exists in destination.');
+  await copyThenRemove(src, dst);
+}
+
+async function copyThenRemove(src, dst) {
+  const copied = await supabase.storage.from(BUCKET).copy(src, dst);
+  if (copied.error) {
+    const msg = (copied.error.message || '').toLowerCase();
+    if (msg.includes('already exists')) throw new Error('Destination already exists.');
+    throw copied.error;
+  }
+  const removed = await supabase.storage.from(BUCKET).remove([src]);
+  if (removed.error) throw removed.error;
+}
+
+async function listOneLevel(prefix) {
+  const path = normalizePath(prefix || '');
+  const { data, error } = await supabase.storage.from(BUCKET).list(path, {
+    limit: 1000,
+    sortBy: { column: 'name', order: 'asc' }
+  });
+  if (error) throw error;
+  const folders = [];
+  const files = [];
+  for (const it of data) {
+    if (it.id) {
+      files.push({ name: it.name, updated_at: it.updated_at, metadata: it.metadata });
+    } else {
+      folders.push({ name: it.name });
+    }
+  }
+  return { folders, files, items: data };
+}
+
+async function listAll(prefix) {
+  const path = normalizePath(prefix || '');
+  const lvl = await listOneLevel(path);
+  const node = { name: path ? basename(path) : '/', path, folders: [], files: [] };
+  for (const f of lvl.files) {
+    if (isKeep(f.name)) continue;
+    node.files.push({
+      name: f.name,
+      path: joinPath(path, f.name),
+      updated_at: f.updated_at,
+      size: f.metadata && f.metadata.size ? f.metadata.size : undefined
+    });
+  }
+  for (const fd of lvl.folders) {
+    const child = await listAll(joinPath(path, fd.name));
+    node.folders.push(child);
+  }
+  return node;
+}
+
+async function listAllFiles(prefix, includeKeeps) {
+  const root = await listAll(prefix || '');
+  const arr = [];
+  (function walk(n) {
+    for (const f of n.files) {
+      if (!includeKeeps && isKeep(f.name)) continue;
+      arr.push({ path: f.path, updated_at: f.updated_at });
+    }
+    for (const c of n.folders) walk(c);
+  })(root);
+  return arr;
+}
+
+function renderExplorerTree() {
+  treeEl.innerHTML = '';
+  const el = renderTreeNode(tree, { selectable: true, showFiles: true });
+  treeEl.appendChild(el);
+  highlightSelectedFolder(selectedFolder);
+}
+
+function renderPickerTree(selected) {
+  pickerTree.innerHTML = '';
+  const el = renderTreeNode(tree, { selectable: true, showFiles: false, forPicker: true, selectedFolder: selected || '' });
+  pickerTree.appendChild(el);
+}
+
+function renderTreeNode(node, opts) {
+  const container = document.createElement('div');
+  const row = document.createElement('div');
+  row.className = 'node folder';
+  const caret = document.createElement('span');
+  caret.className = 'caret open';
+  caret.textContent = '▾';
+  const icon = document.createElement('span');
+  icon.className = 'icon';
+  icon.textContent = '📁';
+  const label = document.createElement('span');
+  label.textContent = node.path ? basename(node.path) : 'Zoznam súborov';
+  row.appendChild(caret);
+  row.appendChild(icon);
+  row.appendChild(label);
+  row.dataset.path = node.path;
+  row.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const content = container.querySelector(':scope > .children');
+    const open = caret.classList.contains('open');
+    if (open) {
+      caret.classList.remove('open');
+      content.style.display = 'none';
+    } else {
+      caret.classList.add('open');
+      content.style.display = 'block';
+    }
+    if (opts.forPicker) {
+      setModalSelectedFolder(row.dataset.path);
+    } else {
+      selectFolder(row.dataset.path);
+    }
+  });
+  container.appendChild(row);
+  const children = document.createElement('div');
+  children.className = 'children';
+  for (const f of node.folders) {
+    children.appendChild(renderTreeNode(f, opts));
+  }
+  if (opts.showFiles) {
+    for (const file of node.files) {
+      const fr = document.createElement('div');
+      fr.className = 'node';
+      const ic = document.createElement('span');
+      ic.className = 'icon';
+      ic.textContent = '📄';
+      const nm = document.createElement('span');
+      nm.textContent = file.name;
+      const small = document.createElement('span');
+      small.className = 'path';
+      small.textContent = ' /' + node.path;
+      fr.appendChild(document.createElement('span'));
+      fr.appendChild(ic);
+      fr.appendChild(nm);
+      fr.appendChild(small);
+      children.appendChild(fr);
+    }
+  }
+  container.appendChild(children);
+  return container;
+}
+
+function highlightSelectedFolder(path) {
+  const nodes = treeEl.querySelectorAll('.node.folder');
+  nodes.forEach(n => {
+    if (n.dataset.path === path) {
+      n.classList.add('selected');
+    } else {
+      n.classList.remove('selected');
+    }
+  });
+}
+
+function openPathModal(ctx) {
+  modalContext = { ...ctx, selectedFolder: ctx.mode === 'pick-destination' ? uploadDest : (ctx.filePath ? dirname(ctx.filePath) : '') };
+  modalTitle.textContent = ctx.mode === 'pick-destination' ? 'Choose destination folder' : 'Move file';
+  currentPathLabel.textContent = ctx.mode === 'pick-destination' ? (uploadDest ? '/' + uploadDest : '/') : (ctx.filePath ? '/' + dirname(ctx.filePath) : '/');
+  renderPickerTree(modalContext.selectedFolder);
+  pathModal.classList.add('show');
+}
+
+function closePathModal() {
+  pathModal.classList.remove('show');
+  modalContext = null;
+}
+
+function setModalSelectedFolder(path) {
+  if (!modalContext) return;
+  modalContext.selectedFolder = path;
+  currentPathLabel.textContent = path ? '/' + path : '/';
+  const nodes = pickerTree.querySelectorAll('.node.folder');
+  nodes.forEach(n => {
+    if (n.dataset.path === path) {
+      n.classList.add('selected');
+    } else {
+      n.classList.remove('selected');
+    }
+  });
+}
+
+function openFolderModal(ctx) {
+  folderModalContext = ctx;
+  folderModalTitle.textContent = ctx.mode === 'create' ? 'Create Folder' : 'Rename Folder';
+  folderNameInput.value = ctx.mode === 'rename' ? (ctx.currentName || '') : '';
+  folderError.textContent = '';
+  folderModal.classList.add('show');
+  setTimeout(() => folderNameInput.focus(), 0);
+}
+
+function closeFolderModal() {
+  folderModal.classList.remove('show');
+  folderModalContext = null;
+}
+
+function sanitizeFolderName(name) {
+  return name.trim().replace(/\/+/g, '').replace(/^\.+$/, '').slice(0, 255);
+}
+
+async function buildTree() {
+  tree = await listAll('');
+}
+
+function flattenFilesFromTree(node) {
+  const arr = [];
+  (function walk(n) {
+    for (const f of n.files) arr.push({ ...f });
+    for (const c of n.folders) walk(c);
+  })(node);
+  return arr;
+}
+
+function getPublicUrl(path) {
+  const { data: pub } = supabase.storage.from(BUCKET).getPublicUrl(path);
+  return pub.publicUrl;
+}
+
+function isPreviewableInline(name) {
+  const ext = (name.split('.').pop() || '').toLowerCase();
+  return ext === 'pdf';
+}
+
+async function loadFiles() {
+  galleryEl.innerHTML = '';
+  setStatus('Loading…');
+  await buildTree();
+  renderExplorerTree();
+  const files = flattenFilesFromTree(tree).filter(f => !isKeep(f.name));
+  if (files.length === 0) {
+    emptyStateEl.style.display = 'block';
+    setStatus('');
+    return;
+  }
+  emptyStateEl.style.display = 'none';
+  files.sort((a, b) => {
+    const da = a.updated_at || '';
+    const db = b.updated_at || '';
+    return db.localeCompare(da);
+  });
+  for (const f of files) {
+    const publicUrl = getPublicUrl(f.path);
+    const card = document.createElement('div');
+    card.className = 'card';
+    const header = document.createElement('div');
+    header.className = 'card-header';
+    const name = document.createElement('div');
+    name.className = 'name';
+    name.title = f.path;
+    name.textContent = formatDisplayName(f.name);
+    const links = document.createElement('div');
+    links.className = 'links';
+    const aOpen = document.createElement('a');
+    aOpen.href = publicUrl;
+    aOpen.target = '_blank';
+    aOpen.rel = 'noopener';
+    aOpen.textContent = 'Open';
+    const aDownload = document.createElement('a');
+    aDownload.href = publicUrl;
+    aDownload.download = '';
+    aDownload.textContent = 'Download';
+    const aPath = document.createElement('a');
+    aPath.href = 'javascript:void(0)';
+    aPath.textContent = 'Move';
+    aPath.addEventListener('click', () => {
+      openPathModal({ mode: 'move-file', filePath: f.path });
+    });
+    const delBtn = document.createElement('button');
+    delBtn.className = 'link';
+    delBtn.textContent = 'Delete';
+    delBtn.addEventListener('click', async () => {
+      const ok = confirm('Delete "' + f.name + '"?');
+      if (!ok) return;
+      const res = await supabase.storage.from(BUCKET).remove([f.path]);
+      if (res.error) {
+        setStatus(res.error.message || 'Delete failed.', 'err');
+        return;
+      }
+      setStatus('File deleted.', 'ok');
+      await reloadAll();
+    });
+    links.appendChild(aOpen);
+    links.appendChild(aDownload);
+    links.appendChild(aPath);
+    links.appendChild(delBtn);
+    header.appendChild(name);
+    header.appendChild(links);
+    const meta = document.createElement('div');
+    meta.style.padding = '8px 12px';
+    meta.className = 'small';
+    meta.textContent = '/' + dirname(f.path);
+    const viewer = document.createElement('iframe');
+    viewer.className = 'viewer';
+    if (isPreviewableInline(f.name)) {
+      viewer.src = publicUrl + '#view=FitH';
+      viewer.style.display = 'block';
+    }
+    card.appendChild(header);
+    card.appendChild(meta);
+    card.appendChild(viewer);
+    galleryEl.appendChild(card);
+  }
+  setStatus('');
+}
+
+async function reloadAll() {
+  await loadFiles();
+}
+
+loadFiles().then(() => {
+  selectFolder('');
+  updateUploadDestLabel();
+});
+</script>
 </body>
-
 </html>
