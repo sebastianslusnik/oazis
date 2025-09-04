@@ -1,1018 +1,701 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <title>Supabase Bucket Manager</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <style>
-    :root{
-      --bg: #0f1221;
-      --bg-soft: #171a2c;
-      --panel: #1c1f34;
-      --panel-2: #222645;
-      --emph: #7b8cff;
-      --emph-2: #42d392;
-      --text: #f0f3ff;
-      --text-dim: #b1b6d1;
-      --border: #2b2f52;
-      --danger: #ff5874;
-      --warn: #ffc46a;
-      --ok: #5ee1a2;
-      --shadow: 0 8px 30px rgba(0,0,0,.35), 0 6px 16px rgba(2,6,23,.45);
-      --radius: 14px;
-      --radius-sm: 10px;
-      --radius-xs: 8px;
-      --blur: saturate(1.1) blur(6px);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
-      background:
-        radial-gradient(1200px 600px at -10% -10%, rgba(123,140,255,.25), transparent 45%),
-        radial-gradient(900px 500px at 120% 0%, rgba(66,211,146,.18), transparent 40%),
-        linear-gradient(180deg, #0b0e1a 0%, #0f1221 30%, #0f1221 100%);
-      color: var(--text);
-    }
-    a{color:inherit;text-decoration:none}
-    button{font:inherit}
-    .app{
-      display:flex; flex-direction:column; gap:16px;
-      padding:18px clamp(14px, 2vw, 28px) 24px;
-      max-width: 1200px; margin: 0 auto;
-    }
-    .head{
-      display:flex; align-items:center; justify-content:space-between; gap:14px;
-    }
-    .title{
-      display:flex; align-items:center; gap:12px;
-      padding:10px 14px; background: linear-gradient(180deg, rgba(28,31,52,.65), rgba(28,31,52,.35));
-      border:1px solid var(--border); border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      backdrop-filter: var(--blur);
-    }
-    .title .tag{
-      font-weight:600; color: var(--emph-2);
-      background: rgba(66,211,146,.15);
-      border:1px solid rgba(66,211,146,.35);
-      padding: 2px 8px; border-radius: 999px;
-    }
-    .actions{
-      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
-    }
-    .btn{
-      display:inline-flex; align-items:center; gap:8px;
-      background: linear-gradient(180deg, rgba(34,38,69,.9), rgba(34,38,69,.6));
-      border:1px solid var(--border);
-      border-radius: 12px; padding: 10px 12px; color: var(--text);
-      transition: transform .08s ease, background .2s ease, border-color .2s ease, opacity .2s ease;
-      user-select:none; cursor:pointer;
-    }
-    .btn:hover{transform: translateY(-1px); border-color: #39407b}
-    .btn:active{transform: translateY(0)}
-    .btn.primary{ background: linear-gradient(180deg, #3a3f7b, #2a2f63); border-color:#434a9b}
-    .btn.ghost{ background: transparent; border-color: transparent; }
-    .btn.warn{ border-color: rgba(255,196,106,.45); background: linear-gradient(180deg, rgba(255,196,106,.12), rgba(255,196,106,.05)); color:#ffdba5}
-    .btn.danger{ border-color: rgba(255,88,116,.45); background: linear-gradient(180deg, rgba(255,88,116,.12), rgba(255,88,116,.05)); color:#ffc2cc}
-    .sep{ width:1px; height:28px; background: linear-gradient(180deg, transparent, var(--border), transparent)}
-    .search{
-      display:flex; align-items:center; gap:8px; flex:1; max-width:400px;
-      background: linear-gradient(180deg, rgba(28,31,52,.7), rgba(28,31,52,.45));
-      border:1px solid var(--border); border-radius: 12px; padding: 8px 10px;
-    }
-    .search input{
-      background: transparent; border:0; outline:none; width:100%; color:var(--text);
-    }
-    .toolbar{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:12px; flex-wrap:wrap;
-      background: linear-gradient(180deg, rgba(28,31,52,.65), rgba(28,31,52,.35));
-      border:1px solid var(--border); border-radius: var(--radius);
-      padding: 10px; box-shadow: var(--shadow); backdrop-filter: var(--blur);
-    }
-    .crumbs{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-    .crumb{
-      display:inline-flex; align-items:center; gap:6px;
-      padding:6px 10px; border-radius: 999px;
-      background: rgba(67,74,155,.08); border:1px solid rgba(67,74,155,.3);
-      cursor:pointer; transition: border-color .2s ease, transform .08s ease;
-    }
-    .crumb:hover{ border-color:#4c54b3 }
-    .grid{
-      display:grid; gap:12px;
-      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-    }
-    .card{
-      position:relative; display:flex; flex-direction:column; gap:8px;
-      padding:12px; background: linear-gradient(180deg, rgba(28,31,52,.85), rgba(28,31,52,.55));
-      border:1px solid var(--border); border-radius: var(--radius-sm); box-shadow: var(--shadow);
-      transition: transform .12s ease, border-color .2s ease, background .2s;
-      cursor:default;
-    }
-    .card:hover{ transform: translateY(-2px); border-color: #3c4276 }
-    .row{
-      display:grid; grid-template-columns: 28px 1fr 120px 150px 140px 60px; align-items:center; gap:10px;
-      padding: 10px 12px; border-bottom:1px dashed rgba(68,72,110,.4);
-    }
-    .table{
-      background: linear-gradient(180deg, rgba(28,31,52,.85), rgba(28,31,52,.55));
-      border:1px solid var(--border); border-radius: var(--radius);
-      box-shadow: var(--shadow); overflow:hidden;
-    }
-    .thead{ background: rgba(60,66,118,.18); position:sticky; top:0; z-index:1; }
-    .th{ font-size:12px; text-transform:uppercase; letter-spacing:.08em; color: var(--text-dim) }
-    .item-name{ display:flex; align-items:center; gap:10px; min-width:0 }
-    .name{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
-    .meta{ color:var(--text-dim); font-size:12px }
-    .badge{
-      font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(123,140,255,.35);
-      color:#c7ceff; background: rgba(123,140,255,.15)
-    }
-    .hover-show{ opacity:.0; pointer-events:none; transition: opacity .15s ease }
-    .card:hover .hover-show, .row:hover .hover-show{ opacity: 1; pointer-events:auto }
-    .check{
-      width:18px; height:18px; border:1px solid var(--border); border-radius:6px; background: rgba(255,255,255,.02);
-      display:inline-flex; align-items:center; justify-content:center; cursor:pointer;
-    }
-    .check input{ display:none }
-    .check .dot{
-      width:12px; height:12px; border-radius:4px; background: var(--emph); opacity:0; transform: scale(.8);
-      transition: transform .15s ease, opacity .15s ease;
-    }
-    .check input:checked + .dot{ opacity:1; transform: scale(1) }
-    .pillbar{
-      display:flex; align-items:center; gap:8px; flex-wrap:wrap;
-      background: linear-gradient(180deg, rgba(28,31,52,.65), rgba(28,31,52,.35));
-      border:1px dashed #3c4276; padding:10px; border-radius: 12px;
-    }
-    .dropzone{
-      border:1px dashed #454b88; padding: 18px; border-radius: 14px;
-      text-align:center; color: var(--text-dim);
-      transition: background .2s ease, border-color .2s ease;
-    }
-    .dropzone.dragover{ background: rgba(67,74,155,.08); border-color:#7078d6; color:#cfd6ff }
-    .menu{
-      position:absolute; right:10px; top:10px; display:flex; gap:8px;
-    }
-    .icon{ width:18px; height:18px; opacity:.9 }
-    .folder{ color:#91a0ff }
-    .file{ color:#96ffd0 }
-    .danger-text{ color:#ff9faf }
-    .muted{ color: var(--text-dim) }
-    .footer{ padding: 6px; color: var(--text-dim); text-align:center; font-size:12px }
-    .toast-wrap{
-      position: fixed; right: 14px; bottom: 14px; display:flex; flex-direction:column; gap:10px; z-index:9999;
-    }
-    .toast{
-      padding:10px 12px; border-radius: 12px; border:1px solid var(--border);
-      background: linear-gradient(180deg, rgba(28,31,52,.9), rgba(28,31,52,.7)); box-shadow: var(--shadow);
-      display:flex; align-items:center; gap:8px;
-    }
-    .toast.ok{ border-color: rgba(94,225,162,.35) }
-    .toast.warn{ border-color: rgba(255,196,106,.35) }
-    .toast.err{ border-color: rgba(255,88,116,.35) }
-    .modal-bg{
-      position: fixed; inset:0; background: rgba(4,6,20,.6); backdrop-filter: blur(6px);
-      display:none; align-items:center; justify-content:center; z-index:999;
-    }
-    .modal{
-      width: min(520px, calc(100% - 28px));
-      background: linear-gradient(180deg, rgba(28,31,52,.95), rgba(28,31,52,.75));
-      border:1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow);
-      padding: 16px; display:flex; flex-direction:column; gap:12px;
-    }
-    .modal h3{ margin:0; font-size:18px }
-    .modal .field{
-      display:flex; flex-direction:column; gap:6px;
-      background: rgba(255,255,255,.02); border:1px solid var(--border);
-      border-radius: 10px; padding: 10px;
-    }
-    .modal .field input{
-      background: transparent; border:0; outline:none; color: var(--text);
-    }
-    .modal .bar{ display:flex; align-items:center; justify-content:flex-end; gap:8px }
-    .hidden{ display:none }
-    .selectbar{ display:flex; align-items:center; gap:8px; flex-wrap:wrap }
-    .tag2{ padding:4px 8px; border-radius: 999px; background: rgba(255,255,255,.05); border:1px dashed var(--border) }
-    .switch{
-      display:inline-flex; align-items:center; gap:8px; padding: 6px;
-      border-radius: 999px; background: rgba(255,255,255,.05); border:1px solid var(--border);
-    }
-    .switch button{ padding:6px 10px; border-radius: 999px; border:1px solid transparent; background: transparent; color: var(--text-dim); cursor:pointer }
-    .switch button.active{ background: rgba(123,140,255,.18); border-color: rgba(123,140,255,.35); color:#e4e7ff }
-    .sorter{ display:inline-flex; gap:6px; align-items:center; color: var(--text-dim) }
-    .link{ color:#cbd2ff; text-decoration: underline dotted }
-  </style>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Bunny Storage File Manager</title>
+	<style>
+	:root {
+		--bg: #111;
+		--fg: #eee;
+		--muted: #bbb;
+		--line: #2a2a2a;
+		--accent: #666;
+		--accent2: #888;
+		--danger: #a33;
+		--ok: #3a3
+	}
+
+	* {
+		box-sizing: border-box
+	}
+
+	html,
+	body {
+		height: 100%
+	}
+
+	body {
+		margin: 0;
+		background: #000;
+		color: var(--fg);
+		font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Helvetica, Arial, sans-serif
+	}
+
+	.container {
+		max-width: 1100px;
+		margin: 0 auto;
+		padding: 20px
+	}
+
+	.header {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 10px
+	}
+
+	.breadcrumb {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		align-items: center
+	}
+
+	.breadcrumb a {
+		color: var(--muted);
+		text-decoration: none;
+		padding: 2px 6px;
+		border: 1px solid var(--line);
+		border-radius: 4px
+	}
+
+	.breadcrumb a:hover {
+		background: #111;
+		color: #fff
+	}
+
+	.toolbar {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		align-items: center
+	}
+
+	button,
+	input[type=file] {
+		background: #111;
+		color: var(--fg);
+		border: 1px solid var(--line);
+		padding: 8px 10px;
+		border-radius: 6px;
+		cursor: pointer
+	}
+
+	button:hover {
+		background: #151515
+	}
+
+	button.primary {
+		border-color: var(--accent2)
+	}
+
+	button.danger {
+		border-color: var(--danger);
+		color: #f3caca
+	}
+
+	.status {
+		min-height: 22px;
+		color: var(--muted);
+		margin-top: 10px
+	}
+
+	.table-wrap {
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		overflow: hidden
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		background: #0a0a0a
+	}
+
+	th,
+	td {
+		padding: 10px 12px;
+		border-bottom: 1px solid var(--line);
+		vertical-align: middle
+	}
+
+	th {
+		background: #0f0f0f;
+		text-align: left;
+		color: #ddd;
+		font-weight: 600
+	}
+
+	tr:hover td {
+		background: #0f0f0f
+	}
+
+	.type {
+		font-size: 12px;
+		color: var(--muted)
+	}
+
+	.size {
+		white-space: nowrap
+	}
+
+	.actions {
+		display: flex;
+		gap: 6px;
+		flex-wrap: wrap
+	}
+
+	.badge {
+		display: inline-block;
+		padding: 2px 6px;
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		color: #ccc;
+		font-size: 12px
+	}
+
+	footer {
+		opacity: .7;
+		margin-top: 20px;
+		font-size: 12px;
+		color: #888
+	}
+
+	.hidden {
+		display: none
+	}
+
+	.progress {
+		height: 6px;
+		background: #151515;
+		border: 1px solid var(--line);
+		border-radius: 6px;
+		overflow: hidden
+	}
+
+	.progress>div {
+		height: 100%;
+		background: linear-gradient(90deg, #444, #777);
+		width: 0%
+	}
+
+	.small {
+		font-size: 12px;
+		color: #aaa
+	}
+
+	input[type=text] {
+		background: #0a0a0a;
+		border: 1px solid var(--line);
+		color: #fff;
+		border-radius: 6px;
+		padding: 8px 10px
+	}
+
+	.row-title {
+		display: flex;
+		gap: 8px;
+		align-items: center
+	}
+
+	.icon {
+		width: 18px;
+		height: 18px;
+		display: inline-block;
+		border: 1px solid var(--line);
+		border-radius: 4px
+	}
+
+	.icon.folder {
+		background: #111
+	}
+
+	.icon.file {
+		background: #090909
+	}
+	</style>
 </head>
+
 <body>
-  <div class="app">
-    <div class="head">
-      <div class="title">
-        <div style="display:flex; align-items:center; gap:10px">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke="currentColor" stroke-width="1.6" d="M3 6.5A2.5 2.5 0 0 1 5.5 4h3.879a2 2 0 0 1 1.414.586l.621.621A2 2 0 0 0 12.828 6h5.672A2.5 2.5 0 0 1 21 8.5V18a2 2 0 0 1-2 2H5.5A2.5 2.5 0 0 1 3 17.5v-11Z"/></svg>
-          <div>
-            <div style="font-weight:700">Supabase Bucket Manager</div>
-            <div class="meta" id="bucketLabel">Bucket</div>
-          </div>
-        </div>
-        <span class="tag" id="viewTag">Grid</span>
-      </div>
-      <div class="actions">
-        <div class="search">
-          <svg class="icon muted" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7" stroke-width="1.6"/><path d="M20 20l-3.5-3.5" stroke-width="1.6"/></svg>
-          <input id="searchInput" placeholder="Search current folder..." />
-        </div>
-        <div class="switch">
-          <button id="gridBtn" class="active">Grid</button>
-          <button id="tableBtn">Table</button>
-        </div>
-        <button class="btn" id="refreshBtn">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="M3 12a9 9 0 1 0 9-9" stroke-width="1.6"/>
-            <path d="M3 4v6h6" stroke-width="1.6"/>
-          </svg>
-          Refresh
-        </button>
-      </div>
-    </div>
-
-    <div class="toolbar">
-      <div class="crumbs" id="breadcrumbs"></div>
-      <div class="actions">
-        <button class="btn primary" id="newFolderBtn">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4h3.879a2 2 0 0 1 1.414.586l.621.621A2 2 0 0 0 12.828 6h5.672A2.5 2.5 0 0 1 21 8.5V18a2 2 0 0 1-2 2H5.5A2.5 2.5 0 0 1 3 17.5v-11Z" stroke-width="1.6"/></svg>
-          New folder
-        </button>
-        <button class="btn" id="uploadBtn">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 16V4m0 0-4 4m4-4 4 4" stroke-width="1.6"/><rect x="4" y="16" width="16" height="4" rx="1" stroke-width="1.6"/></svg>
-          Upload
-        </button>
-        <span class="sep"></span>
-        <div class="sorter">
-          <span>Sort:</span>
-          <select id="sortField">
-            <option value="name">Name</option>
-            <option value="updated_at">Modified</option>
-            <option value="created_at">Created</option>
-            <option value="size">Size</option>
-          </select>
-          <select id="sortOrder">
-            <option value="asc">Asc</option>
-            <option value="desc">Desc</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <div id="selectBar" class="pillbar hidden"></div>
-
-    <div class="dropzone" id="dropzone">Drag & drop files here to upload to this folder</div>
-
-    <div id="gridView" class="grid"></div>
-
-    <div id="tableView" class="table hidden">
-      <div class="thead row th">
-        <div></div>
-        <div>Name</div>
-        <div>Size</div>
-        <div>Modified</div>
-        <div>Path</div>
-        <div></div>
-      </div>
-      <div id="tableBody"></div>
-    </div>
-
-    <div class="footer">Built with Supabase Storage</div>
-  </div>
-
-  <input id="fileInput" type="file" multiple class="hidden" />
-
-  <div class="toast-wrap" id="toasts"></div>
-
-  <div class="modal-bg" id="modalBg">
-    <div class="modal" role="dialog" aria-modal="true">
-      <h3 id="modalTitle">Title</h3>
-      <div class="field hidden" id="modalField">
-        <label id="modalLabel" class="muted"></label>
-        <input id="modalInput" />
-      </div>
-      <div id="modalBody"></div>
-      <div class="bar">
-        <button class="btn ghost" id="modalCancel">Cancel</button>
-        <button class="btn primary" id="modalOk">OK</button>
-      </div>
-    </div>
-  </div>
-
-  <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-
-    const SUPABASE_URL = "https://vehpvfcjceglrftdjlje.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlaHB2ZmNqY2VnbHJmdGRqbGplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwMTQ5NDEsImV4cCI6MjA3MjU5MDk0MX0.yqZTnMDvCuCqTD9ptkj_Nc-qsvKne-06k8gaRtnYNxc";
-    const BUCKET = "pdfs";
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // State
-    let cwd = ""; // current folder prefix, e.g. "", "docs/", "docs/sub/"
-    let entries = []; // current listing
-    let search = "";
-    let view = "grid"; // or "table"
-    let selection = new Set(); // of full keys (for files) or "prefix/" for folders
-    let sortField = "name";
-    let sortOrder = "asc";
-
-    // UI refs
-    const bucketLabel = document.getElementById("bucketLabel");
-    const breadcrumbs = document.getElementById("breadcrumbs");
-    const gridView = document.getElementById("gridView");
-    const tableView = document.getElementById("tableView");
-    const tableBody = document.getElementById("tableBody");
-    const viewTag = document.getElementById("viewTag");
-    const searchInput = document.getElementById("searchInput");
-    const gridBtn = document.getElementById("gridBtn");
-    const tableBtn = document.getElementById("tableBtn");
-    const refreshBtn = document.getElementById("refreshBtn");
-    const newFolderBtn = document.getElementById("newFolderBtn");
-    const uploadBtn = document.getElementById("uploadBtn");
-    const fileInput = document.getElementById("fileInput");
-    const sortFieldEl = document.getElementById("sortField");
-    const sortOrderEl = document.getElementById("sortOrder");
-    const selectBar = document.getElementById("selectBar");
-    const dropzone = document.getElementById("dropzone");
-    const toasts = document.getElementById("toasts");
-    const modalBg = document.getElementById("modalBg");
-    const modalTitle = document.getElementById("modalTitle");
-    const modalField = document.getElementById("modalField");
-    const modalLabel = document.getElementById("modalLabel");
-    const modalInput = document.getElementById("modalInput");
-    const modalBody = document.getElementById("modalBody");
-    const modalCancel = document.getElementById("modalCancel");
-    const modalOk = document.getElementById("modalOk");
-
-    bucketLabel.textContent = `Bucket: ${BUCKET}`;
-
-    function joinPath(...parts){
-      const p = parts.filter(Boolean).join("/").replace(/\/+/g,"/");
-      return p.replace(/^\/+/, "").replace(/\/+$/, "");
-    }
-    function asPrefix(path){
-      if(!path) return "";
-      return path.endsWith("/") ? path : path + "/";
-    }
-    function dirname(path){
-      const clean = path.replace(/\/+$/,"");
-      const idx = clean.lastIndexOf("/");
-      return idx === -1 ? "" : clean.slice(0, idx);
-    }
-    function base(path){
-      const clean = path.replace(/\/+$/,"");
-      const idx = clean.lastIndexOf("/");
-      return idx === -1 ? clean : clean.slice(idx+1);
-    }
-    function isFolderItem(item){
-      // Supabase list: item may have type: 'folder' | 'file'
-      if (item.type) return item.type === "folder";
-      // Fallback: folders have null metadata
-      return !item.metadata;
-    }
-    function formatBytes(x){
-      if(x == null) return "";
-      const u = ["B","KB","MB","GB","TB"];
-      let i=0; let n = x;
-      while(n >= 1024 && i < u.length-1){ n/=1024; i++ }
-      return `${n.toFixed(n<10 && i>0?1:0)} ${u[i]}`;
-    }
-    function formatDate(d){
-      if(!d) return "";
-      const dt = new Date(d);
-      return dt.toLocaleString();
-    }
-    function toast(msg, type="ok", ms=2500){
-      const t = document.createElement("div");
-      t.className = `toast ${type}`;
-      t.textContent = msg;
-      toasts.appendChild(t);
-      setTimeout(()=>{ t.style.opacity = "0"; t.style.transform = "translateY(4px)"; }, ms);
-      setTimeout(()=>{ t.remove() }, ms+400);
-    }
-
-    async function promptModal({title, label, placeholder="", value="", okText="OK", cancelText="Cancel", bodyHTML=""}){
-      modalTitle.textContent = title;
-      modalLabel.textContent = label ?? "";
-      modalInput.value = value ?? "";
-      modalInput.placeholder = placeholder ?? "";
-      modalOk.textContent = okText;
-      modalCancel.textContent = cancelText;
-      modalBody.innerHTML = bodyHTML || "";
-      if(label != null){
-        modalField.classList.remove("hidden");
-      }else{
-        modalField.classList.add("hidden");
-      }
-      return new Promise((resolve)=>{
-        modalBg.style.display = "flex";
-        const onCancel = ()=>{ cleanup(); resolve(null) }
-        const onOk = ()=>{ const v = modalField.classList.contains("hidden") ? true : modalInput.value.trim(); cleanup(); resolve(v) }
-        function onKey(e){
-          if(e.key === "Escape"){ onCancel() }
-          if(e.key === "Enter" && !modalField.classList.contains("hidden")){ onOk() }
-        }
-        function cleanup(){
-          modalBg.style.display = "none";
-          modalOk.removeEventListener("click", onOk);
-          modalCancel.removeEventListener("click", onCancel);
-          window.removeEventListener("keydown", onKey);
-        }
-        modalOk.addEventListener("click", onOk);
-        modalCancel.addEventListener("click", onCancel);
-        window.addEventListener("keydown", onKey);
-        if(!modalField.classList.contains("hidden")) modalInput.focus();
-      });
-    }
-
-    async function confirmModal(title, message, okText="OK", cancelText="Cancel"){
-      const res = await promptModal({ title, label: null, okText, cancelText, bodyHTML: `<div class="muted">${message}</div>`});
-      return !!res;
-    }
-
-    async function listPath(prefix){
-      // Paginate if needed (limit 1000)
-      const all = [];
-      let page = 1; const limit = 1000;
-      while(true){
-        const { data, error } = await supabase.storage.from(BUCKET).list(prefix || "", {
-          limit, offset: (page-1)*limit, sortBy: { column: "name", order: "asc" }
-        });
-        if(error){ throw error }
-        all.push(...(data||[]));
-        if(!data || data.length < limit) break;
-        page++;
-      }
-      return all;
-    }
-
-    function sortedAndFiltered(list){
-      let out = list.slice();
-      if(search){
-        const q = search.toLowerCase();
-        out = out.filter(it => it.name.toLowerCase().includes(q));
-      }
-      // Compute size column for folders as null to place them before files when sorting by size asc
-      out.sort((a,b)=>{
-        // folders first when sorting by name; otherwise keep sort logic consistent
-        if(sortField === "name"){
-          const af = isFolderItem(a), bf = isFolderItem(b);
-          if(af !== bf) return af ? -1 : 1;
-        }
-        let av, bv;
-        if(sortField === "size"){
-          av = a.metadata?.size ?? -1;
-          bv = b.metadata?.size ?? -1;
-        }else{
-          av = a[sortField] ?? a.metadata?.[sortField] ?? a[sortField];
-          bv = b[sortField] ?? b.metadata?.[sortField] ?? b[sortField];
-        }
-        if(av == null) av = "";
-        if(bv == null) bv = "";
-        if(typeof av === "string") av = av.toLowerCase();
-        if(typeof bv === "string") bv = bv.toLowerCase();
-        const cmp = av < bv ? -1 : av > bv ? 1 : 0;
-        return sortOrder === "asc" ? cmp : -cmp;
-      });
-      return out;
-    }
-
-    async function refresh(){
-      try{
-        const raw = await listPath(cwd);
-        entries = raw;
-        render();
-      } catch(e){
-        console.error(e);
-        toast(`Failed to list: ${e.message || e}`, "err");
-      }
-    }
-
-    function renderBreadcrumbs(){
-      breadcrumbs.innerHTML = "";
-      const parts = asPrefix(cwd).split("/").filter(Boolean);
-      const build = [];
-      // Root
-      const root = document.createElement("div");
-      root.className = "crumb";
-      root.textContent = BUCKET;
-      root.onclick = ()=> goTo("");
-      breadcrumbs.appendChild(root);
-      parts.forEach((p, idx)=>{
-        const cr = document.createElement("div");
-        cr.className = "crumb";
-        build.push(p);
-        cr.textContent = p;
-        cr.onclick = ()=> goTo(build.slice(0, idx+1).join("/") + "/");
-        breadcrumbs.appendChild(cr);
-      });
-    }
-
-    function render(){
-      renderBreadcrumbs();
-      renderSelectBar();
-      renderViewToggle();
-      const list = sortedAndFiltered(entries);
-      gridView.innerHTML = "";
-      tableBody.innerHTML = "";
-      if(view === "grid"){
-        gridView.classList.remove("hidden");
-        tableView.classList.add("hidden");
-        for(const it of list){
-          const card = document.createElement("div");
-          card.className = "card";
-          // Top row: checkbox + menu
-          const top = document.createElement("div");
-          top.style.display = "flex";
-          top.style.alignItems = "center";
-          top.style.justifyContent = "space-between";
-          const left = document.createElement("label");
-          left.className = "check";
-          const id = `${cwd}${it.name}${isFolderItem(it)?"/":""}`;
-          const chk = document.createElement("input");
-          chk.type = "checkbox";
-          chk.checked = selection.has(id);
-          chk.onchange = ()=>{
-            if(chk.checked) selection.add(id); else selection.delete(id);
-            renderSelectBar();
-          };
-          const dot = document.createElement("span"); dot.className = "dot";
-          left.append(chk, dot);
-          top.appendChild(left);
-
-          const m = actionsMenu(it);
-          m.classList.add("hover-show");
-          top.appendChild(m);
-          card.appendChild(top);
-
-          // Icon + name
-          const nameRow = document.createElement("div");
-          nameRow.className = "item-name";
-          const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          icon.setAttribute("viewBox", "0 0 24 24");
-          icon.classList.add("icon", isFolderItem(it) ? "folder" : "file");
-          icon.innerHTML = isFolderItem(it)
-            ? '<path d="M3 7a2 2 0 0 1 2-2h3.5a2 2 0 0 1 1.6.8l.6.8H19a2 2 0 0 1 2 2v7.5A2.5 2.5 0 0 1 18.5 19H5.5A2.5 2.5 0 0 1 3 16.5V7Z" stroke="currentColor" stroke-width="1.6" fill="none"/>'
-            : '<rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M8 8h8M8 12h8M8 16h6" stroke="currentColor" stroke-width="1.6" />';
-          const nm = document.createElement("div");
-          nm.className = "name";
-          nm.textContent = it.name;
-          nameRow.append(icon, nm);
-          card.appendChild(nameRow);
-
-          const meta = document.createElement("div");
-          meta.className = "meta";
-          meta.textContent = isFolderItem(it)
-            ? "Folder"
-            : `${formatBytes(it.metadata?.size)} • ${formatDate(it.updated_at || it.created_at)}`;
-          card.appendChild(meta);
-
-          if(isFolderItem(it)){
-            card.style.cursor = "pointer";
-            card.onclick = (e)=>{
-              if(e.target === chk || e.target === dot) return;
-              goTo(joinPath(cwd, it.name) + "/");
-            };
-          }
-
-          gridView.appendChild(card);
-        }
-      } else {
-        gridView.classList.add("hidden");
-        tableView.classList.remove("hidden");
-        for(const it of list){
-          const row = document.createElement("div");
-          row.className = "row";
-          const id = `${cwd}${it.name}${isFolderItem(it)?"/":""}`;
-
-          // Checkbox
-          const cwrap = document.createElement("label");
-          cwrap.className = "check";
-          const chk = document.createElement("input"); chk.type="checkbox"; chk.checked = selection.has(id);
-          const dot = document.createElement("span"); dot.className="dot";
-          chk.onchange = ()=>{ if(chk.checked) selection.add(id); else selection.delete(id); renderSelectBar() }
-          cwrap.append(chk,dot);
-          row.appendChild(cwrap);
-
-          // Name
-          const nm = document.createElement("div");
-          nm.className = "item-name";
-          const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          icon.setAttribute("viewBox","0 0 24 24");
-          icon.classList.add("icon", isFolderItem(it) ? "folder" : "file");
-          icon.innerHTML = isFolderItem(it)
-            ? '<path d="M3 7a2 2 0 0 1 2-2h3.5a2 2 0 0 1 1.6.8l.6.8H19a2 2 0 0 1 2 2v7.5A2.5 2.5 0 0 1 18.5 19H5.5A2.5 2.5 0 0 1 3 16.5V7Z" stroke="currentColor" stroke-width="1.6" fill="none"/>'
-            : '<rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M8 8h8M8 12h8M8 16h6" stroke="currentColor" stroke-width="1.6" />';
-          const nameText = document.createElement("div");
-          nameText.className = "name";
-          nameText.textContent = it.name;
-          nm.append(icon, nameText);
-          nm.style.cursor = isFolderItem(it) ? "pointer" : "default";
-          if(isFolderItem(it)){
-            nm.onclick = ()=> goTo(joinPath(cwd, it.name) + "/");
-          }
-          row.appendChild(nm);
-
-          // Size
-          const size = document.createElement("div");
-          size.textContent = isFolderItem(it) ? "" : formatBytes(it.metadata?.size);
-          row.appendChild(size);
-
-          // Modified
-          const mod = document.createElement("div");
-          mod.textContent = formatDate(it.updated_at || it.created_at);
-          row.appendChild(mod);
-
-          // Path
-          const pth = document.createElement("div");
-          pth.className = "meta";
-          pth.textContent = asPrefix(cwd) + it.name + (isFolderItem(it)?"/":"");
-          row.appendChild(pth);
-
-          // Actions
-          const m = actionsMenu(it);
-          m.classList.add("hover-show");
-          const cell = document.createElement("div");
-          cell.appendChild(m);
-          row.appendChild(cell);
-
-          tableBody.appendChild(row);
-        }
-      }
-    }
-
-    function renderViewToggle(){
-      viewTag.textContent = view === "grid" ? "Grid" : "Table";
-      gridBtn.classList.toggle("active", view==="grid");
-      tableBtn.classList.toggle("active", view==="table");
-    }
-
-    function renderSelectBar(){
-      const items = [...selection];
-      if(items.length === 0){
-        selectBar.classList.add("hidden");
-        selectBar.innerHTML = "";
-        return;
-      }
-      selectBar.classList.remove("hidden");
-      selectBar.innerHTML = "";
-
-      const count = document.createElement("span");
-      count.className = "tag2";
-      count.textContent = `${items.length} selected`;
-      selectBar.appendChild(count);
-
-      const clearBtn = document.createElement("button");
-      clearBtn.className = "btn";
-      clearBtn.textContent = "Clear";
-      clearBtn.onclick = ()=>{ selection.clear(); renderSelectBar(); render() };
-      selectBar.appendChild(clearBtn);
-
-      const moveBtn = document.createElement("button");
-      moveBtn.className = "btn";
-      moveBtn.textContent = "Move...";
-      moveBtn.onclick = bulkMoveSelected;
-      selectBar.appendChild(moveBtn);
-
-      const delBtn = document.createElement("button");
-      delBtn.className = "btn danger";
-      delBtn.textContent = "Delete";
-      delBtn.onclick = bulkDeleteSelected;
-      selectBar.appendChild(delBtn);
-
-      const dlBtn = document.createElement("button");
-      dlBtn.className = "btn";
-      dlBtn.textContent = "Download";
-      dlBtn.onclick = bulkDownloadSelected;
-      selectBar.appendChild(dlBtn);
-    }
-
-    function actionsMenu(it){
-      const wrap = document.createElement("div");
-      wrap.className = "menu";
-
-      const more = (label, fn, cls="btn")=>{
-        const b = document.createElement("button");
-        b.className = cls;
-        b.textContent = label;
-        b.onclick = (e)=>{ e.stopPropagation(); fn() };
-        return b;
-      };
-
-      if(isFolderItem(it)){
-        wrap.appendChild(more("Open", ()=> goTo(joinPath(cwd, it.name)+"/")));
-        wrap.appendChild(more("Rename", ()=> renameFolder(joinPath(cwd, it.name)+"/")));
-        wrap.appendChild(more("Delete", ()=> deleteFolder(joinPath(cwd, it.name)+"/"), "btn danger"));
-      } else {
-        wrap.appendChild(more("Rename", ()=> renameFile(joinPath(cwd, it.name))));
-        wrap.appendChild(more("Move", ()=> moveFile(joinPath(cwd, it.name))));
-        wrap.appendChild(more("Download", ()=> downloadFile(joinPath(cwd, it.name))));
-        wrap.appendChild(more("Delete", ()=> deleteFiles([joinPath(cwd, it.name)]), "btn danger"));
-        const pub = document.createElement("button");
-        pub.className = "btn";
-        pub.textContent = "Copy URL";
-        pub.onclick = async (e)=>{
-          e.stopPropagation();
-          const url = getPublicUrl(joinPath(cwd, it.name));
-          await navigator.clipboard.writeText(url);
-          toast("Public URL copied");
-        }
-        wrap.appendChild(pub);
-      }
-      return wrap;
-    }
-
-    async function goTo(prefix){
-      cwd = asPrefix(prefix);
-      selection.clear();
-      await refresh();
-    }
-
-    async function createFolder(name){
-      const path = asPrefix(joinPath(cwd, name));
-      // Prefer createFolder if available
-      try{
-        const ref = supabase.storage.from(BUCKET);
-        if(typeof ref.createFolder === "function"){
-          const { error } = await ref.createFolder(path);
-          if(error) throw error;
-        } else {
-          // Fallback: upload a .keep file
-          const { error } = await ref.upload(path + ".keep", new Blob([""], { type: "text/plain" }), { upsert: false });
-          if(error) throw error;
-        }
-        toast("Folder created");
-        await refresh();
-      } catch(e){
-        toast(`Create failed: ${e.message || e}`, "err");
-      }
-    }
-
-    async function renameFolder(oldPrefix){
-      const oldName = base(oldPrefix);
-      const newName = await promptModal({ title: "Rename folder", label: "New name", value: oldName, okText: "Rename" });
-      if(!newName) return;
-      const parent = asPrefix(dirname(oldPrefix));
-      const newPrefix = asPrefix(joinPath(parent, newName));
-      if(newPrefix === oldPrefix) return;
-      try{
-        await moveFolderRecursive(oldPrefix, newPrefix);
-        toast("Folder renamed");
-        await refresh();
-      } catch(e){
-        toast(`Rename failed: ${e.message || e}`, "err");
-      }
-    }
-
-    async function deleteFolder(prefix){
-      const ok = await confirmModal("Delete folder", `Delete the folder "${prefix}" and all its contents? This cannot be undone.`, "Delete", "Cancel");
-      if(!ok) return;
-      try{
-        const keys = await listAllKeys(prefix);
-        if(keys.length){
-          const { error } = await supabase.storage.from(BUCKET).remove(keys);
-          if(error) throw error;
-        }
-        toast("Folder deleted");
-        await refresh();
-      } catch(e){
-        toast(`Delete failed: ${e.message || e}`, "err");
-      }
-    }
-
-    async function renameFile(oldKey){
-      const newName = await promptModal({ title: "Rename file", label: "New name", value: base(oldKey), okText: "Rename" });
-      if(!newName) return;
-      const newKey = joinPath(dirname(oldKey), newName);
-      if(newKey === oldKey) return;
-      try{
-        const { error } = await supabase.storage.from(BUCKET).move(oldKey, newKey);
-        if(error) throw error;
-        toast("File renamed");
-        await refresh();
-      } catch(e){
-        toast(`Rename failed: ${e.message || e}`, "err");
-      }
-    }
-
-    async function moveFile(key){
-      const dest = await promptModal({ title: "Move file", label: "Destination folder (prefix)", value: asPrefix(dirname(key)), okText: "Move" });
-      if(dest === null) return;
-      const newKey = asPrefix(dest) + base(key);
-      try{
-        const { error } = await supabase.storage.from(BUCKET).move(key, newKey);
-        if(error) throw error;
-        toast("Moved");
-        await refresh();
-      } catch(e){
-        toast(`Move failed: ${e.message || e}`, "err");
-      }
-    }
-
-    async function listAllKeys(prefix){
-      const out = [];
-      async function walk(pfx){
-        const list = await listPath(pfx);
-        for(const it of list){
-          if(isFolderItem(it)){
-            await walk(asPrefix(joinPath(pfx, it.name)));
-          } else {
-            out.push(joinPath(pfx, it.name));
-          }
-        }
-      }
-      await walk(asPrefix(prefix));
-      return out;
-    }
-
-    async function moveFolderRecursive(oldPrefix, newPrefix){
-      // Ensure new folder exists (optional)
-      const ref = supabase.storage.from(BUCKET);
-      if(typeof ref.createFolder === "function"){
-        await ref.createFolder(newPrefix);
-      } else {
-        await ref.upload(asPrefix(newPrefix) + ".keep", new Blob([""],{type:"text/plain"}), { upsert:true });
-      }
-      const keys = await listAllKeys(oldPrefix);
-      // Move files one by one
-      for(const k of keys){
-        const rel = k.slice(asPrefix(oldPrefix).length);
-        const target = asPrefix(newPrefix) + rel;
-        const { error } = await supabase.storage.from(BUCKET).move(k, target);
-        if(error) throw error;
-      }
-      // Remove old placeholders if any
-      const { data } = await supabase.storage.from(BUCKET).list(oldPrefix);
-      const extra = (data||[])
-        .filter(it => !isFolderItem(it))
-        .map(it => joinPath(oldPrefix, it.name));
-      if(extra.length){
-        await supabase.storage.from(BUCKET).remove(extra);
-      }
-    }
-
-    async function deleteFiles(keys){
-      if(!keys.length) return;
-      const ok = await confirmModal("Delete files", `Delete ${keys.length} file(s)?`, "Delete", "Cancel");
-      if(!ok) return;
-      try{
-        const { error } = await supabase.storage.from(BUCKET).remove(keys);
-        if(error) throw error;
-        toast("Deleted");
-        selection.clear();
-        await refresh();
-      } catch(e){
-        toast(`Delete failed: ${e.message || e}`, "err");
-      }
-    }
-
-    function getPublicUrl(key){
-      const { data } = supabase.storage.from(BUCKET).getPublicUrl(key);
-      return data.publicUrl;
-    }
-
-    async function downloadFile(key){
-      try{
-        const { data, error } = await supabase.storage.from(BUCKET).download(key);
-        if(error) throw error;
-        const url = URL.createObjectURL(data);
-        const a = document.createElement("a");
-        a.href = url; a.download = base(key);
-        document.body.appendChild(a); a.click(); a.remove();
-        URL.revokeObjectURL(url);
-      } catch(e){
-        toast(`Download failed: ${e.message || e}`, "err");
-      }
-    }
-
-    async function bulkMoveSelected(){
-      const items = [...selection];
-      const dest = await promptModal({ title: "Move selected", label: "Destination folder (prefix)", value: asPrefix(cwd), okText: "Move" });
-      if(dest === null) return;
-      const toPrefix = asPrefix(dest);
-      try{
-        for(const id of items){
-          const isFolder = id.endsWith("/");
-          if(isFolder){
-            const oldPrefix = id;
-            const newPrefix = asPrefix(joinPath(toPrefix, base(oldPrefix)));
-            await moveFolderRecursive(oldPrefix, newPrefix);
-          } else {
-            const newKey = toPrefix + base(id);
-            const { error } = await supabase.storage.from(BUCKET).move(id, newKey);
-            if(error) throw error;
-          }
-        }
-        toast("Moved");
-        selection.clear();
-        await refresh();
-      } catch(e){
-        toast(`Move failed: ${e.message || e}`, "err");
-      }
-    }
-
-    async function bulkDeleteSelected(){
-      const items = [...selection];
-      const folders = items.filter(x=>x.endsWith("/"));
-      const files = items.filter(x=>!x.endsWith("/"));
-      const ok = await confirmModal("Delete selection", `Delete ${files.length} file(s) and ${folders.length} folder(s)? This cannot be undone.`, "Delete", "Cancel");
-      if(!ok) return;
-      try{
-        if(files.length){
-          const { error } = await supabase.storage.from(BUCKET).remove(files);
-          if(error) throw error;
-        }
-        for(const p of folders){
-          const keys = await listAllKeys(p);
-          if(keys.length){
-            const { error } = await supabase.storage.from(BUCKET).remove(keys);
-            if(error) throw error;
-          }
-        }
-        toast("Deleted");
-        selection.clear();
-        await refresh();
-      } catch(e){
-        toast(`Delete failed: ${e.message || e}`, "err");
-      }
-    }
-
-    async function bulkDownloadSelected(){
-      const items = [...selection];
-      const files = items.filter(x=>!x.endsWith("/"));
-      if(files.length === 0){ toast("Only files can be downloaded", "warn"); return; }
-      for(const k of files){
-        await downloadFile(k);
-      }
-    }
-
-    // Uploads
-    uploadBtn.onclick = ()=> fileInput.click();
-    fileInput.onchange = async ()=>{
-      if(!fileInput.files?.length) return;
-      await uploadFiles(fileInput.files);
-      fileInput.value = "";
-    };
-
-    dropzone.addEventListener("dragover", (e)=>{ e.preventDefault(); dropzone.classList.add("dragover") });
-    dropzone.addEventListener("dragleave", ()=> dropzone.classList.remove("dragover"));
-    dropzone.addEventListener("drop", async (e)=>{
-      e.preventDefault();
-      dropzone.classList.remove("dragover");
-      const files = e.dataTransfer?.files;
-      if(files?.length){ await uploadFiles(files) }
-    });
-
-    async function uploadFiles(fileList){
-      const files = Array.from(fileList);
-      if(!files.length) return;
-      const overwrite = await confirmModal("Upload", "Overwrite existing files if names collide?", "Yes, overwrite", "No");
-      const upsert = !!overwrite;
-      try{
-        for(const f of files){
-          const key = joinPath(cwd, f.name);
-          const { error } = await supabase.storage.from(BUCKET).upload(key, f, { upsert, contentType: f.type || "application/octet-stream" });
-          if(error) throw error;
-        }
-        toast(`Uploaded ${files.length} file(s)`);
-        await refresh();
-      } catch(e){
-        toast(`Upload failed: ${e.message || e}`, "err");
-      }
-    }
-
-    // New folder
-    newFolderBtn.onclick = async ()=>{
-      const name = await promptModal({ title: "New folder", label: "Folder name", placeholder: "e.g. invoices-2025", okText: "Create" });
-      if(!name) return;
-      await createFolder(name);
-    };
-
-    // Grid/Table toggle
-    gridBtn.onclick = ()=>{ view = "grid"; render() };
-    tableBtn.onclick = ()=>{ view = "table"; render() };
-    refreshBtn.onclick = refresh;
-
-    // Search
-    let searchDeb;
-    searchInput.addEventListener("input", ()=>{
-      clearTimeout(searchDeb);
-      searchDeb = setTimeout(()=>{ search = searchInput.value.trim(); render() }, 120);
-    });
-
-    sortFieldEl.onchange = ()=>{ sortField = sortFieldEl.value; render() };
-    sortOrderEl.onchange = ()=>{ sortOrder = sortOrderEl.value; render() };
-
-    // Initialize
-    await refresh();
-
-  </script>
+	<div class="container">
+		<div class="header">
+			<div class="breadcrumb" id="breadcrumb"></div>
+			<div class="toolbar"> <button id="btnUp">Up</button> <button id="btnRefresh">Refresh</button> <button id="btnNewFolder" class="primary">New Folder</button> <label> <input type="file" id="fileInput" multiple class="hidden"> <button id="btnUpload" class="primary">Upload Files</button> </label> </div>
+		</div>
+		<div class="table-wrap">
+			<table>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Type</th>
+						<th class="size">Size</th>
+						<th>Modified</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody id="tbody"></tbody>
+			</table>
+		</div>
+		<div class="status" id="status"></div>
+		<div id="globalProgress" class="progress hidden">
+			<div></div>
+		</div>
+		<footer>
+			<div class="small">Move: enter a destination folder path relative to /1164453/, for example: images or images/2025</div>
+		</footer>
+	</div>
+	<script>
+	const CONFIG = {
+		zone: 'oazis',
+		accessKey: '6b50ffa1-b890-4094-ac781b47265e-19f9-4fd0',
+		root: '/1164453/'
+	}
+	const API = 'https://storage.bunnycdn.com'
+	let currentPath = CONFIG.root.endsWith('/') ? CONFIG.root : CONFIG.root + '/'
+	const tbody = document.getElementById('tbody') const breadcrumbEl = document.getElementById('breadcrumb') const statusEl = document.getElementById('status') const fileInput = document.getElementById('fileInput') const globalProgress = document.getElementById('globalProgress')
+	function setStatus(t, ok) {
+		statusEl.textContent = t || '';
+		statusEl.style.color = ok ? '#8fd18f' : '#bbb'
+	}
+
+	function showProgress(p) {
+		if(p == null) {
+			globalProgress.classList.add('hidden');
+			globalProgress.firstElementChild.style.width = '0%';
+			return
+		}
+		globalProgress.classList.remove('hidden');
+		globalProgress.firstElementChild.style.width = (Math.max(0, Math.min(100, p))).toFixed(0) + '%'
+	}
+
+	function normPath(p) {
+		if(!p.startsWith('/')) p = '/' + p;
+		if(!p.endsWith('/')) p = p + '/';
+		return p
+	}
+
+	function cleanPath(p) {
+		let s = p.replace(/\/+/g, '/');
+		if(!s.startsWith('/')) s = '/' + s;
+		return s
+	}
+
+	function buildUrl(p) {
+		let parts = [CONFIG.zone].concat(cleanPath(p).slice(1).split('/').filter(Boolean));
+		let encoded = parts.map(encodeURIComponent).join('/');
+		let url = API + '/' + encoded;
+		if(p.endsWith('/')) url += '/';
+		return url
+	}
+
+	function parentPath(p) {
+		let s = cleanPath(p);
+		if(s === '/') return '/';
+		let parts = s.split('/').filter(Boolean);
+		if(parts.length <= 1) return '/';
+		parts.pop();
+		return '/' + parts.join('/') + '/'
+	}
+
+	function formatBytes(b) {
+		if(b == null || isNaN(b)) return '';
+		let u = ['B', 'KB', 'MB', 'GB', 'TB'];
+		let i = 0;
+		let n = b;
+		while(n >= 1024 && i < u.length - 1) {
+			n /= 1024;
+			i++
+		}
+		return n.toFixed(n >= 10 || i === 0 ? 0 : 1) + ' ' + u[i]
+	}
+
+	function formatDate(d) {
+		if(!d) return '';
+		let dt = new Date(d);
+		if(isNaN(dt)) return '';
+		return dt.toLocaleString()
+	}
+	async function api(path, opts) {
+		let o = opts || {};
+		o.headers = Object.assign({
+			'AccessKey': CONFIG.accessKey
+		}, o.headers || {});
+		let res = await fetch(buildUrl(path), o);
+		return res
+	}
+	async function list(path) {
+		let res = await api(path, {
+			headers: {
+				'Accept': 'application/json'
+			}
+		});
+		if(!res.ok) throw new Error('List failed ' + res.status);
+		return res.json()
+	}
+	async function createDir(path) {
+		let res = await api(path, {
+			method: 'PUT',
+			headers: {
+				'Content-Length': '0',
+				'Directory': 'true'
+			}
+		});
+		if(!res.ok && res.status !== 201 && res.status !== 409) throw new Error('Create folder failed ' + res.status)
+	}
+	async function deleteFile(path) {
+		let res = await api(path, {
+			method: 'DELETE'
+		});
+		if(!res.ok && res.status !== 404) throw new Error('Delete failed ' + res.status)
+	}
+	async function downloadFile(path) {
+		let res = await api(path, {});
+		if(!res.ok) throw new Error('Download failed ' + res.status);
+		return res.blob()
+	}
+	async function uploadFile(path, file, onProgress) {
+		let controller = new AbortController();
+		let reader = file.stream().getReader();
+		let chunks = [];
+		let uploaded = 0;
+		const total = file.size;
+		for(;;) {
+			let {
+				done,
+				value
+			} = await reader.read();
+			if(done) break;
+			chunks.push(value);
+			uploaded += value.byteLength;
+			if(onProgress) onProgress(Math.min(100, Math.round(uploaded / Math.max(1, total) * 100)))
+		}
+		let body = new Blob(chunks, {
+			type: 'application/octet-stream'
+		});
+		let res = await api(path, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/octet-stream'
+			},
+			body,
+			signal: controller.signal
+		});
+		if(!res.ok) throw new Error('Upload failed ' + res.status)
+	}
+	async function ensureDirChain(dir) {
+		let p = cleanPath(dir);
+		if(!p.endsWith('/')) p += '/';
+		let base = '/';
+		let segments = p.split('/').filter(Boolean);
+		for(let i = 0; i < segments.length; i++) {
+			base += segments[i] + '/';
+			try {
+				await createDir(base)
+			} catch (e) {}
+		}
+	}
+	async function deleteFolderRecursively(dir) {
+		let items = await list(dir);
+		for(let it of items) {
+			if(it.IsDirectory) {
+				await deleteFolderRecursively(dir + it.ObjectName + '/')
+			} else {
+				await deleteFile(dir + it.ObjectName)
+			}
+		}
+		await deleteFile(dir)
+	}
+	async function moveFile(oldPath, newPath) {
+		let blob = await downloadFile(oldPath);
+		let parent = newPath.split('/').slice(0, -1).join('/') + '/';
+		await ensureDirChain(parent);
+		let res = await api(newPath, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/octet-stream'
+			},
+			body: blob
+		});
+		if(!res.ok) throw new Error('Move upload failed ' + res.status);
+		await deleteFile(oldPath)
+	}
+	async function moveFolder(oldDir, newDir) {
+		let nd = normPath(newDir);
+		let od = normPath(oldDir);
+		await ensureDirChain(nd);
+		await moveFolderRecurse(od, nd);
+		await deleteFolderRecursively(od)
+	}
+	async function moveFolderRecurse(src, dst) {
+		let items = await list(src);
+		for(let it of items) {
+			if(it.IsDirectory) {
+				await ensureDirChain(dst + it.ObjectName + '/');
+				await moveFolderRecurse(src + it.ObjectName + '/', dst + it.ObjectName + '/')
+			} else {
+				await moveFile(src + it.ObjectName, dst + it.ObjectName)
+			}
+		}
+	}
+
+	function renderBreadcrumb() {
+		breadcrumbEl.innerHTML = '';
+		let full = cleanPath(currentPath);
+		let parts = full.split('/').filter(Boolean);
+		let acc = '/';
+		let baseParts = cleanPath(CONFIG.root).split('/').filter(Boolean);
+		let startIndex = 0;
+		let accParts = [];
+		for(let i = 0; i < parts.length; i++) {
+			accParts.push(parts[i]);
+			acc = '/' + accParts.join('/') + '/';
+			let label = i < baseParts.length ? parts[i] : parts[i];
+			let a = document.createElement('a');
+			a.href = '#';
+			a.textContent = label;
+			a.onclick = (e) => {
+				e.preventDefault();
+				currentPath = acc;
+				load()
+			};
+			breadcrumbEl.appendChild(a)
+		}
+	}
+
+	function rowActions(item, isDir) {
+		let wrap = document.createElement('div');
+		wrap.className = 'actions';
+		if(isDir) {
+			let open = document.createElement('button');
+			open.textContent = 'Open';
+			open.onclick = () => {
+				currentPath = cleanPath(currentPath + item.ObjectName + '/');
+				load()
+			};
+			wrap.appendChild(open);
+			let rename = document.createElement('button');
+			rename.textContent = 'Rename';
+			rename.onclick = async () => {
+				let nn = prompt('New folder name', item.ObjectName);
+				if(!nn || nn === item.ObjectName) return;
+				setStatus('Renaming...', true);
+				try {
+					await moveFolder(currentPath + item.ObjectName + '/', currentPath + nn + '/');
+					setStatus('Folder renamed', true);
+					load()
+				} catch (e) {
+					setStatus(String(e))
+				}
+			};
+			wrap.appendChild(rename);
+			let move = document.createElement('button');
+			move.textContent = 'Move';
+			move.onclick = async () => {
+				let dest = prompt('Destination folder relative to ' + CONFIG.root, '');
+				if(dest === null) return;
+				dest = dest.trim();
+				let destPath = dest ? normPath(CONFIG.root + dest) : currentPath;
+				setStatus('Moving folder...', true);
+				try {
+					await moveFolder(currentPath + item.ObjectName + '/', destPath + item.ObjectName + '/');
+					setStatus('Folder moved', true);
+					load()
+				} catch (e) {
+					setStatus(String(e))
+				}
+			};
+			wrap.appendChild(move);
+			let del = document.createElement('button');
+			del.className = 'danger';
+			del.textContent = 'Delete';
+			del.onclick = async () => {
+				if(!confirm('Delete folder and all contents?')) return;
+				setStatus('Deleting...', true);
+				try {
+					await deleteFolderRecursively(currentPath + item.ObjectName + '/');
+					setStatus('Folder deleted', true);
+					load()
+				} catch (e) {
+					setStatus(String(e))
+				}
+			};
+			wrap.appendChild(del)
+		} else {
+			let download = document.createElement('button');
+			download.textContent = 'Download';
+			download.onclick = async () => {
+				try {
+					setStatus('Preparing download...', true);
+					let blob = await downloadFile(currentPath + item.ObjectName);
+					let a = document.createElement('a');
+					a.href = URL.createObjectURL(blob);
+					a.download = item.ObjectName;
+					document.body.appendChild(a);
+					a.click();
+					a.remove();
+					URL.revokeObjectURL(a.href);
+					setStatus('Download started', true)
+				} catch (e) {
+					setStatus(String(e))
+				}
+			};
+			wrap.appendChild(download);
+			let rename = document.createElement('button');
+			rename.textContent = 'Rename';
+			rename.onclick = async () => {
+				let nn = prompt('New file name', item.ObjectName);
+				if(!nn || nn === item.ObjectName) return;
+				setStatus('Renaming...', true);
+				try {
+					await moveFile(currentPath + item.ObjectName, currentPath + nn);
+					setStatus('File renamed', true);
+					load()
+				} catch (e) {
+					setStatus(String(e))
+				}
+			};
+			wrap.appendChild(rename);
+			let move = document.createElement('button');
+			move.textContent = 'Move';
+			move.onclick = async () => {
+				let dest = prompt('Destination folder relative to ' + CONFIG.root, '');
+				if(dest === null) return;
+				dest = dest.trim();
+				let destPath = dest ? normPath(CONFIG.root + dest) : currentPath;
+				setStatus('Moving file...', true);
+				try {
+					await moveFile(currentPath + item.ObjectName, destPath + item.ObjectName);
+					setStatus('File moved', true);
+					load()
+				} catch (e) {
+					setStatus(String(e))
+				}
+			};
+			wrap.appendChild(move);
+			let del = document.createElement('button');
+			del.className = 'danger';
+			del.textContent = 'Delete';
+			del.onclick = async () => {
+				if(!confirm('Delete file?')) return;
+				setStatus('Deleting...', true);
+				try {
+					await deleteFile(currentPath + item.ObjectName);
+					setStatus('File deleted', true);
+					load()
+				} catch (e) {
+					setStatus(String(e))
+				}
+			};
+			wrap.appendChild(del)
+		}
+		return wrap
+	}
+
+	function render(items) {
+		tbody.innerHTML = '';
+		renderBreadcrumb();
+		if(!Array.isArray(items) || !items.length) {
+			let tr = document.createElement('tr');
+			let td = document.createElement('td');
+			td.colSpan = 5;
+			td.style.color = '#888';
+			td.textContent = 'Empty';
+			tr.appendChild(td);
+			tbody.appendChild(tr);
+			return
+		}
+		items.sort((a, b) => Number(b.IsDirectory) - Number(a.IsDirectory) || a.ObjectName.localeCompare(b.ObjectName)) for(let it of items) {
+			let tr = document.createElement('tr');
+			let nameTd = document.createElement('td');
+			let row = document.createElement('div');
+			row.className = 'row-title';
+			let icon = document.createElement('span');
+			icon.className = 'icon ' + (it.IsDirectory ? 'folder' : 'file');
+			row.appendChild(icon);
+			let name = document.createElement('span');
+			name.textContent = it.ObjectName;
+			row.appendChild(name);
+			nameTd.appendChild(row);
+			tr.appendChild(nameTd);
+			let typeTd = document.createElement('td');
+			typeTd.innerHTML = it.IsDirectory ? '<span class="badge">Folder</span>' : '<span class="badge">File</span>';
+			tr.appendChild(typeTd);
+			let sizeTd = document.createElement('td');
+			sizeTd.className = 'size';
+			sizeTd.textContent = it.IsDirectory ? '' : formatBytes(it.Length);
+			tr.appendChild(sizeTd);
+			let dateTd = document.createElement('td');
+			dateTd.textContent = formatDate(it.LastChanged);
+			tr.appendChild(dateTd);
+			let actionsTd = document.createElement('td');
+			actionsTd.appendChild(rowActions(it, it.IsDirectory));
+			tr.appendChild(actionsTd);
+			tbody.appendChild(tr)
+		}
+	}
+	async function load() {
+		setStatus('Loading...', true);
+		try {
+			let data = await list(currentPath);
+			render(data);
+			setStatus('')
+		} catch (e) {
+			setStatus(String(e))
+		}
+	}
+	document.getElementById('btnRefresh').onclick = () => load() document.getElementById('btnUp').onclick = () => {
+		let p = parentPath(currentPath);
+		if(p === currentPath) return;
+		currentPath = p;
+		load()
+	}
+	document.getElementById('btnNewFolder').onclick = async () => {
+		let name = prompt('Folder name');
+		if(!name) return;
+		name = name.trim();
+		if(!name) return;
+		setStatus('Creating folder...', true);
+		try {
+			await createDir(currentPath + name + '/');
+			setStatus('Folder created', true);
+			load()
+		} catch (e) {
+			setStatus(String(e))
+		}
+	}
+	document.getElementById('btnUpload').onclick = () => fileInput.click() fileInput.onchange = async (e) => {
+		let files = [...e.target.files];
+		if(!files.length) return;
+		let total = files.reduce((a, f) => a + f.size, 0);
+		let done = 0;
+		showProgress(0);
+		setStatus('Uploading...', true);
+		for(let f of files) {
+			try {
+				await uploadFile(currentPath + f.name, f, p => {
+					let prev = done + Math.floor(f.size * (p / 100));
+					let overall = 100 * (prev / Math.max(1, total));
+					showProgress(overall)
+				});
+				done += f.size;
+				showProgress(100 * (done / Math.max(1, total)))
+			} catch (err) {
+				setStatus('Upload failed: ' + err);
+				showProgress(null);
+				return
+			}
+		}
+		setStatus('Upload complete', true);
+		showProgress(null);
+		fileInput.value = '';
+		load()
+	}
+	load()
+	</script>
 </body>
+
 </html>
