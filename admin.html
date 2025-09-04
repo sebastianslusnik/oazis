@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin — Documents | Evergreen Retirement Home</title>
+<meta name="description" content="Manage document categories, subcategories, lists, and files." />
+<style>
+  :root{
+    --bg:#f8fafc; --panel:#ffffff; --text:#0f172a; --muted:#475569; --accent:#2563eb; --accent-2:#1e40af; --border:#e2e8f0;
+    --danger:#dc2626; --success:#16a34a; --warn:#b45309;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--text);background:var(--bg)}
+  header{background:linear-gradient(180deg,#0b3b2e,#0e4a3a);color:#fff;padding:18px 20px}
+  header .wrap{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:20px;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand-logo{width:40px;height:40px;border-radius:8px;background:#e8f5ee;border:2px solid #c9e6d7;display:grid;place-items:center;color:#0b3b2e;font-weight:700}
+  nav a{color:#e6ffef;text-decoration:none;margin:0 10px;font-weight:600;opacity:.9}
+  nav a:hover{opacity:1;text-decoration:underline}
+  .hero{background:#0e4a3a;color:#d6f5e6;border-top:1px solid rgba(255,255,255,.15);border-bottom:1px solid rgba(255,255,255,.15)}
+  .hero .wrap{max-width:1200px;margin:0 auto;padding:18px 20px}
+  .hero h1{margin:0 0 6px 0;font-size:24px}
+  .hero p{margin:0;color:#cde9dd}
+  main{max-width:1200px;margin:16px auto;padding:0 20px 40px 20px}
+  .layout{display:grid;grid-template-columns:280px 340px 1fr;gap:16px}
+  @media (max-width: 1100px){.layout{grid-template-columns:1fr}}
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  .panel .head{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;justify-content:space-between}
+  .panel .body{padding:10px}
+  .list{display:flex;flex-direction:column}
+  .item{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;justify-content:space-between}
+  .item:hover{background:#f1f5f9}
+  .item.active{background:#e8f0ff;border-left:3px solid var(--accent)}
+  .btn{padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;font-weight:600}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.primary:hover{background:var(--accent-2);border-color:var(--accent-2)}
+  .btn.danger{border-color:#fecaca;background:#fee2e2;color:#b91c1c}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  input[type="text"], textarea, select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px}
+  .muted{color:var(--muted);font-size:12px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media (max-width:640px){.grid{grid-template-columns:1fr}}
+  .file{border:1px solid var(--border);border-radius:10px;padding:10px;background:#fff;display:flex;flex-direction:column;gap:6px}
+  .file .title{font-weight:700}
+  .file .meta{font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
+  .drop{
+    border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;background:#fafcff;color:var(--muted)
+  }
+  .drop.drag{border-color:var(--accent);background:#eef2ff;color:#1e3a8a}
+  .empty{padding:12px;border:1px dashed var(--border);border-radius:8px;text-align:center;color:var(--muted);background:#fafcff}
+  .sticky{position:sticky;top:10px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <div class="brand-logo">E</div>
+      <div>
+        <div style="font-weight:800;">Evergreen Retirement Home</div>
+        <div style="font-size:12px;opacity:.85">Staff Console</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="documents.html">Documents</a>
+      <a href="admin.html" style="text-decoration:underline">Admin</a>
+    </nav>
+  </div>
+</header>
+<section class="hero">
+  <div class="wrap">
+    <h1>Documents — Admin</h1>
+    <p>Manage categories, subcategories, lists, and files. Changes save to JSONBin.</p>
+  </div>
+</section>
+
+<main>
+  <div class="panel" style="margin-bottom:16px">
+    <div class="head">
+      <div>Controls</div>
+      <div class="muted" id="status">Idle</div>
+    </div>
+    <div class="body">
+      <div class="row">
+        <button class="btn" id="refreshBtn">Refresh</button>
+        <button class="btn primary" id="saveBtn">Save Changes</button>
+        <button class="btn" id="addCategoryBtn">+ Category</button>
+        <button class="btn" id="addSubcategoryBtn">+ Subcategory</button>
+        <button class="btn" id="addListBtn">+ List</button>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <label class="muted">Quick select:</label>
+        <select id="catSelect"></select>
+        <select id="subSelect"></select>
+        <select id="listSelect"></select>
+      </div>
+      <div class="row" style="margin-top:6px">
+        <label class="muted">Admin password (to protect this page):</label>
+        <input type="password" id="adminPwd" placeholder="Set or enter admin password" />
+        <button class="btn" id="lockBtn">Lock</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel sticky">
+      <div class="head"><div>Categories</div></div>
+      <div class="body">
+        <div id="catsList" class="list"></div>
+      </div>
+    </div>
+
+    <div class="panel sticky">
+      <div class="head"><div>Subcategories</div></div>
+      <div class="body">
+        <div id="subsList" class="list"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="head"><div>Files in selected list</div></div>
+      <div class="body">
+        <div class="row">
+          <input type="text" id="listNameInput" placeholder="List name (e.g., 2025)" />
+          <button class="btn" id="renameListBtn">Rename List</button>
+          <button class="btn danger" id="deleteListBtn">Delete List</button>
+        </div>
+
+        <div class="drop" id="dropzone" style="margin-top:10px">
+          Drag & drop files here, or click to select
+          <input type="file" id="fileInput" accept="application/pdf" multiple style="display:none" />
+        </div>
+
+        <div id="filesGrid" class="grid" style="margin-top:10px"></div>
+        <div id="emptyState" class="empty" style="display:none">No files in this list yet.</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer style="max-width:1200px;margin:20px auto 40px auto;padding:0 20px;color:var(--muted);font-size:13px">
+  © <span id="year"></span> Evergreen Retirement Home — Admin console
+</footer>
+
+<script>
+  // Configuration
+  const BIN_ID = "68b9d3d8d0ea881f4071c182";
+  const MASTER_KEY = "$2a$10$9sO/ja29sMebpWNvsWmp5.dJ6lv7CPeLBMRFaA/cAEwz42ii6qlCS"; // Keep in admin only
+  const JSONBIN_READ_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`;
+  const JSONBIN_WRITE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+  // Toggle host: "fileio" or "cloudinary"
+  const FILE_HOST = "fileio";
+
+  // Optional simple password gate for this page
+  const ADMIN_LOCK_KEY = "evergreen_admin_lock";
+  function applyLock() {
+    const saved = localStorage.getItem(ADMIN_LOCK_KEY);
+    if (!saved) return;
+    const entered = prompt("Admin password required:");
+    if (entered !== saved) {
+      alert("Incorrect password. Redirecting to public documents.");
+      location.href = "documents.html";
+    }
+  }
+
+  // Data state
+  const state = {
+    data: null,
+    selectedCatId: null,
+    selectedSubId: null,
+    selectedListId: null,
+    dirty: false
+  };
+
+  const schema = () => ({
+    version: 1,
+    lastUpdated: new Date().toISOString(),
+    categories: []
+  });
+
+  // JSONBin helpers
+  async function fetchData() {
+    const res = await fetch(JSONBIN_READ_URL, { headers: { "X-Bin-Meta":"false", "X-Master-Key": MASTER_KEY }});
+    if (!res.ok) throw new Error("Failed to fetch JSONBin");
+    const data = await res.json();
+    return data.record ? data.record : data;
+  }
+  async function saveData() {
+    setStatus("Saving...");
+    const payload = JSON.stringify(state.data);
+    const res = await fetch(JSONBIN_WRITE_URL, {
+      method:"PUT",
+      headers:{
+        "Content-Type":"application/json",
+        "X-Master-Key": MASTER_KEY
+      },
+      body: payload
+    });
+    if (!res.ok) {
+      setStatus("Save failed");
+      throw new Error("Failed to save JSONBin");
+    }
+    setStatus("Saved");
+    state.dirty = false;
+  }
+
+  // File upload host implementations
+  async function uploadFile(file) {
+    if (FILE_HOST === "fileio") {
+      // File.io (note: ensure persistence settings; free tier limits apply)
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("expires", "never"); // keep forever
+      formData.append("maxDownloads", "0"); // unlimited
+      const res = await fetch("https://file.io", { method:"POST", body: formData });
+      if (!res.ok) throw new Error("Upload failed");
+      const data = await res.json();
+      if (!data.link) throw new Error("Upload did not return a link");
+      // File.io reports size and other meta only partially
+      return { url: data.link, sizeBytes: file.size, filename: file.name };
+    } else if (FILE_HOST === "cloudinary") {
+      // Replace with your Cloudinary unsigned upload preset and cloud name
+      const CLOUD_NAME = "your_cloud_name";
+      const UPLOAD_PRESET = "unsigned_preset";
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", UPLOAD_PRESET);
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, { method:"POST", body: formData });
+      if (!res.ok) throw new Error("Cloudinary upload failed");
+      const data = await res.json();
+      return { url: data.secure_url, sizeBytes: file.size, filename: file.name };
+    } else {
+      throw new Error("Unknown FILE_HOST");
+    }
+  }
+
+  // UI rendering
+  function renderSelectors() {
+    const catSel = document.getElementById("catSelect");
+    const subSel = document.getElementById("subSelect");
+    const listSel = document.getElementById("listSelect");
+    function opt(el, v, t){ const o=document.createElement("option"); o.value=v||""; o.textContent=t; el.appendChild(o); }
+
+    catSel.innerHTML = ""; opt(catSel,"","Select category");
+    for (const c of state.data.categories || []) opt(catSel,c.id,c.name);
+
+    subSel.innerHTML = ""; opt(subSel,"","Select subcategory");
+    const cat = state.data.categories.find(c=>c.id===state.selectedCatId);
+    for (const s of cat?.subcategories || []) opt(subSel,s.id,s.name);
+
+    listSel.innerHTML = ""; opt(listSel,"","Select list");
+    const sub = cat?.subcategories?.find(s=>s.id===state.selectedSubId);
+    for (const l of sub?.lists || []) opt(listSel,l.id,l.name);
+
+    catSel.value = state.selectedCatId || "";
+    subSel.value = state.selectedSubId || "";
+    listSel.value = state.selectedListId || "";
+  }
+
+  function renderColumns() {
+    // Categories
+    const catsEl = document.getElementById("catsList");
+    catsEl.innerHTML = "";
+    const cats = state.data.categories || [];
+    if (cats.length===0) {
+      catsEl.innerHTML = `<div class="empty">No categories. Click + Category to add.</div>`;
+    } else {
+      for (const c of cats) {
+        const row = document.createElement("div");
+        row.className = "item" + (c.id===state.selectedCatId ? " active":"");
+        row.innerHTML = `
+          <div style="flex:1">
+            <input type="text" value="${escapeHtml(c.name)}" data-id="${c.id}" class="cat-name" />
+            <div class="muted"><input type="text" value="${escapeHtml(c.description||"")}" data-id="${c.id}" class="cat-desc" placeholder="Description" /></div>
+          </div>
+          <div class="row">
+            <button class="btn" data-id="${c.id}" data-act="select">Open</button>
+            <button class="btn danger" data-id="${c.id}" data-act="delete">Delete</button>
+          </div>
+        `;
+        catsEl.appendChild(row);
+      }
+    }
+
+    // Subcategories
+    const subsEl = document.getElementById("subsList");
+    subsEl.innerHTML = "";
+    const cat = state.data.categories.find(c=>c.id===state.selectedCatId);
+    if (!cat) {
+      subsEl.innerHTML = `<div class="empty">Select a category.</div>`;
+    } else {
+      const subs = cat.subcategories || [];
+      if (subs.length===0) {
+        subsEl.innerHTML = `<div class="empty">No subcategories. Click + Subcategory.</div>`;
+      } else {
+        for (const s of subs) {
+          const row = document.createElement("div");
+          row.className = "item" + (s.id===state.selectedSubId ? " active":"");
+          const totalFiles = (s.lists||[]).reduce((n,l)=>n+(l.files?.length||0),0);
+          row.innerHTML = `
+            <div style="flex:1">
+              <input type="text" value="${escapeHtml(s.name)}" data-id="${s.id}" class="sub-name" />
+              <div class="muted">${totalFiles} file(s) across ${s.lists?.length||0} list(s)</div>
+            </div>
+            <div class="row">
+              <button class="btn" data-id="${s.id}" data-act="select-sub">Open</button>
+              <button class="btn danger" data-id="${s.id}" data-act="delete-sub">Delete</button>
+            </div>
+          `;
+          subsEl.appendChild(row);
+        }
+      }
+    }
+
+    // Files grid for selected list
+    renderFilesGrid();
+    renderSelectors();
+  }
+
+  function currentList() {
+    const cat = state.data.categories.find(c=>c.id===state.selectedCatId);
+    const sub = cat?.subcategories?.find(s=>s.id===state.selectedSubId);
+    const lst = sub?.lists?.find(l=>l.id===state.selectedListId);
+    return { cat, sub, lst };
+  }
+
+  function renderFilesGrid() {
+    const grid = document.getElementById("filesGrid");
+    const empty = document.getElementById("emptyState");
+    const nameInput = document.getElementById("listNameInput");
+    grid.innerHTML = "";
+    const { lst } = currentList();
+
+    if (!lst) {
+      empty.style.display = "block";
+      empty.textContent = "Select a list.";
+      nameInput.value = "";
+      return;
+    }
+    nameInput.value = lst.name || "";
+    const files = lst.files || [];
+    if (files.length===0) {
+      empty.style.display = "block";
+      empty.textContent = "No files in this list yet.";
+      return;
+    }
+    empty.style.display = "none";
+    files.sort((a,b)=> (a.title||"").localeCompare(b.title||""));
+
+    for (const f of files) {
+      const card = document.createElement("div");
+      const size = f.sizeBytes ? humanFileSize(f.sizeBytes) : "";
+      const uploaded = f.uploadedAt ? new Date(f.uploadedAt).toLocaleString() : "";
+      card.className = "file";
+      card.innerHTML = `
+        <div class="title">📄 <input type="text" class="file-title" data-id="${f.id}" value="${escapeHtml(f.title || f.filename || "Untitled")}" /></div>
+        <div class="meta">
+          <span>${size}</span>
+          ${uploaded ? `<span>${uploaded}</span>`:""}
+          <span class="muted">${escapeHtml(f.filename || "")}</span>
+        </div>
+        <div class="row">
+          <a class="btn" href="${f.url}" target="_blank" rel="noopener">Open</a>
+          <button class="btn" data-id="${f.id}" data-act="replace">Replace</button>
+          <button class="btn danger" data-id="${f.id}" data-act="delete-file">Delete</button>
+        </div>
+        <div class="muted"><input type="text" class="file-notes" data-id="${f.id}" value="${escapeHtml(f.notes||"")}" placeholder="Notes (optional)" /></div>
+      `;
+      grid.appendChild(card);
+    }
+  }
+
+  // CRUD actions
+  function addCategory() {
+    const name = prompt("Category name:");
+    if (!name) return;
+    ensureArrays();
+    state.data.categories.push({ id: uid("cat"), name, description:"", subcategories:[] });
+    state.dirty = true; renderColumns(); setStatus("Category added (unsaved)");
+  }
+  function addSubcategory() {
+    if (!state.selectedCatId) { alert("Select a category first."); return; }
+    const name = prompt("Subcategory name:");
+    if (!name) return;
+    const cat = state.data.categories.find(c=>c.id===state.selectedCatId);
+    cat.subcategories = cat.subcategories || [];
+    cat.subcategories.push({ id: uid("sub"), name, lists:[] });
+    state.dirty = true; renderColumns(); setStatus("Subcategory added (unsaved)");
+  }
+  function addList() {
+    if (!state.selectedSubId) { alert("Select a subcategory first."); return; }
+    const name = prompt("List name (e.g., 2025):");
+    if (!name) return;
+    const { sub } = currentList();
+    sub.lists = sub.lists || [];
+    const newList = { id: uid("list"), name, files:[] };
+    sub.lists.push(newList);
+    state.selectedListId = newList.id;
+    state.dirty = true; renderColumns(); setStatus("List added (unsaved)");
+  }
+  function renameList() {
+    const { lst } = currentList();
+    if (!lst) { alert("Select a list first."); return; }
+    const nameInput = document.getElementById("listNameInput");
+    const newName = nameInput.value.trim();
+    if (!newName) { alert("Name cannot be empty."); return; }
+    lst.name = newName;
+    state.dirty = true; renderColumns(); setStatus("List renamed (unsaved)");
+  }
+  function deleteList() {
+    const { sub, lst } = currentList();
+    if (!lst) { alert("Select a list first."); return; }
+    if (!confirm(`Delete list "${lst.name}" and all its files?`)) return;
+    sub.lists = (sub.lists||[]).filter(l=>l.id!==lst.id);
+    state.selectedListId = null;
+    state.dirty = true; renderColumns(); setStatus("List deleted (unsaved)");
+  }
+
+  function deleteCategory(id){
+    if (!confirm("Delete this category and everything in it?")) return;
+    state.data.categories = state.data.categories.filter(c=>c.id!==id);
+    if (state.selectedCatId===id){ state.selectedCatId=null; state.selectedSubId=null; state.selectedListId=null; }
+    state.dirty = true; renderColumns(); setStatus("Category deleted (unsaved)");
+  }
+  function deleteSubcategory(id){
+    const cat = state.data.categories.find(c=>c.id===state.selectedCatId);
+    if (!cat) return;
+    if (!confirm("Delete this subcategory and everything in it?")) return;
+    cat.subcategories = (cat.subcategories||[]).filter(s=>s.id!==id);
+    if (state.selectedSubId===id){ state.selectedSubId=null; state.selectedListId=null; }
+    state.dirty = true; renderColumns(); setStatus("Subcategory deleted (unsaved)");
+  }
+
+  function updateCategoryName(id, val){
+    const cat = state.data.categories.find(c=>c.id===id);
+    cat.name = val; state.dirty = true; setStatus("Unsaved changes");
+    renderSelectors();
+  }
+  function updateCategoryDesc(id, val){
+    const cat = state.data.categories.find(c=>c.id===id);
+    cat.description = val; state.dirty = true; setStatus("Unsaved changes");
+  }
+  function updateSubName(id, val){
+    const cat = state.data.categories.find(c=>c.id===state.selectedCatId);
+    const sub = cat?.subcategories?.find(s=>s.id===id);
+    if (sub){ sub.name = val; state.dirty = true; setStatus("Unsaved changes"); renderSelectors(); }
+  }
+
+  function onFileTitleChange(id, val){
+    const { lst } = currentList();
+    const f = lst?.files?.find(x=>x.id===id);
+    if (f){ f.title = val; state.dirty = true; setStatus("Unsaved changes"); }
+  }
+  function onFileNotesChange(id, val){
+    const { lst } = currentList();
+    const f = lst?.files?.find(x=>x.id===id);
+    if (f){ f.notes = val; state.dirty = true; setStatus("Unsaved changes"); }
+  }
+  async function replaceFile(id){
+    const { lst } = currentList();
+    const f = lst?.files?.find(x=>x.id===id);
+    if (!f) return;
+    const picker = document.createElement("input"); picker.type="file"; picker.accept="application/pdf";
+    picker.onchange = async () => {
+      const file = picker.files[0]; if (!file) return;
+      setStatus("Uploading replacement...");
+      try {
+        const up = await uploadFile(file);
+        f.url = up.url; f.filename = up.filename || file.name; f.sizeBytes = up.sizeBytes || file.size; f.uploadedAt = new Date().toISOString();
+        state.dirty = true;
+        renderFilesGrid(); setStatus("File replaced (unsaved)");
+      } catch(err){ console.error(err); alert("Replace failed: " + err.message); setStatus("Error"); }
+    };
+    picker.click();
+  }
+  function deleteFile(id){
+    const { lst } = currentList();
+    if (!lst) return;
+    const f = lst.files.find(x=>x.id===id);
+    if (!f) return;
+    if (!confirm(`Delete file "${f.title||f.filename}"?`)) return;
+    lst.files = lst.files.filter(x=>x.id!==id);
+    state.dirty = true; renderFilesGrid(); setStatus("File deleted (unsaved)");
+  }
+
+  // Upload new files
+  async function handleFiles(files) {
+    const { lst } = currentList();
+    if (!lst) { alert("Select a list first."); return; }
+    for (const file of files) {
+      if (file.type !== "application/pdf") { alert(`Only PDF allowed: ${file.name}`); continue; }
+      setStatus(`Uploading ${file.name}...`);
+      try{
+        const up = await uploadFile(file);
+        lst.files = lst.files || [];
+        lst.files.push({
+          id: uid("file"),
+          title: file.name.replace(/\.pdf$/i,""),
+          filename: up.filename || file.name,
+          url: up.url,
+          sizeBytes: up.sizeBytes || file.size,
+          uploadedAt: new Date().toISOString(),
+          notes: ""
+        });
+        state.dirty = true;
+      }catch(err){
+        console.error(err);
+        alert("Upload failed: " + err.message);
+      }
+    }
+    renderFilesGrid();
+    setStatus("Uploads complete (unsaved)");
+  }
+
+  // Events and wiring
+  function wireEvents(){
+    document.getElementById("addCategoryBtn").onclick = addCategory;
+    document.getElementById("addSubcategoryBtn").onclick = addSubcategory;
+    document.getElementById("addListBtn").onclick = addList;
+    document.getElementById("renameListBtn").onclick = renameList;
+    document.getElementById("deleteListBtn").onclick = deleteList;
+
+    document.getElementById("refreshBtn").onclick = async ()=>{
+      await load();
+      setStatus("Refreshed");
+    };
+    document.getElementById("saveBtn").onclick = async ()=>{
+      try{
+        state.data.lastUpdated = new Date().toISOString();
+        await saveData();
+      }catch(err){
+        alert("Save failed: " + err.message);
+      }
+    };
+
+    document.getElementById("catSelect").onchange = (e)=>{
+      state.selectedCatId = e.target.value || null;
+      state.selectedSubId = null; state.selectedListId = null;
+      renderColumns();
+    };
+    document.getElementById("subSelect").onchange = (e)=>{
+      state.selectedSubId = e.target.value || null;
+      state.selectedListId = null;
+      renderColumns();
+    };
+    document.getElementById("listSelect").onchange = (e)=>{
+      state.selectedListId = e.target.value || null;
+      renderColumns();
+    };
+
+    // Inline edits and actions
+    document.getElementById("catsList").addEventListener("input", (e)=>{
+      if (e.target.classList.contains("cat-name")) updateCategoryName(e.target.dataset.id, e.target.value);
+      if (e.target.classList.contains("cat-desc")) updateCategoryDesc(e.target.dataset.id, e.target.value);
+    });
+    document.getElementById("subsList").addEventListener("input", (e)=>{
+      if (e.target.classList.contains("sub-name")) updateSubName(e.target.dataset.id, e.target.value);
+    });
+    document.getElementById("catsList").addEventListener("click", (e)=>{
+      const btn = e.target.closest("button"); if (!btn) return;
+      const id = btn.dataset.id;
+      if (btn.dataset.act==="select"){ state.selectedCatId=id; state.selectedSubId=null; state.selectedListId=null; renderColumns(); }
+      if (btn.dataset.act==="delete"){ deleteCategory(id); }
+    });
+    document.getElementById("subsList").addEventListener("click", (e)=>{
+      const btn = e.target.closest("button"); if (!btn) return;
+      const id = btn.dataset.id;
+      if (btn.dataset.act==="select-sub"){ state.selectedSubId=id; state.selectedListId=null; renderColumns(); }
+      if (btn.dataset.act==="delete-sub"){ deleteSubcategory(id); }
+    });
+
+    document.getElementById("filesGrid").addEventListener("input", (e)=>{
+      if (e.target.classList.contains("file-title")) onFileTitleChange(e.target.dataset.id, e.target.value);
+      if (e.target.classList.contains("file-notes")) onFileNotesChange(e.target.dataset.id, e.target.value);
+    });
+    document.getElementById("filesGrid").addEventListener("click", (e)=>{
+      const btn = e.target.closest("button"); if (!btn) return;
+      const id = btn.dataset.id;
+      if (btn.dataset.act==="replace") replaceFile(id);
+      if (btn.dataset.act==="delete-file") deleteFile(id);
+    });
+
+    // Dropzone
+    const drop = document.getElementById("dropzone");
+    const input = document.getElementById("fileInput");
+    drop.addEventListener("click", ()=> input.click());
+    drop.addEventListener("dragover", (e)=>{ e.preventDefault(); drop.classList.add("drag"); });
+    drop.addEventListener("dragleave", ()=> drop.classList.remove("drag"));
+    drop.addEventListener("drop", (e)=>{
+      e.preventDefault(); drop.classList.remove("drag");
+      handleFiles(e.dataTransfer.files);
+    });
+    input.addEventListener("change", ()=> handleFiles(input.files));
+
+    // Simple lock
+    document.getElementById("lockBtn").onclick = ()=>{
+      const v = document.getElementById("adminPwd").value;
+      if (!v) { localStorage.removeItem(ADMIN_LOCK_KEY); alert("Lock disabled"); return; }
+      localStorage.setItem(ADMIN_LOCK_KEY, v);
+      alert("Lock enabled on this browser. You will be prompted next time.");
+    };
+  }
+
+  // Helpers
+  function setStatus(msg){ document.getElementById("status").textContent = msg; }
+  function ensureArrays(){
+    state.data.categories = state.data.categories || [];
+    for (const c of state.data.categories) {
+      c.subcategories = c.subcategories || [];
+      for (const s of c.subcategories) {
+        s.lists = s.lists || [];
+        for (const l of s.lists) { l.files = l.files || []; }
+      }
+    }
+  }
+  function uid(prefix){
+    return `${prefix}-${Math.random().toString(36).slice(2,8)}-${Date.now().toString(36).slice(-4)}`;
+  }
+  function humanFileSize(bytes){
+    const thresh=1024;if(Math.abs(bytes)<thresh)return bytes+" B";
+    const units=["KB","MB","GB","TB"];let u=-1;do{bytes/=thresh;++u}while(Math.abs(bytes)>=thresh&&u<units.length-1);
+    return bytes.toFixed(1)+" "+units[u];
+  }
+  function escapeHtml(s){
+    return String(s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  async function load(){
+    setStatus("Loading...");
+    try{
+      const data = await fetchData();
+      state.data = data && data.categories ? data : schema();
+      ensureArrays();
+      renderColumns(); setStatus("Loaded");
+    }catch(err){
+      console.error(err);
+      state.data = schema();
+      renderColumns(); setStatus("Loaded (new schema)");
+    }
+  }
+
+  window.addEventListener("beforeunload", (e)=>{
+    if (state.dirty) {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  });
+
+  // Init
+  document.getElementById("year").textContent = new Date().getFullYear();
+  applyLock();
+  wireEvents();
+  load();
+</script>
+</body>
+</html>
