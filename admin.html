@@ -7,18 +7,19 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<style>
 	:root {
-		--bg: #0b1020;
-		--panel: #121933;
-		--accent: #6aa9ff;
-		--text: #e8ecf3;
-		--muted: #aab3c5;
-		--danger: #ff6b6b;
-		--success: #2ecc71;
+		--bg: #f7f7f8;
+		--panel: #ffffff;
+		--accent: #111827;
+		--text: #111827;
+		--muted: #6b7280;
+		--danger: #dc2626;
+		--success: #16a34a;
+		--border: #e5e7eb;
 	}
 
 	body {
 		margin: 0;
-		background: radial-gradient(1000px 600px at 15% -100px, #1a2557, transparent 65%), var(--bg);
+		background: var(--bg);
 		color: var(--text);
 		font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
 		min-height: 100vh;
@@ -41,10 +42,10 @@
 	}
 
 	.panel {
-		background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.03));
-		border: 1px solid rgba(255, 255, 255, 0.07);
+		background: var(--panel);
+		border: 1px solid var(--border);
 		border-radius: 16px;
-		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 		padding: 18px;
 	}
 
@@ -61,18 +62,18 @@
 	}
 
 	.dropzone {
-		border: 2px dashed rgba(255, 255, 255, 0.2);
+		border: 2px dashed var(--border);
 		border-radius: 14px;
 		padding: 28px;
 		text-align: center;
 		transition: border-color .2s, background .2s;
 		cursor: pointer;
-		background: rgba(255, 255, 255, 0.02);
+		background: #fafafa;
 	}
 
 	.dropzone.dragover {
 		border-color: var(--accent);
-		background: rgba(106, 169, 255, 0.08);
+		background: #f3f4f6;
 	}
 
 	.hint {
@@ -91,18 +92,19 @@
 
 	.btn {
 		appearance: none;
-		border: 1px solid rgba(255, 255, 255, 0.15);
-		background: rgba(255, 255, 255, 0.06);
+		border: 1px solid var(--border);
+		background: #ffffff;
 		color: var(--text);
 		padding: 10px 14px;
 		border-radius: 10px;
 		cursor: pointer;
 		font-weight: 600;
-		transition: transform .06s ease, background .2s;
+		transition: transform .06s ease, background .2s, box-shadow .2s;
 	}
 
 	.btn:hover {
-		background: rgba(255, 255, 255, 0.12);
+		background: #f9fafb;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 	}
 
 	.btn:active {
@@ -110,8 +112,9 @@
 	}
 
 	.btn.primary {
-		border-color: rgba(106, 169, 255, 0.5);
-		background: linear-gradient(180deg, #2a64ff 0%, #1b46c9 100%);
+		border-color: var(--accent);
+		background: var(--accent);
+		color: #ffffff;
 	}
 
 	.status {
@@ -136,8 +139,8 @@
 	}
 
 	.card {
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: var(--panel);
+		border: 1px solid var(--border);
 		border-radius: 12px;
 		overflow: hidden;
 	}
@@ -148,8 +151,8 @@
 		justify-content: space-between;
 		gap: 10px;
 		padding: 10px 12px;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-		background: rgba(0, 0, 0, 0.15);
+		border-bottom: 1px solid var(--border);
+		background: #f9fafb;
 	}
 
 	.name {
@@ -172,7 +175,7 @@
 		height: 380px;
 		border: 0;
 		display: none;
-		background: #1b2038;
+		background: #f3f4f6;
 	}
 
 	.empty {
@@ -239,6 +242,14 @@
 
 	function uid() {
 		return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+	}
+
+	function formatDisplayName(filename) {
+		let name = filename.replace(/^[^_]+_/, '');
+		name = name.replace(/\.pdf$/i, '');
+		name = name.replace(/_/g, ' ');
+		name = name.replace(/\s+/g, ' ').trim();
+		return name;
 	}
 	dropzone.addEventListener('click', () => fileInput.click());
 	chooseBtn.addEventListener('click', () => fileInput.click());
@@ -343,7 +354,7 @@
 			const name = document.createElement('div');
 			name.className = 'name';
 			name.title = obj.name;
-			name.textContent = obj.name;
+			name.textContent = formatDisplayName(obj.name);
 			const links = document.createElement('div');
 			links.className = 'links';
 			const aOpen = document.createElement('a');
