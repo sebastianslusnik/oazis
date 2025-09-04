@@ -1,614 +1,619 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Admin — Documents | Evergreen Retirement Home</title>
-<meta name="description" content="Manage document categories, subcategories, lists, and files." />
-<style>
-  :root{
-    --bg:#f8fafc; --panel:#ffffff; --text:#0f172a; --muted:#475569; --accent:#2563eb; --accent-2:#1e40af; --border:#e2e8f0;
-    --danger:#dc2626; --success:#16a34a; --warn:#b45309;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--text);background:var(--bg)}
-  header{background:linear-gradient(180deg,#0b3b2e,#0e4a3a);color:#fff;padding:18px 20px}
-  header .wrap{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:20px;justify-content:space-between}
-  .brand{display:flex;align-items:center;gap:12px}
-  .brand-logo{width:40px;height:40px;border-radius:8px;background:#e8f5ee;border:2px solid #c9e6d7;display:grid;place-items:center;color:#0b3b2e;font-weight:700}
-  nav a{color:#e6ffef;text-decoration:none;margin:0 10px;font-weight:600;opacity:.9}
-  nav a:hover{opacity:1;text-decoration:underline}
-  .hero{background:#0e4a3a;color:#d6f5e6;border-top:1px solid rgba(255,255,255,.15);border-bottom:1px solid rgba(255,255,255,.15)}
-  .hero .wrap{max-width:1200px;margin:0 auto;padding:18px 20px}
-  .hero h1{margin:0 0 6px 0;font-size:24px}
-  .hero p{margin:0;color:#cde9dd}
-  main{max-width:1200px;margin:16px auto;padding:0 20px 40px 20px}
-  .layout{display:grid;grid-template-columns:280px 340px 1fr;gap:16px}
-  @media (max-width: 1100px){.layout{grid-template-columns:1fr}}
-  .panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-  .panel .head{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;justify-content:space-between}
-  .panel .body{padding:10px}
-  .list{display:flex;flex-direction:column}
-  .item{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;justify-content:space-between}
-  .item:hover{background:#f1f5f9}
-  .item.active{background:#e8f0ff;border-left:3px solid var(--accent)}
-  .btn{padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;font-weight:600}
-  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-  .btn.primary:hover{background:var(--accent-2);border-color:var(--accent-2)}
-  .btn.danger{border-color:#fecaca;background:#fee2e2;color:#b91c1c}
-  .row{display:flex;gap:8px;flex-wrap:wrap}
-  input[type="text"], input[type="password"], textarea, select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px}
-  .muted{color:var(--muted);font-size:12px}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  @media (max-width:640px){.grid{grid-template-columns:1fr}}
-  .file{border:1px solid var(--border);border-radius:10px;padding:10px;background:#fff;display:flex;flex-direction:column;gap:6px}
-  .file .title{font-weight:700}
-  .file .meta{font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
-  .drop{border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;background:#fafcff;color:var(--muted)}
-  .drop.drag{border-color:var(--accent);background:#eef2ff;color:#1e3a8a}
-  .empty{padding:12px;border:1px dashed var(--border);border-radius:8px;text-align:center;color:var(--muted);background:#fafcff}
-  .sticky{position:sticky;top:10px}
-</style>
+  <meta charset="UTF-8" />
+  <title>Documents Admin | Retirement Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Uploadcare widget -->
+  <script>window.UPLOADCARE_PUBLIC_KEY = "6cfc619c1a701bae1efe";</script>
+  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
+  <!-- Base styles aligning with index.html design -->
+  <style>
+    :root{
+      --bg:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --brand:#0ea5e9;
+      --brand-600:#0284c7;
+      --surface:#f3f4f6;
+      --border:#e5e7eb;
+      --danger:#ef4444;
+      --radius:12px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji;
+      line-height:1.5;
+    }
+    header{
+      position:sticky; top:0; z-index:20;
+      background:rgba(255,255,255,0.8);
+      backdrop-filter: saturate(180%) blur(12px);
+      border-bottom:1px solid var(--border);
+    }
+    .container{max-width:1100px; margin:0 auto; padding:0 20px;}
+    .nav{
+      display:flex; align-items:center; justify-content:space-between; height:64px;
+    }
+    .nav a.logo{
+      display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text); font-weight:700; font-size:18px;
+    }
+    .nav .links a{
+      margin-left:16px; text-decoration:none; color:var(--text); font-weight:500;
+    }
+    .hero{
+      padding:40px 0 12px;
+      border-bottom:1px solid var(--border);
+      background:linear-gradient(180deg, #f9fafb 0%, #ffffff 100%);
+    }
+    .hero h1{ margin:0 0 8px; font-size:28px; }
+    .hero p{ margin:0; color:var(--muted); }
+    main{ padding:24px 0 60px; }
+    .layout{ display:grid; grid-template-columns:320px 1fr; gap:20px; }
+    @media (max-width: 1000px){ .layout{ grid-template-columns:1fr; } }
+
+    .panel{
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:12px;
+    }
+    .tree{ max-height:60vh; overflow:auto; padding:4px; }
+    .tree ul{ list-style:none; margin:0; padding-left:14px; }
+    .tree li{ margin:2px 0; padding:4px 6px; border-radius:8px; display:flex; align-items:center; gap:6px; cursor:pointer; }
+    .tree li:hover{ background:#fff; }
+    .disclosure{ width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; border-radius:4px; color:var(--muted); }
+    .disclosure.open{ color:var(--brand); }
+    .label{ flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .active{ background:#e0f2fe !important; color:#0c4a6e; }
+
+    .controls{
+      display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;
+    }
+    .btn{
+      display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px;
+      border:1px solid var(--border); background:#fff; color:var(--text); text-decoration:none; cursor:pointer;
+      font-size:14px;
+    }
+    .btn.primary{ background:var(--brand); color:#fff; border-color:var(--brand-600); }
+    .btn.danger{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
+
+    .content{
+      background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:16px; min-height:420px;
+    }
+    .crumbs{ font-size:14px; color:var(--muted); margin-bottom:8px; }
+    .content h2{ margin:6px 0 14px; font-size:22px; }
+
+    .group{ border:1px dashed var(--border); border-radius:12px; padding:12px; margin-bottom:14px; background:var(--surface); }
+    .group h3{ margin:0 0 10px; font-size:16px; }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+    .row input[type="text"], .row textarea, .row select{
+      flex:1; min-width:180px; padding:10px; border:1px solid var(--border); border-radius:10px; outline:none;
+    }
+    .row textarea{ min-height:70px; }
+
+    .list{ display:flex; flex-direction:column; gap:8px; }
+    .item{
+      background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px; display:flex; align-items:flex-start; gap:10px;
+    }
+    .item .drag{ cursor:grab; user-select:none; }
+    .item .meta{ flex:1; }
+    .item .meta .title{ font-weight:600; }
+    .item .actions{ display:flex; gap:8px; flex-wrap:wrap; }
+    .small{ font-size:12px; color:var(--muted); }
+
+    footer{
+      border-top:1px solid var(--border); padding:24px 0; color:var(--muted); font-size:14px;
+    }
+
+    .note{
+      background:#ecfeff; border:1px solid #a5f3fc; color:#0e7490; padding:10px; border-radius:10px; font-size:13px; margin-bottom:12px;
+    }
+  </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <div class="brand">
-      <div class="brand-logo">E</div>
-      <div>
-        <div style="font-weight:800;">Evergreen Retirement Home</div>
-        <div style="font-size:12px;opacity:.85">Staff Console</div>
-      </div>
-    </div>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="documents.html">Documents</a>
-      <a href="admin.html" style="text-decoration:underline">Admin</a>
-    </nav>
-  </div>
-</header>
-<section class="hero">
-  <div class="wrap">
-    <h1>Documents — Admin</h1>
-    <p>Manage categories, subcategories, lists, and files. Changes save to JSONBin.</p>
-  </div>
-</section>
-
-<main>
-  <div class="panel" style="margin-bottom:16px">
-    <div class="head">
-      <div>Controls</div>
-      <div class="muted" id="status">Idle</div>
-    </div>
-    <div class="body">
-      <div class="row">
-        <button class="btn" id="refreshBtn">Refresh</button>
-        <button class="btn primary" id="saveBtn">Save Changes</button>
-        <button class="btn" id="addCategoryBtn">+ Category</button>
-        <button class="btn" id="addSubcategoryBtn">+ Subcategory</button>
-        <button class="btn" id="addListBtn">+ List</button>
-      </div>
-      <div class="row" style="margin-top:10px">
-        <label class="muted">Quick select:</label>
-        <select id="catSelect"></select>
-        <select id="subSelect"></select>
-        <select id="listSelect"></select>
-      </div>
-      <div class="row" style="margin-top:6px">
-        <label class="muted">Admin password (to protect this page):</label>
-        <input type="password" id="adminPwd" placeholder="Set or enter admin password" />
-        <button class="btn" id="lockBtn">Lock</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="layout">
-    <div class="panel sticky">
-      <div class="head"><div>Categories</div></div>
-      <div class="body">
-        <div id="catsList" class="list"></div>
-      </div>
-    </div>
-
-    <div class="panel sticky">
-      <div class="head"><div>Subcategories</div></div>
-      <div class="body">
-        <div id="subsList" class="list"></div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="head"><div>Files in selected list</div></div>
-      <div class="body">
-        <div class="row">
-          <input type="text" id="listNameInput" placeholder="List name (e.g., 2025)" />
-          <button class="btn" id="renameListBtn">Rename List</button>
-          <button class="btn danger" id="deleteListBtn">Delete List</button>
+  <header>
+    <div class="container">
+      <nav class="nav">
+        <a href="index.html" class="logo">
+          <span aria-hidden="true">🏡</span> <span>Retirement Home</span>
+        </a>
+        <div class="links">
+          <a href="documents.html">Documents</a>
+          <a href="admin.html" style="color:var(--brand)">Admin</a>
         </div>
-
-        <div class="drop" id="dropzone" style="margin-top:10px">
-          Drag & drop files here, or click to select
-          <input type="file" id="fileInput" accept="application/pdf" multiple style="display:none" />
-        </div>
-
-        <div id="filesGrid" class="grid" style="margin-top:10px"></div>
-        <div id="emptyState" class="empty" style="display:none">No files in this list yet.</div>
-      </div>
+      </nav>
     </div>
-  </div>
-</main>
+  </header>
 
-<footer style="max-width:1200px;margin:20px auto 40px auto;padding:0 20px;color:var(--muted);font-size:13px">
-  © <span id="year"></span> Evergreen Retirement Home — Admin console
-</footer>
+  <section class="hero">
+    <div class="container">
+      <h1>Documents Administration</h1>
+      <p>Manage categories and files. Changes are saved to JSONBin and reflected on the public Documents page.</p>
+    </div>
+  </section>
 
-<script>
-  // Configuration
-  const BIN_ID = "68b9d3d8d0ea881f4071c182";
-  const MASTER_KEY = "$2a$10$9sO/ja29sMebpWNvsWmp5.dJ6lv7CPeLBMRFaA/cAEwz42ii6qlCS"; // Keep in admin only
-  const JSONBIN_READ_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`;
-  const JSONBIN_WRITE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+  <main class="container">
+    <div class="note">
+      Placeholders:
+      JSONBin Master Key: YOUR_JSONBIN_MASTER_KEY.
+      Uploadcare Public Key: YOUR_UPLOADCARE_PUBLIC_KEY. Uploadcare Secret Key: YOUR_UPLOADCARE_SECRET_KEY (do not expose in production—use a server proxy for secure operations).
+    </div>
+    <div class="layout">
+      <aside class="panel">
+        <div class="controls">
+          <button class="btn primary" id="addRootCategoryBtn">+ Add Top-level Category</button>
+          <button class="btn" id="expandAllBtn">Expand all</button>
+          <button class="btn" id="collapseAllBtn">Collapse all</button>
+        </div>
+        <div id="tree" class="tree" role="tree" aria-label="Document categories"></div>
+      </aside>
 
-  // Cloudinary unsigned upload settings
-  // Replace CLOUD_NAME with your Cloudinary cloud name (from dashboard).
-  const CLOUD_NAME = "djf49hhfr"; // TODO: set your cloud name
-  const UPLOAD_PRESET = "theoazis";     // your unsigned preset
-  const CLOUDINARY_FOLDER = "documents"; // target folder in Cloudinary
+      <section class="content">
+        <div class="crumbs" id="breadcrumbs"></div>
+        <h2 id="categoryTitle">Root</h2>
 
-  // Optional simple password gate for this page
-  const ADMIN_LOCK_KEY = "evergreen_admin_lock";
-  function applyLock() {
-    const saved = localStorage.getItem(ADMIN_LOCK_KEY);
-    if (!saved) return;
-    const entered = prompt("Admin password required:");
-    if (entered !== saved) {
-      alert("Incorrect password. Redirecting to public documents.");
-      location.href = "documents.html";
-    }
-  }
-
-  // Data state
-  const state = { data: null, selectedCatId: null, selectedSubId: null, selectedListId: null, dirty: false };
-
-  const schema = () => ({ version: 1, lastUpdated: new Date().toISOString(), categories: [] });
-
-  // JSONBin helpers
-  async function fetchData() {
-    const res = await fetch(JSONBIN_READ_URL, { headers: { "X-Bin-Meta":"false", "X-Master-Key": MASTER_KEY }});
-    if (!res.ok) throw new Error("Failed to fetch JSONBin");
-    const data = await res.json();
-    return data.record ? data.record : data;
-  }
-  async function saveData() {
-    setStatus("Saving...");
-    const payload = JSON.stringify(state.data);
-    const res = await fetch(JSONBIN_WRITE_URL, {
-      method:"PUT",
-      headers:{ "Content-Type":"application/json", "X-Master-Key": MASTER_KEY },
-      body: payload
-    });
-    if (!res.ok) { setStatus("Save failed"); throw new Error("Failed to save JSONBin"); }
-    setStatus("Saved"); state.dirty = false;
-  }
-
-  // Cloudinary upload (unsigned)
-  async function uploadFile(file) {
-    // PDFs are best uploaded as resource_type=raw
-    const endpoint = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload`;
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", UPLOAD_PRESET);
-    formData.append("folder", CLOUDINARY_FOLDER);
-    // Optional: ensure unique filename and keep original extension
-    formData.append("use_filename", "true");
-    formData.append("unique_filename", "true");
-    const res = await fetch(endpoint, { method: "POST", body: formData });
-    if (!res.ok) throw new Error("Cloudinary upload failed");
-    const data = await res.json();
-    // data.secure_url is permanent/versioned; bytes may be undefined for raw, fall back to file.size
-    return { url: data.secure_url, sizeBytes: data.bytes || file.size, filename: file.name };
-  }
-
-  // UI rendering
-  function renderSelectors() {
-    const catSel = document.getElementById("catSelect");
-    const subSel = document.getElementById("subSelect");
-    const listSel = document.getElementById("listSelect");
-    function opt(el, v, t){ const o=document.createElement("option"); o.value=v||""; o.textContent=t; el.appendChild(o); }
-
-    catSel.innerHTML = ""; opt(catSel,"","Select category");
-    for (const c of state.data.categories || []) opt(catSel,c.id,c.name);
-
-    subSel.innerHTML = ""; opt(subSel,"","Select subcategory");
-    const cat = state.data.categories.find(c=>c.id===state.selectedCatId);
-    for (const s of cat?.subcategories || []) opt(subSel,s.id,s.name);
-
-    listSel.innerHTML = ""; opt(listSel,"","Select list");
-    const sub = cat?.subcategories?.find(s=>s.id===state.selectedSubId);
-    for (const l of sub?.lists || []) opt(listSel,l.id,l.name);
-
-    catSel.value = state.selectedCatId || "";
-    subSel.value = state.selectedSubId || "";
-    listSel.value = state.selectedListId || "";
-  }
-
-  function renderColumns() {
-    // Categories
-    const catsEl = document.getElementById("catsList");
-    catsEl.innerHTML = "";
-    const cats = state.data.categories || [];
-    if (cats.length===0) {
-      catsEl.innerHTML = `<div class="empty">No categories. Click + Category to add.</div>`;
-    } else {
-      for (const c of cats) {
-        const row = document.createElement("div");
-        row.className = "item" + (c.id===state.selectedCatId ? " active":"");
-        row.innerHTML = `
-          <div style="flex:1">
-            <input type="text" value="${escapeHtml(c.name)}" data-id="${c.id}" class="cat-name" />
-            <div class="muted"><input type="text" value="${escapeHtml(c.description||"")}" data-id="${c.id}" class="cat-desc" placeholder="Description" /></div>
+        <div class="group">
+          <h3>Selected Category</h3>
+          <div class="row">
+            <input type="text" id="catName" placeholder="Category name" />
+            <input type="text" id="catId" placeholder="Category ID (auto)" disabled />
           </div>
           <div class="row">
-            <button class="btn" data-id="${c.id}" data-act="select">Open</button>
-            <button class="btn danger" data-id="${c.id}" data-act="delete">Delete</button>
+            <button class="btn primary" id="saveCategoryBtn">Save Category</button>
+            <button class="btn" id="addSubCategoryBtn">+ Add Sub-category</button>
+            <button class="btn danger" id="deleteCategoryBtn">Delete Category</button>
           </div>
-        `;
-        catsEl.appendChild(row);
+          <div class="small">Tip: Renaming a category updates it immediately on Save. IDs should remain stable once created.</div>
+        </div>
+
+        <div class="group">
+          <h3>Files in this category</h3>
+          <div class="row">
+            <input type="hidden" role="uploadcare-uploader" id="uploader" data-public-key="6cfc619c1a701bae1efe" data-multiple="true" data-images-only="false" data-validators="pdfOnly" />
+            <button class="btn primary" id="uploadBtn">Upload PDF(s)</button>
+          </div>
+          <div class="list" id="fileList"></div>
+        </div>
+
+        <div class="group">
+          <h3>Data</h3>
+          <div class="row">
+            <button class="btn primary" id="saveAllBtn">Save All Changes</button>
+            <button class="btn" id="reloadBtn">Reload from JSONBin</button>
+          </div>
+          <div class="small">All changes are kept locally until you Save All. Saving overwrites the JSONBin document.</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      © <span id="year"></span> Retirement Home. Admin.
+    </div>
+  </footer>
+
+  <script>
+    // Config
+    const JSONBIN_BIN_ID = "68b9d3d8d0ea881f4071c182";
+    const JSONBIN_MASTER_KEY = "$2a$10$9sO/ja29sMebpWNvsWmp5.dJ6lv7CPeLBMRFaA/cAEwz42ii6qlCS"; // Do not expose in production
+    const JSONBIN_HEADERS_WRITE = {
+      "Content-Type": "application/json",
+      "X-Master-Key": JSONBIN_MASTER_KEY
+    };
+
+    // Uploadcare validators
+    uploadcare.registerTab('preview', uploadcareTabEffects);
+    function pdfOnly(info) {
+      if (!info.isStored && !info.isImage) {
+        // Allow non-image PDFs; Uploadcare flags images vs non-image.
+      }
+      // Enforce MIME by extension if available
+      const name = (info && info.name || '').toLowerCase();
+      if (name && !name.endsWith('.pdf')) {
+        throw new Error('Only PDF files are allowed.');
       }
     }
 
-    // Subcategories
-    const subsEl = document.getElementById("subsList");
-    subsEl.innerHTML = "";
-    const cat = state.data.categories.find(c=>c.id===state.selectedCatId);
-    if (!cat) {
-      subsEl.innerHTML = `<div class="empty">Select a category.</div>`;
-    } else {
-      const subs = cat.subcategories || [];
-      if (subs.length===0) {
-        subsEl.innerHTML = `<div class="empty">No subcategories. Click + Subcategory.</div>`;
-      } else {
-        for (const s of subs) {
-          const row = document.createElement("div");
-          row.className = "item" + (s.id===state.selectedSubId ? " active":"");
-          const totalFiles = (s.lists||[]).reduce((n,l)=>n+(l.files?.length||0),0);
-          row.innerHTML = `
-            <div style="flex:1">
-              <input type="text" value="${escapeHtml(s.name)}" data-id="${s.id}" class="sub-name" />
-              <div class="muted">${totalFiles} file(s) across ${s.lists?.length||0} list(s)</div>
-            </div>
-            <div class="row">
-              <button class="btn" data-id="${s.id}" data-act="select-sub">Open</button>
-              <button class="btn danger" data-id="${s.id}" data-act="delete-sub">Delete</button>
-            </div>
-          `;
-          subsEl.appendChild(row);
+    let rootData = null;
+    let activePath = [];
+    let expandedIds = new Set();
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    async function fetchRecord() {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+        headers: { "Content-Type":"application/json", "X-Master-Key": JSONBIN_MASTER_KEY }
+      });
+      if (!res.ok) throw new Error("Failed to fetch from JSONBin");
+      const data = await res.json();
+      return data.record;
+    }
+
+    async function saveRecord() {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+        method: "PUT",
+        headers: JSONBIN_HEADERS_WRITE,
+        body: JSON.stringify(rootData)
+      });
+      if (!res.ok) throw new Error("Failed to save to JSONBin");
+      return await res.json();
+    }
+
+    function ensureDefaults(data){
+      if (!data.id) data.id = 'root';
+      if (!data.name) data.name = 'Documents';
+      if (!data.children) data.children = [];
+      if (!data.files) data.files = [];
+      return data;
+    }
+
+    function uid(prefix='id'){
+      return prefix + '-' + Math.random().toString(36).slice(2,10);
+    }
+
+    function findCategoryById(cat, id, path=[]) {
+      if (cat.id === id) return { node: cat, path:[...path, cat] };
+      if (cat.children) {
+        for (const c of cat.children) {
+          const found = findCategoryById(c, id, [...path, cat]);
+          if (found) return found;
         }
       }
+      return null;
     }
 
-    // Files grid for selected list
-    renderFilesGrid();
-    renderSelectors();
-  }
-
-  function currentList() {
-    const cat = state.data.categories.find(c=>c.id===state.selectedCatId);
-    const sub = cat?.subcategories?.find(s=>s.id===state.selectedSubId);
-    const lst = sub?.lists?.find(l=>l.id===state.selectedListId);
-    return { cat, sub, lst };
-  }
-
-  function renderFilesGrid() {
-    const grid = document.getElementById("filesGrid");
-    const empty = document.getElementById("emptyState");
-    const nameInput = document.getElementById("listNameInput");
-    grid.innerHTML = "";
-    const { lst } = currentList();
-
-    if (!lst) {
-      empty.style.display = "block";
-      empty.textContent = "Select a list.";
-      nameInput.value = "";
-      return;
+    function renderTree() {
+      const tree = document.getElementById('tree');
+      tree.innerHTML = '';
+      const ul = document.createElement('ul');
+      ul.setAttribute('role','tree');
+      ul.style.paddingLeft='2px';
+      ul.appendChild(buildTreeNode(rootData, 0));
+      tree.appendChild(ul);
+      applyActiveState();
     }
-    nameInput.value = lst.name || "";
-    const files = lst.files || [];
-    if (files.length===0) {
-      empty.style.display = "block";
-      empty.textContent = "No files in this list yet.";
-      return;
+
+    function buildTreeNode(cat, level=0) {
+      const li = document.createElement('li');
+      li.dataset.id = cat.id;
+
+      const hasChildren = (cat.children && cat.children.length) || false;
+
+      const disclosure = document.createElement('span');
+      disclosure.className = 'disclosure';
+      disclosure.textContent = expandedIds.has(cat.id) ? '▾' : (hasChildren ? '▸' : '·');
+      if (expandedIds.has(cat.id)) disclosure.classList.add('open');
+      li.appendChild(disclosure);
+
+      const label = document.createElement('span');
+      label.className = 'label';
+      label.textContent = cat.name;
+      li.appendChild(label);
+
+      if (hasChildren) {
+        const ul = document.createElement('ul');
+        ul.style.display = expandedIds.has(cat.id) ? 'block' : 'none';
+        cat.children.forEach(ch=> ul.appendChild(buildTreeNode(ch, level+1)));
+        li.appendChild(ul);
+      }
+
+      li.addEventListener('click', (e)=>{
+        if (e.target === disclosure) {
+          if (hasChildren) {
+            if (expandedIds.has(cat.id)) expandedIds.delete(cat.id); else expandedIds.add(cat.id);
+            renderTree();
+          }
+        } else {
+          setActiveCategory(cat.id);
+        }
+        e.stopPropagation();
+      });
+
+      return li;
     }
-    empty.style.display = "none";
-    files.sort((a,b)=> (a.title||"").localeCompare(b.title||""));
 
-    for (const f of files) {
-      const card = document.createElement("div");
-      const size = f.sizeBytes ? humanFileSize(f.sizeBytes) : "";
-      const uploaded = f.uploadedAt ? new Date(f.uploadedAt).toLocaleString() : "";
-      card.className = "file";
-      card.innerHTML = `
-        <div class="title">📄 <input type="text" class="file-title" data-id="${f.id}" value="${escapeHtml(f.title || f.filename || "Untitled")}" /></div>
-        <div class="meta">
-          <span>${size}</span>
-          ${uploaded ? `<span>${uploaded}</span>`:""}
-          <span class="muted">${escapeHtml(f.filename || "")}</span>
-        </div>
-        <div class="row">
-          <a class="btn" href="${f.url}" target="_blank" rel="noopener">Open</a>
-          <button class="btn" data-id="${f.id}" data-act="replace">Replace</button>
-          <button class="btn danger" data-id="${f.id}" data-act="delete-file">Delete</button>
-        </div>
-        <div class="muted"><input type="text" class="file-notes" data-id="${f.id}" value="${escapeHtml(f.notes||"")}" placeholder="Notes (optional)" /></div>
-      `;
-      grid.appendChild(card);
+    function applyActiveState(){
+      const ids = activePath.map(c=>c.id);
+      document.querySelectorAll('#tree li').forEach(li=>{
+        if (ids.includes(li.dataset.id)) li.classList.add('active'); else li.classList.remove('active');
+      });
     }
-  }
 
-  // CRUD actions
-  function addCategory() {
-    const name = prompt("Category name:");
-    if (!name) return;
-    ensureArrays();
-    state.data.categories.push({ id: uid("cat"), name, description:"", subcategories:[] });
-    state.dirty = true; renderColumns(); setStatus("Category added (unsaved)");
-  }
-  function addSubcategory() {
-    if (!state.selectedCatId) { alert("Select a category first."); return; }
-    const name = prompt("Subcategory name:");
-    if (!name) return;
-    const cat = state.data.categories.find(c=>c.id===state.selectedCatId);
-    cat.subcategories = cat.subcategories || [];
-    cat.subcategories.push({ id: uid("sub"), name, lists:[] });
-    state.dirty = true; renderColumns(); setStatus("Subcategory added (unsaved)");
-  }
-  function addList() {
-    if (!state.selectedSubId) { alert("Select a subcategory first."); return; }
-    const name = prompt("List name (e.g., 2025):");
-    if (!name) return;
-    const { sub } = currentList();
-    sub.lists = sub.lists || [];
-    const newList = { id: uid("list"), name, files:[] };
-    sub.lists.push(newList);
-    state.selectedListId = newList.id;
-    state.dirty = true; renderColumns(); setStatus("List added (unsaved)");
-  }
-  function renameList() {
-    const { lst } = currentList();
-    if (!lst) { alert("Select a list first."); return; }
-    const nameInput = document.getElementById("listNameInput");
-    const newName = nameInput.value.trim();
-    if (!newName) { alert("Name cannot be empty."); return; }
-    lst.name = newName;
-    state.dirty = true; renderColumns(); setStatus("List renamed (unsaved)");
-  }
-  function deleteList() {
-    const { sub, lst } = currentList();
-    if (!lst) { alert("Select a list first."); return; }
-    if (!confirm(`Delete list "${lst.name}" and all its files?`)) return;
-    sub.lists = (sub.lists||[]).filter(l=>l.id!==lst.id);
-    state.selectedListId = null;
-    state.dirty = true; renderColumns(); setStatus("List deleted (unsaved)");
-  }
+    function setActiveCategory(id){
+      const found = findCategoryById(rootData, id) || { node: rootData, path:[rootData] };
+      activePath = found.path;
+      activePath.forEach(c => expandedIds.add(c.id));
+      applyActiveState();
+      renderDetails(found.node);
+    }
 
-  function deleteCategory(id){
-    if (!confirm("Delete this category and everything in it?")) return;
-    state.data.categories = state.data.categories.filter(c=>c.id!==id);
-    if (state.selectedCatId===id){ state.selectedCatId=null; state.selectedSubId=null; state.selectedListId=null; }
-    state.dirty = true; renderColumns(); setStatus("Category deleted (unsaved)");
-  }
-  function deleteSubcategory(id){
-    const cat = state.data.categories.find(c=>c.id===state.selectedCatId);
-    if (!cat) return;
-    if (!confirm("Delete this subcategory and everything in it?")) return;
-    cat.subcategories = (cat.subcategories||[]).filter(s=>s.id!==id);
-    if (state.selectedSubId===id){ state.selectedSubId=null; state.selectedListId=null; }
-    state.dirty = true; renderColumns(); setStatus("Subcategory deleted (unsaved)");
-  }
+    function renderDetails(cat){
+      document.getElementById('breadcrumbs').textContent = activePath.map(c=>c.name).join(' › ');
+      document.getElementById('categoryTitle').textContent = cat.name;
+      document.getElementById('catName').value = cat.name || '';
+      document.getElementById('catId').value = cat.id || '';
 
-  function updateCategoryName(id, val){
-    const cat = state.data.categories.find(c=>c.id===id);
-    cat.name = val; state.dirty = true; setStatus("Unsaved changes"); renderSelectors();
-  }
-  function updateCategoryDesc(id, val){
-    const cat = state.data.categories.find(c=>c.id===id);
-    cat.description = val; state.dirty = true; setStatus("Unsaved changes");
-  }
-  function updateSubName(id, val){
-    const cat = state.data.categories.find(c=>c.id===state.selectedCatId);
-    const sub = cat?.subcategories?.find(s=>s.id===id);
-    if (sub){ sub.name = val; state.dirty = true; setStatus("Unsaved changes"); renderSelectors(); }
-  }
+      // Files
+      const list = document.getElementById('fileList');
+      list.innerHTML = '';
+      (cat.files || []).forEach(file=>{
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.draggable = true;
+        item.dataset.id = file.id;
 
-  function onFileTitleChange(id, val){
-    const { lst } = currentList();
-    const f = lst?.files?.find(x=>x.id===id);
-    if (f){ f.title = val; state.dirty = true; setStatus("Unsaved changes"); }
-  }
-  function onFileNotesChange(id, val){
-    const { lst } = currentList();
-    const f = lst?.files?.find(x=>x.id===id);
-    if (f){ f.notes = val; state.dirty = true; setStatus("Unsaved changes"); }
-  }
-  async function replaceFile(id){
-    const { lst } = currentList();
-    const f = lst?.files?.find(x=>x.id===id);
-    if (!f) return;
-    const picker = document.createElement("input"); picker.type="file"; picker.accept="application/pdf";
-    picker.onchange = async () => {
-      const file = picker.files[0]; if (!file) return;
-      setStatus("Uploading replacement...");
-      try {
-        const up = await uploadFile(file);
-        f.url = up.url; f.filename = up.filename || file.name; f.sizeBytes = up.sizeBytes || file.size; f.uploadedAt = new Date().toISOString();
-        state.dirty = true;
-        renderFilesGrid(); setStatus("File replaced (unsaved)");
-      } catch(err){ console.error(err); alert("Replace failed: " + err.message); setStatus("Error"); }
-    };
-    picker.click();
-  }
-  function deleteFile(id){
-    const { lst } = currentList();
-    if (!lst) return;
-    const f = lst.files.find(x=>x.id===id);
-    if (!f) return;
-    if (!confirm(`Delete file "${f.title||f.filename}"?`)) return;
-    lst.files = lst.files.filter(x=>x.id!==id);
-    state.dirty = true; renderFilesGrid(); setStatus("File deleted (unsaved)");
-  }
+        const drag = document.createElement('div');
+        drag.className = 'drag';
+        drag.textContent = '⋮⋮';
 
-  // Upload new files
-  async function handleFiles(files) {
-    const { lst } = currentList();
-    if (!lst) { alert("Select a list first."); return; }
-    for (const file of files) {
-      if (file.type !== "application/pdf") { alert(`Only PDF allowed: ${file.name}`); continue; }
-      setStatus(`Uploading ${file.name}...`);
-      try{
-        const up = await uploadFile(file);
-        lst.files = lst.files || [];
-        lst.files.push({
-          id: uid("file"),
-          title: file.name.replace(/\.pdf$/i,""),
-          filename: up.filename || file.name,
-          url: up.url,
-          sizeBytes: up.sizeBytes || file.size,
-          uploadedAt: new Date().toISOString(),
-          notes: ""
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+
+        const title = document.createElement('div');
+        title.className = 'title';
+        title.textContent = file.name;
+
+        const small = document.createElement('div');
+        small.className = 'small';
+        small.textContent = [
+          file.size ? (Math.round(file.size/1024)+' KB') : null,
+          file.updated ? new Date(file.updated).toLocaleString() : null
+        ].filter(Boolean).join(' • ');
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+
+        const renameBtn = document.createElement('button');
+        renameBtn.className = 'btn';
+        renameBtn.textContent = 'Rename';
+        renameBtn.addEventListener('click', ()=>{
+          const newName = prompt('New file title:', file.name);
+          if (newName) { file.name = newName; renderDetails(cat); }
         });
-        state.dirty = true;
-      }catch(err){
-        console.error(err);
-        alert("Upload failed: " + err.message);
+
+        const editDescBtn = document.createElement('button');
+        editDescBtn.className = 'btn';
+        editDescBtn.textContent = 'Edit Description';
+        editDescBtn.addEventListener('click', ()=>{
+          const newDesc = prompt('Description:', file.description || '');
+          file.description = newDesc || '';
+          renderDetails(cat);
+        });
+
+        const tagsBtn = document.createElement('button');
+        tagsBtn.className = 'btn';
+        tagsBtn.textContent = 'Tags';
+        tagsBtn.addEventListener('click', ()=>{
+          const t = prompt('Comma-separated tags:', (file.tags||[]).join(', '));
+          file.tags = t ? t.split(',').map(s=>s.trim()).filter(Boolean) : [];
+          renderDetails(cat);
+        });
+
+        const replaceBtn = document.createElement('button');
+        replaceBtn.className = 'btn';
+        replaceBtn.textContent = 'Replace';
+        replaceBtn.addEventListener('click', async ()=>{
+          const dialog = uploadcare.openDialog(null, { publicKey: "6cfc619c1a701bae1efe", multiple: false });
+          dialog.done(async (fileInfoPromise)=>{
+            const fileInfo = await fileInfoPromise;
+            if (!fileInfo || !fileInfo.cdnUrl) return;
+            file.url = fileInfo.cdnUrl;
+            file.size = fileInfo.size || file.size;
+            file.updated = new Date().toISOString();
+            renderDetails(cat);
+          });
+        });
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'btn danger';
+        delBtn.textContent = 'Delete';
+        delBtn.addEventListener('click', ()=>{
+          if (confirm('Delete this file from this category?')) {
+            cat.files = (cat.files || []).filter(f=>f.id !== file.id);
+            renderDetails(cat);
+          }
+        });
+
+        actions.appendChild(renameBtn);
+        actions.appendChild(editDescBtn);
+        actions.appendChild(tagsBtn);
+        actions.appendChild(replaceBtn);
+        actions.appendChild(delBtn);
+
+        meta.appendChild(title);
+        meta.appendChild(small);
+        meta.appendChild(actions);
+
+        item.appendChild(drag);
+        item.appendChild(meta);
+        list.appendChild(item);
+      });
+
+      enableDragSort(list, (orderIds)=>{
+        cat.files = orderIds.map(id => (cat.files||[]).find(f=>f.id===id)).filter(Boolean);
+      });
+    }
+
+    function enableDragSort(listEl, onSorted){
+      let dragEl = null;
+      listEl.addEventListener('dragstart', (e)=>{
+        dragEl = e.target.closest('.item');
+        if (dragEl) {
+          e.dataTransfer.effectAllowed='move';
+          dragEl.style.opacity='0.5';
+        }
+      });
+      listEl.addEventListener('dragend', (e)=>{
+        if (dragEl) dragEl.style.opacity='1';
+        dragEl = null;
+        const ids = Array.from(listEl.querySelectorAll('.item')).map(i=>i.dataset.id);
+        onSorted(ids);
+      });
+      listEl.addEventListener('dragover', (e)=>{
+        e.preventDefault();
+        const after = getDragAfterElement(listEl, e.clientY);
+        const current = dragEl;
+        if (!current) return;
+        if (!after) listEl.appendChild(current);
+        else listEl.insertBefore(current, after);
+      });
+      function getDragAfterElement(container, y){
+        const els = [...container.querySelectorAll('.item:not(.dragging)')];
+        return els.reduce((closest, child)=>{
+          const box = child.getBoundingClientRect();
+          const offset = y - box.top - box.height/2;
+          if (offset < 0 && offset > closest.offset) return { offset, element: child };
+          else return closest;
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+      }
+      listEl.addEventListener('dragenter', e=>e.preventDefault());
+      listEl.addEventListener('drop', e=>e.preventDefault());
+    }
+
+    function addCategory(parent){
+      const name = prompt('Category name:');
+      if (!name) return;
+      const id = uid('cat');
+      const node = { id, name, children:[], files:[] };
+      parent.children = parent.children || [];
+      parent.children.push(node);
+      expandedIds.add(parent.id);
+      renderTree();
+      setActiveCategory(id);
+    }
+
+    function deleteCategory(cat){
+      if (cat.id === 'root') return alert('Cannot delete root.');
+      if (!confirm(`Delete category "${cat.name}" and all its subcategories/files?`)) return;
+      // Remove from parent's children
+      const parent = activePath[activePath.length-2];
+      parent.children = parent.children.filter(c=>c.id !== cat.id);
+      setActiveCategory(parent.id);
+      renderTree();
+    }
+
+    function expandAll(cat=rootData){
+      expandedIds.add(cat.id);
+      (cat.children||[]).forEach(ch=> expandAll(ch));
+      renderTree();
+    }
+
+    function collapseAll(cat=rootData){
+      if (cat.id !== 'root') expandedIds.delete(cat.id); // keep root open
+      (cat.children||[]).forEach(ch=> collapseAll(ch));
+      renderTree();
+    }
+
+    function gatherFiles(cat){
+      let files = [];
+      if (cat.files) files = files.concat(cat.files);
+      (cat.children||[]).forEach(ch => files = files.concat(gatherFiles(ch)));
+      return files;
+    }
+
+    async function init(){
+      try {
+        let data = await fetchRecord();
+        rootData = ensureDefaults(data);
+        activePath = [rootData];
+        expandedIds.add('root');
+        renderTree();
+        renderDetails(rootData);
+
+        // Wire controls
+        document.getElementById('addRootCategoryBtn').addEventListener('click', ()=> addCategory(rootData));
+        document.getElementById('addSubCategoryBtn').addEventListener('click', ()=>{
+          const current = activePath[activePath.length-1];
+          addCategory(current);
+        });
+        document.getElementById('deleteCategoryBtn').addEventListener('click', ()=>{
+          const current = activePath[activePath.length-1];
+          deleteCategory(current);
+        });
+        document.getElementById('saveCategoryBtn').addEventListener('click', ()=>{
+          const current = activePath[activePath.length-1];
+          const newName = document.getElementById('catName').value.trim();
+          if (!newName) return alert('Name is required');
+          current.name = newName;
+          renderTree();
+          renderDetails(current);
+        });
+        document.getElementById('expandAllBtn').addEventListener('click', ()=> expandAll());
+        document.getElementById('collapseAllBtn').addEventListener('click', ()=> collapseAll());
+
+        // Upload button triggers widget
+        const uploadBtn = document.getElementById('uploadBtn');
+        uploadBtn.addEventListener('click', ()=>{
+          const dialog = uploadcare.openDialog(null, { publicKey: "6cfc619c1a701bae1efe", multiple: true, imagesOnly: false });
+          dialog.done(async (fileGroupPromise)=>{
+            const group = await fileGroupPromise;
+            // group is either group info or single file info
+            const items = Array.isArray(group.files) ? group.files : [group];
+            for (const p of items) {
+              const info = await p;
+              if (!info || !info.cdnUrl) continue;
+              if (info.name && !info.name.toLowerCase().endsWith('.pdf')) continue; // enforce PDF
+              const fileObj = {
+                id: uid('file'),
+                name: (info.name || 'Document').replace(/\.pdf$/i,''),
+                description: '',
+                tags: ['pdf'],
+                url: info.cdnUrl,
+                size: info.size || null,
+                updated: new Date().toISOString()
+              };
+              const current = activePath[activePath.length-1];
+              current.files = current.files || [];
+              current.files.push(fileObj);
+            }
+            const current = activePath[activePath.length-1];
+            renderDetails(current);
+          });
+        });
+
+        document.getElementById('saveAllBtn').addEventListener('click', async ()=>{
+          try {
+            await saveRecord();
+            alert('Saved successfully.');
+          } catch (e) {
+            console.error(e);
+            alert('Save failed. Check console.');
+          }
+        });
+        document.getElementById('reloadBtn').addEventListener('click', async ()=>{
+          if (!confirm('Discard local changes and reload from JSONBin?')) return;
+          try {
+            const data = await fetchRecord();
+            rootData = ensureDefaults(data);
+            activePath = [rootData];
+            expandedIds = new Set(['root']);
+            renderTree();
+            renderDetails(rootData);
+          } catch (e) {
+            console.error(e);
+            alert('Reload failed. Check console.');
+          }
+        });
+
+        // Save category name on blur
+        document.getElementById('catName').addEventListener('blur', ()=>{
+          const current = activePath[activePath.length-1];
+          const newName = document.getElementById('catName').value.trim();
+          if (newName) { current.name = newName; renderTree(); }
+        });
+
+      } catch (e) {
+        console.error(e);
+        alert('Failed to initialize admin. Check console/logs and your keys.');
       }
     }
-    renderFilesGrid();
-    setStatus("Uploads complete (unsaved)");
-  }
 
-  // Events and wiring
-  function wireEvents(){
-    document.getElementById("addCategoryBtn").onclick = addCategory;
-    document.getElementById("addSubcategoryBtn").onclick = addSubcategory;
-    document.getElementById("addListBtn").onclick = addList;
-    document.getElementById("renameListBtn").onclick = renameList;
-    document.getElementById("deleteListBtn").onclick = deleteList;
-
-    document.getElementById("refreshBtn").onclick = async ()=>{ await load(); setStatus("Refreshed"); };
-    document.getElementById("saveBtn").onclick = async ()=>{
-      try{ state.data.lastUpdated = new Date().toISOString(); await saveData(); }
-      catch(err){ alert("Save failed: " + err.message); }
-    };
-
-    document.getElementById("catSelect").onchange = (e)=>{
-      state.selectedCatId = e.target.value || null;
-      state.selectedSubId = null; state.selectedListId = null;
-      renderColumns();
-    };
-    document.getElementById("subSelect").onchange = (e)=>{
-      state.selectedSubId = e.target.value || null;
-      state.selectedListId = null;
-      renderColumns();
-    };
-    document.getElementById("listSelect").onchange = (e)=>{
-      state.selectedListId = e.target.value || null;
-      renderColumns();
-    };
-
-    document.getElementById("catsList").addEventListener("input", (e)=>{
-      if (e.target.classList.contains("cat-name")) updateCategoryName(e.target.dataset.id, e.target.value);
-      if (e.target.classList.contains("cat-desc")) updateCategoryDesc(e.target.dataset.id, e.target.value);
-    });
-    document.getElementById("subsList").addEventListener("input", (e)=>{
-      if (e.target.classList.contains("sub-name")) updateSubName(e.target.dataset.id, e.target.value);
-    });
-    document.getElementById("catsList").addEventListener("click", (e)=>{
-      const btn = e.target.closest("button"); if (!btn) return;
-      const id = btn.dataset.id;
-      if (btn.dataset.act==="select"){ state.selectedCatId=id; state.selectedSubId=null; state.selectedListId=null; renderColumns(); }
-      if (btn.dataset.act==="delete"){ deleteCategory(id); }
-    });
-    document.getElementById("subsList").addEventListener("click", (e)=>{
-      const btn = e.target.closest("button"); if (!btn) return;
-      const id = btn.dataset.id;
-      if (btn.dataset.act==="select-sub"){ state.selectedSubId=id; state.selectedListId=null; renderColumns(); }
-      if (btn.dataset.act==="delete-sub"){ deleteSubcategory(id); }
-    });
-
-    document.getElementById("filesGrid").addEventListener("input", (e)=>{
-      if (e.target.classList.contains("file-title")) onFileTitleChange(e.target.dataset.id, e.target.value);
-      if (e.target.classList.contains("file-notes")) onFileNotesChange(e.target.dataset.id, e.target.value);
-    });
-    document.getElementById("filesGrid").addEventListener("click", (e)=>{
-      const btn = e.target.closest("button"); if (!btn) return;
-      const id = btn.dataset.id;
-      if (btn.dataset.act==="replace") replaceFile(id);
-      if (btn.dataset.act==="delete-file") deleteFile(id);
-    });
-
-    const drop = document.getElementById("dropzone");
-    const input = document.getElementById("fileInput");
-    drop.addEventListener("click", ()=> input.click());
-    drop.addEventListener("dragover", (e)=>{ e.preventDefault(); drop.classList.add("drag"); });
-    drop.addEventListener("dragleave", ()=> drop.classList.remove("drag"));
-    drop.addEventListener("drop", (e)=>{
-      e.preventDefault(); drop.classList.remove("drag");
-      handleFiles(e.dataTransfer.files);
-    });
-    input.addEventListener("change", ()=> handleFiles(input.files));
-
-    document.getElementById("lockBtn").onclick = ()=>{
-      const v = document.getElementById("adminPwd").value;
-      if (!v) { localStorage.removeItem(ADMIN_LOCK_KEY); alert("Lock disabled"); return; }
-      localStorage.setItem(ADMIN_LOCK_KEY, v);
-      alert("Lock enabled on this browser. You will be prompted next time.");
-    };
-  }
-
-  // Helpers
-  function setStatus(msg){ document.getElementById("status").textContent = msg; }
-  function ensureArrays(){
-    state.data.categories = state.data.categories || [];
-    for (const c of state.data.categories) {
-      c.subcategories = c.subcategories || [];
-      for (const s of c.subcategories) {
-        s.lists = s.lists || [];
-        for (const l of s.lists) { l.files = l.files || []; }
-      }
-    }
-  }
-  function uid(prefix){ return `${prefix}-${Math.random().toString(36).slice(2,8)}-${Date.now().toString(36).slice(-4)}`; }
-  function humanFileSize(bytes){
-    const thresh=1024;if(Math.abs(bytes)<thresh)return bytes+" B";
-    const units=["KB","MB","GB","TB"];let u=-1;do{bytes/=thresh;++u}while(Math.abs(bytes)>=thresh&&u<units.length-1);
-    return bytes.toFixed(1)+" "+units[u];
-  }
-  function escapeHtml(s){
-    return String(s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  }
-
-  async function load(){
-    setStatus("Loading...");
-    try{
-      const data = await fetchData();
-      state.data = data && data.categories ? data : schema();
-      ensureArrays();
-      renderColumns(); setStatus("Loaded");
-    }catch(err){
-      console.error(err);
-      state.data = schema();
-      renderColumns(); setStatus("Loaded (new schema)");
-    }
-  }
-
-  window.addEventListener("beforeunload", (e)=>{
-    if (state.dirty) { e.preventDefault(); e.returnValue = ""; }
-  });
-
-  document.getElementById("year").textContent = new Date().getFullYear();
-  applyLock();
-  wireEvents();
-  load();
-</script>
+    init();
+  </script>
 </body>
 </html>
