@@ -18,79 +18,42 @@
     --warn:#b45309;
   }
   *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-    color:var(--text);
-    background:var(--bg);
-  }
-  header{
-    background:linear-gradient(180deg,#0b3b2e,#0e4a3a);
-    color:#fff;
-    padding:18px 20px;
-  }
-  header .wrap{
-    max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:20px;justify-content:space-between;
-  }
+  body{margin:0;font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";color:var(--text);background:var(--bg)}
+  header{background:linear-gradient(180deg,#0b3b2e,#0e4a3a);color:#fff;padding:18px 20px}
+  header .wrap{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:20px;justify-content:space-between}
   .brand{display:flex;align-items:center;gap:12px}
-  .brand-logo{
-    width:40px;height:40px;border-radius:8px;background:#e8f5ee;border:2px solid #c9e6d7;display:grid;place-items:center;color:#0b3b2e;font-weight:700
-  }
-  nav a{
-    color:#e6ffef;text-decoration:none;margin:0 10px;font-weight:600;opacity:.9
-  }
+  .brand-logo{width:40px;height:40px;border-radius:8px;background:#e8f5ee;border:2px solid #c9e6d7;display:grid;place-items:center;color:#0b3b2e;font-weight:700}
+  nav a{color:#e6ffef;text-decoration:none;margin:0 10px;font-weight:600;opacity:.9}
   nav a:hover{opacity:1;text-decoration:underline}
-  .hero{
-    background:#0e4a3a;color:#d6f5e6;border-top:1px solid rgba(255,255,255,.15);border-bottom:1px solid rgba(255,255,255,.15)
-  }
+  .hero{background:#0e4a3a;color:#d6f5e6;border-top:1px solid rgba(255,255,255,.15);border-bottom:1px solid rgba(255,255,255,.15)}
   .hero .wrap{max-width:1200px;margin:0 auto;padding:18px 20px}
   .hero h1{margin:0 0 6px 0;font-size:24px}
   .hero p{margin:0;color:#cde9dd}
   main{max-width:1200px;margin:16px auto;padding:0 20px 40px 20px}
   .layout{display:grid;grid-template-columns:240px 320px 1fr;gap:16px}
   @media (max-width: 1024px){.layout{grid-template-columns:1fr}}
-  .panel{
-    background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden
-  }
-  .panel .head{
-    padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;justify-content:space-between
-  }
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  .panel .head{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;justify-content:space-between}
   .panel .body{padding:10px}
   .searchbar{display:flex;gap:8px}
-  .searchbar input{
-    flex:1;padding:10px 12px;border:1px solid var(--border);border-radius:8px
-  }
-  .searchbar button{
-    padding:10px 12px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer
-  }
+  .searchbar input{flex:1;padding:10px 12px;border:1px solid var(--border);border-radius:8px}
+  .searchbar button{padding:10px 12px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer}
   .searchbar button:hover{background:var(--accent-2)}
-  .list{
-    display:flex;flex-direction:column
-  }
-  .item{
-    padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px
-  }
+  .list{display:flex;flex-direction:column}
+  .item{padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px}
   .item:hover{background:#f1f5f9}
   .item.active{background:#e8f0ff;border-left:3px solid var(--accent)}
   .muted{color:var(--muted);font-size:13px}
-  .grid{
-    display:grid;grid-template-columns:1fr 1fr;gap:10px
-  }
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   @media (max-width: 640px){.grid{grid-template-columns:1fr}}
-  .file{
-    border:1px solid var(--border);border-radius:10px;padding:10px;background:#fff;display:flex;flex-direction:column;gap:6px
-  }
+  .file{border:1px solid var(--border);border-radius:10px;padding:10px;background:#fff;display:flex;flex-direction:column;gap:6px}
   .file .title{font-weight:700}
   .file .meta{font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
   .file .actions{display:flex;gap:8px}
-  .btn{
-    padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;font-weight:600
-  }
+  .btn{padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;font-weight:600}
   .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
   .btn.primary:hover{background:var(--accent-2);border-color:var(--accent-2)}
-  .empty{
-    padding:16px;border:1px dashed var(--border);border-radius:10px;background:#fafcff;color:var(--muted);text-align:center
-  }
+  .empty{padding:16px;border:1px dashed var(--border);border-radius:10px;background:#fafcff;color:var(--muted);text-align:center}
   footer{max-width:1200px;margin:20px auto 40px auto;padding:0 20px;color:var(--muted);font-size:13px}
 </style>
 </head>
@@ -163,24 +126,14 @@
 <script>
   const BIN_ID = "68b9d3d8d0ea881f4071c182";
   const JSONBIN_READ_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`;
-  const state = {
-    data: null,
-    selectedCatId: null,
-    selectedSubId: null,
-    search: ""
-  };
+  const state = { data: null, selectedCatId: null, selectedSubId: null, search: "" };
 
-  const schema = () => ({
-    version: 1,
-    lastUpdated: new Date().toISOString(),
-    categories: []
-  });
+  const schema = () => ({ version: 1, lastUpdated: new Date().toISOString(), categories: [] });
 
   async function fetchData() {
     const res = await fetch(JSONBIN_READ_URL, { headers: { "X-Bin-Meta": "false" }});
     if (!res.ok) throw new Error("Failed to load documents");
     const data = await res.json();
-    // JSONBin returns stored object or wrapper depending on write method; guard both
     return data.record ? data.record : data;
   }
 
@@ -276,9 +229,7 @@
       const sub = (cat?.subcategories || []).find(s => s.id === state.selectedSubId);
       if (sub) {
         for (const lst of sub.lists || []) {
-          for (const file of lst.files || []) {
-            files.push({ cat, sub, lst, file });
-          }
+          for (const file of lst.files || []) files.push({ cat, sub, lst, file });
         }
         title = `${sub.name} — Files`;
       }
@@ -326,7 +277,14 @@
     }
   }
 
-  // Utils
+  document.getElementById("searchBtn").onclick = ()=>{
+    state.search = document.getElementById("searchInput").value;
+    renderFiles();
+  };
+  document.getElementById("searchInput").addEventListener("keydown", e=>{
+    if(e.key==="Enter"){ document.getElementById("searchBtn").click(); }
+  });
+
   function humanFileSize(bytes){
     const thresh=1024;if(Math.abs(bytes)<thresh)return bytes+" B";
     const units=["KB","MB","GB","TB"];let u=-1;do{bytes/=thresh;++u}while(Math.abs(bytes)>=thresh&&u<units.length-1);
@@ -336,16 +294,6 @@
     return String(s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   }
 
-  // Events
-  document.getElementById("searchBtn").onclick = ()=>{
-    state.search = document.getElementById("searchInput").value;
-    renderFiles();
-  };
-  document.getElementById("searchInput").addEventListener("keydown", e=>{
-    if(e.key==="Enter"){ document.getElementById("searchBtn").click(); }
-  });
-
-  // Init
   document.getElementById("year").textContent = new Date().getFullYear();
   (async ()=>{
     try{
