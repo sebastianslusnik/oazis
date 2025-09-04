@@ -652,7 +652,8 @@
 			setStatus(String(e))
 		}
 	}
-	document.getElementById('btnRefresh').onclick = () => load() document.getElementById('btnUp').onclick = () => {
+	document.getElementById('btnRefresh').onclick = () => load()
+	document.getElementById('btnUp').onclick = () => {
 		let p = parentPath(currentPath);
 		if(p === currentPath) return;
 		currentPath = p;
