@@ -154,7 +154,7 @@
   const FILE_HOST = "fileio";
 
   // Optional simple password gate for this page
-  const ADMIN_LOCK_KEY = "evergreen_admin_lock";
+  const ADMIN_LOCK_KEY = "admin";
   function applyLock() {
     const saved = localStorage.getItem(ADMIN_LOCK_KEY);
     if (!saved) return;
