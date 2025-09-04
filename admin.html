@@ -1,8 +1,9 @@
 <!doctype html>
 <html lang="en">
+
 <head>
 	<meta charset="utf-8" />
-	<title>Supabase Storage PDF Upload + Folder Manager</title>
+	<title>Supabase Storage PDF Upload + Folders</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<style>
 	:root {
@@ -13,155 +14,137 @@
 		--muted: #6b7280;
 		--danger: #dc2626;
 		--success: #16a34a;
-		--border: #e5e7eb;
+		--border: #e5e7eb
 	}
+
 	body {
 		margin: 0;
 		background: var(--bg);
 		color: var(--text);
 		font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
-		min-height: 100vh;
+		min-height: 100vh
 	}
+
 	.container {
-		max-width: 1100px;
-		margin: 32px auto;
-		padding: 0 20px;
+		max-width: 1140px;
+		margin: 40px auto;
+		padding: 0 20px
 	}
+
 	h1 {
 		font-size: 1.6rem;
-		margin: 0 0 8px;
+		margin: 0 0 8px
 	}
+
 	p {
 		color: var(--muted);
-		margin: 0 0 18px;
+		margin: 0 0 18px
 	}
+
 	.panel {
 		background: var(--panel);
 		border: 1px solid var(--border);
-		border-radius: 12px;
+		border-radius: 16px;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-		padding: 16px;
+		padding: 18px
 	}
+
 	.grid {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: 16px;
+		gap: 16px
 	}
-	@media (min-width: 1100px) {
+
+	@media(min-width:1100px) {
 		.grid {
-			grid-template-columns: 360px 1fr;
+			grid-template-columns: 1fr 1fr
 		}
 	}
+
+	.dropzone {
+		border: 2px dashed var(--border);
+		border-radius: 14px;
+		padding: 28px;
+		text-align: center;
+		transition: border-color .2s, background .2s;
+		cursor: pointer;
+		background: #fafafa
+	}
+
+	.dropzone.dragover {
+		border-color: var(--accent);
+		background: #f3f4f6
+	}
+
+	.hint {
+		color: var(--muted);
+		font-size: .95rem;
+		margin-top: 6px
+	}
+
 	.controls {
-		margin-top: 12px;
+		margin-top: 14px;
 		display: flex;
 		gap: 10px;
 		justify-content: center;
-		flex-wrap: wrap;
+		flex-wrap: wrap
 	}
+
 	.btn {
 		appearance: none;
 		border: 1px solid var(--border);
 		background: #ffffff;
 		color: var(--text);
-		padding: 8px 12px;
+		padding: 10px 14px;
 		border-radius: 10px;
 		cursor: pointer;
 		font-weight: 600;
-		transition: transform .06s ease, background .12s, box-shadow .12s;
+		transition: transform .06s ease, background .2s, box-shadow .2s
 	}
+
 	.btn:hover {
 		background: #f9fafb;
-		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04)
 	}
+
+	.btn:active {
+		transform: translateY(1px)
+	}
+
 	.btn.primary {
 		border-color: var(--accent);
 		background: var(--accent);
-		color: #ffffff;
+		color: #ffffff
 	}
-	.small {
-		font-size: .9rem;
-		color: var(--muted);
-	}
-	.dropzone {
-		border: 2px dashed var(--border);
-		border-radius: 10px;
-		padding: 18px;
-		text-align: center;
-		transition: border-color .2s, background .2s;
-		cursor: pointer;
-		background: #fafafa;
-	}
-	.dropzone.dragover {
-		border-color: var(--accent);
-		background: #f3f4f6;
-	}
-	.hint {
-		color: var(--muted);
-		font-size: .95rem;
-		margin-top: 6px;
-	}
+
 	.status {
 		margin-top: 10px;
 		min-height: 18px;
-		font-size: .95rem;
+		font-size: .95rem
 	}
+
 	.status.ok {
-		color: var(--success);
+		color: var(--success)
 	}
+
 	.status.err {
-		color: var(--danger);
+		color: var(--danger)
 	}
-	.panel-title {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-bottom: 10px;
-	}
-	.folder-tree {
-		max-height: 520px;
-		overflow: auto;
-		margin-top: 8px;
-	}
-	.folder-row {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 6px 8px;
-		border-radius: 8px;
-	}
-	.folder-row:hover {
-		background: #f9fafb;
-	}
-	.folder-name {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		font-weight: 600;
-	}
-	.folder-actions {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-	}
-	.input, .select {
-		padding: 8px;
-		border-radius: 8px;
-		border: 1px solid var(--border);
-		font-size: .95rem;
-	}
+
 	.gallery {
 		display: grid;
 		grid-template-columns: 1fr;
 		gap: 14px;
-		margin-top: 8px;
+		margin-top: 8px
 	}
+
 	.card {
 		background: var(--panel);
 		border: 1px solid var(--border);
-		border-radius: 10px;
-		overflow: hidden;
+		border-radius: 12px;
+		overflow: hidden
 	}
+
 	.card-header {
 		display: flex;
 		align-items: center;
@@ -169,170 +152,285 @@
 		gap: 10px;
 		padding: 10px 12px;
 		border-bottom: 1px solid var(--border);
-		background: #f9fafb;
+		background: #f9fafb
 	}
+
 	.name {
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
 		font-weight: 600;
-		font-size: .95rem;
+		font-size: .95rem
 	}
+
 	.links a {
 		color: var(--accent);
 		text-decoration: none;
 		font-weight: 600;
-		margin-left: 10px;
+		margin-left: 10px
 	}
+
 	.viewer {
 		width: 100%;
 		height: 380px;
 		border: 0;
 		display: none;
-		background: #f3f4f6;
+		background: #f3f4f6
 	}
-	.path-btn {
-		padding: 6px 8px;
-		border-radius: 8px;
-		border: 1px solid var(--border);
-		background: #fff;
-		cursor: pointer;
-		font-size: .85rem;
-	}
-	.modal {
-		position: fixed;
-		inset: 0;
-		display: none;
-		align-items: center;
-		justify-content: center;
-		background: rgba(0,0,0,0.35);
-		z-index: 1200;
-	}
-	.modal.open {
-		display: flex;
-	}
-	.modal-panel {
-		width: 720px;
-		max-width: calc(100% - 40px);
-		background: var(--panel);
-		border-radius: 10px;
-		padding: 16px;
-		box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-	}
-	.modal-row {
-		display: flex;
-		gap: 10px;
-		margin-bottom: 10px;
-		align-items: center;
-	}
-	.kv {
-		color: var(--muted);
-		font-size: .9rem;
-	}
+
 	.empty {
 		color: var(--muted);
 		padding: 10px;
-		font-style: italic;
+		font-style: italic
 	}
-	.search {
-		padding: 8px;
-		border-radius: 8px;
-		border: 1px solid var(--border);
+
+	.small {
+		font-size: .9rem;
+		color: var(--muted)
+	}
+
+	.section-title {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 8px
+	}
+
+	.row {
+		display: flex;
+		gap: 16px;
+		flex-wrap: wrap
+	}
+
+	.col {
+		flex: 1 1 320px
+	}
+
+	.input {
 		width: 100%;
+		padding: 10px 12px;
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		background: #fff
 	}
-	.footer {
-		margin-top: 12px;
+
+	.label {
+		font-size: .9rem;
+		color: var(--muted);
+		margin-bottom: 6px
+	}
+
+	.tree {
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		padding: 10px;
+		max-height: 420px;
+		overflow: auto;
+		background: #fafafa
+	}
+
+	.tree ul {
+		list-style: none;
+		margin: 0;
+		padding-left: 16px
+	}
+
+	.tree li {
+		margin: 4px 0
+	}
+
+	.tree .node {
+		display: flex;
+		align-items: center;
+		gap: 8px
+	}
+
+	.badge {
+		display: inline-block;
+		font-size: .75rem;
+		padding: 2px 8px;
+		border-radius: 999px;
+		border: 1px solid var(--border);
+		background: #fff;
+		color: var(--muted)
+	}
+
+	.pathbar {
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+		background: #f3f4f6;
+		border: 1px dashed var(--border);
+		border-radius: 8px;
+		padding: 6px 8px;
+		color: #374151
+	}
+
+	.kv {
+		display: flex;
+		align-items: center;
+		gap: 8px
+	}
+
+	.kv input {
+		flex: 1
+	}
+
+	.toolbar {
 		display: flex;
 		gap: 8px;
+		flex-wrap: wrap;
+		margin-top: 10px
+	}
+
+	hr.sep {
+		border: 0;
+		border-top: 1px solid var(--border);
+		margin: 12px 0
+	}
+
+	.select {
+		padding: 10px 12px;
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		background: #fff;
+		width: 100%
+	}
+
+	.modal {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.5);
+		display: none;
+		align-items: center;
+		justify-content: center;
+		padding: 20px;
+		z-index: 1000
+	}
+
+	.modal .dialog {
+		background: #fff;
+		border-radius: 14px;
+		max-width: 720px;
+		width: 100%;
+		padding: 16px;
+		border: 1px solid var(--border)
+	}
+
+	.modal .dialog .header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 10px
+	}
+
+	.modal .dialog .body {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 12px
+	}
+
+	@media(min-width:800px) {
+		.modal .dialog .body {
+			grid-template-columns: 1fr 1fr
+		}
+	}
+
+	.modal .actions {
+		display: flex;
 		justify-content: flex-end;
+		gap: 10px;
+		margin-top: 12px
+	}
+
+	.file-item {
+		display: flex;
+		align-items: center;
+		gap: 8px
+	}
+
+	.file-item .fname {
+		flex: 1;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap
+	}
+
+	.muted {
+		color: var(--muted)
 	}
 	</style>
 </head>
+
 <body>
 	<div class="container">
-		<h1>PDF Uploader with Folder Manager</h1>
-		<p>Drop a PDF or choose a file. Use the folder manager to create and manage folders, assign PDFs to folders when uploading or later.</p>
+		<h1>PDF Uploader (Supabase Storage)</h1>
+		<p>Drop a PDF or choose a file. Manage folders, place PDFs into folders, and view the full structure.</p>
 		<div class="grid">
 			<div class="panel">
-				<div class="panel-title">
-					<div style="display:flex;align-items:center;gap:10px;">
-						<h2 style="margin:0;font-size:1.05rem;">Folders</h2>
-						<div class="small">Bucket: <code>pdfs</code></div>
-					</div>
-					<button id="refreshBtn" class="btn">Refresh</button>
-				</div>
-				<div style="display:flex;gap:8px;margin-bottom:8px;">
-					<input id="newFolderName" class="input" placeholder="New folder name" />
-					<select id="newFolderParent" class="select"></select>
-					<button id="createFolderBtn" class="btn primary">Create</button>
-				</div>
-				<div style="display:flex;gap:8px;margin-bottom:8px;">
-					<input id="folderSearch" class="search" placeholder="Search folders" />
-				</div>
-				<div class="folder-tree" id="folderTree"></div>
-				<div style="margin-top:12px;display:flex;gap:8px;">
-					<button id="exportStructureBtn" class="btn">Export JSON</button>
-					<button id="importStructureBtn" class="btn">Import JSON</button>
-				</div>
-			</div>
-			<div class="panel">
-				<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-					<div style="display:flex;flex-direction:column;">
-						<h2 style="margin:0;font-size:1.1rem;">Upload PDF</h2>
-						<div class="small">Choose a destination folder before uploading</div>
-					</div>
-					<div style="display:flex;gap:8px;align-items:center;">
-						<select id="uploadFolderSelect" class="select"></select>
-						<button id="chooseBtn" class="btn">Choose PDF</button>
-						<button id="uploadBtn" class="btn primary">Upload</button>
-					</div>
-				</div>
 				<div id="dropzone" class="dropzone">
 					<div><strong>Drop PDF here</strong> or click to choose</div>
-					<div class="hint">Max 20 MB • Only application/pdf</div>
-					<input id="fileInput" type="file" accept="application/pdf" hidden />
+					<div class="hint">Max 20 MB • Only application/pdf</div> <input id="fileInput" type="file" accept="application/pdf" hidden />
 				</div>
+				<div class="controls"> <button id="chooseBtn" class="btn">Choose PDF</button> <select id="uploadPathSelect" class="select" style="max-width:320px"></select> <button id="uploadBtn" class="btn primary">Upload</button> </div>
 				<div id="status" class="status"></div>
-				<div style="margin-top:12px;display:flex;gap:8px;align-items:center;">
-					<input id="searchInput" class="search" placeholder="Search PDFs by name or folder" />
+				<div class="small">Bucket: <code>pdfs</code></div>
+			</div>
+			<div class="panel">
+				<div class="section-title">
+					<h2 style="margin:0;font-size:1.1rem;">Uploaded PDFs</h2>
+					<div class="row" style="gap:8px"> <button id="refreshBtn" class="btn">Refresh</button> </div>
 				</div>
-				<div class="gallery" id="gallery"></div>
+				<div id="gallery" class="gallery"></div>
 				<div id="emptyState" class="empty" style="display:none;">No PDFs yet.</div>
 			</div>
 		</div>
-	</div>
-
-	<div id="pathModal" class="modal">
-		<div class="modal-panel">
-			<h3 style="margin-top:0">Edit file path</h3>
-			<div class="modal-row">
-				<div style="flex:1">
-					<div class="kv">File</div>
-					<div id="modalFileName" style="font-weight:600"></div>
+		<div class="grid" style="margin-top:16px">
+			<div class="panel col">
+				<div class="section-title">
+					<h2 style="margin:0;font-size:1.1rem;">Folder Manager</h2> <span class="badge">JSONBin</span>
 				</div>
-				<div style="width:260px">
-					<div class="kv">Folder</div>
-					<select id="modalFolderSelect" class="select" style="width:100%"></select>
+				<div class="label">Selected Path</div>
+				<div id="selectedPath" class="pathbar">/</div>
+				<div class="toolbar"> <input id="newFolderName" class="input" placeholder="New folder name" style="max-width:240px" /> <button id="addFolderBtn" class="btn">Add Here</button> <button id="renameFolderBtn" class="btn">Rename</button> <button id="removeFolderBtn" class="btn">Remove</button> </div>
+				<div class="small" style="margin-top:6px">Empty folders are stored in JSONBin. Files appear under their actual storage paths.</div>
+				<div class="small" style="margin-top:6px">Bin ID: <code>68b9d3d8d0ea881f4071c182</code></div>
+			</div>
+			<div class="panel col">
+				<div class="section-title">
+					<h2 style="margin:0;font-size:1.1rem;">Structure</h2> <button id="reloadStructureBtn" class="btn">Reload</button>
 				</div>
-			</div>
-			<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-				<button id="modalMoveBtn" class="btn primary">Move</button>
-				<button id="modalRemoveFromFolderBtn" class="btn">Remove from folder</button>
-				<button id="modalCloseBtn" class="btn">Close</button>
-			</div>
-			<div class="footer" style="justify-content:flex-start">
-				<div id="modalStatus" class="small kv"></div>
+				<div id="structureTree" class="tree"></div>
 			</div>
 		</div>
 	</div>
-
+	<div id="pathModal" class="modal">
+		<div class="dialog">
+			<div class="header">
+				<div style="font-weight:700">Move PDF</div> <button id="closePathModal" class="btn">Close</button>
+			</div>
+			<div class="body">
+				<div>
+					<div class="label">Current</div>
+					<div id="currentFilePath" class="pathbar"></div>
+					<div class="label" style="margin-top:8px">Choose New Path</div>
+					<div id="modalTree" class="tree"></div>
+				</div>
+				<div>
+					<div class="label">Or type a new path</div> <input id="typedPath" class="input" placeholder="e.g. Reports/2025/Q1" />
+					<div class="small" style="margin-top:6px">Use "/" to create nested folders. Leave empty for root.</div>
+					<hr class="sep" />
+					<div class="file-item"> <span class="muted">File:</span> <span id="modalFileName" class="fname"></span> </div>
+					<div class="label" style="margin-top:8px">Resulting Key</div>
+					<div id="resultingKey" class="pathbar"></div>
+				</div>
+			</div>
+			<div class="actions"> <button id="moveConfirmBtn" class="btn primary">Move</button> </div>
+		</div>
+	</div>
 	<script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" crossorigin="anonymous"></script>
 	<script>
 	const SUPABASE_URL = "https://vehpvfcjceglrftdjlje.supabase.co";
 	const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlaHB2ZmNqY2VnbHJmdGRqbGplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwMTQ5NDEsImV4cCI6MjA3MjU5MDk0MX0.yqZTnMDvCuCqTD9ptkj_Nc-qsvKne-06k8gaRtnYNxc";
 	const BUCKET = "pdfs";
-	const JSONBIN_ID = "68b9d3d8d0ea881f4071c182";
-	const JSONBIN_SECRET = "";
 	const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 	const dropzone = document.getElementById('dropzone');
 	const fileInput = document.getElementById('fileInput');
@@ -342,71 +440,289 @@
 	const galleryEl = document.getElementById('gallery');
 	const emptyStateEl = document.getElementById('emptyState');
 	const refreshBtn = document.getElementById('refreshBtn');
-	const uploadFolderSelect = document.getElementById('uploadFolderSelect');
-	const newFolderName = document.getElementById('newFolderName');
-	const newFolderParent = document.getElementById('newFolderParent');
-	const createFolderBtn = document.getElementById('createFolderBtn');
-	const folderTree = document.getElementById('folderTree');
-	const folderSearch = document.getElementById('folderSearch');
-	const searchInput = document.getElementById('searchInput');
-	const exportStructureBtn = document.getElementById('exportStructureBtn');
-	const importStructureBtn = document.getElementById('importStructureBtn');
-	const folderResults = [];
+	const uploadPathSelect = document.getElementById('uploadPathSelect');
+	const structureTreeEl = document.getElementById('structureTree');
+	const reloadStructureBtn = document.getElementById('reloadStructureBtn');
+	const selectedPathEl = document.getElementById('selectedPath');
+	const newFolderNameInput = document.getElementById('newFolderName');
+	const addFolderBtn = document.getElementById('addFolderBtn');
+	const renameFolderBtn = document.getElementById('renameFolderBtn');
+	const removeFolderBtn = document.getElementById('removeFolderBtn');
+	const pathModal = document.getElementById('pathModal');
+	const closePathModalBtn = document.getElementById('closePathModal');
+	const modalTreeEl = document.getElementById('modalTree');
+	const typedPathInput = document.getElementById('typedPath');
+	const resultingKeyEl = document.getElementById('resultingKey');
+	const currentFilePathEl = document.getElementById('currentFilePath');
+	const modalFileNameEl = document.getElementById('modalFileName');
+	const moveConfirmBtn = document.getElementById('moveConfirmBtn');
+	const BIN_ID = "68b9d3d8d0ea881f4071c182";
+	const BIN_URL_LATEST = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`;
+	const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+	const JSONBIN_KEY = "$2a$10$9sO/ja29sMebpWNvsWmp5.dJ6lv7CPeLBMRFaA/cAEwz42ii6qlCS";
 	let selectedFile = null;
-	let structure = { folders: [""], files: {} };
-	let storageList = [];
-	async function safeFetchJson(url, opts) {
-		const res = await fetch(url, opts);
-		if(res.status === 404) return null;
-		const j = await res.json().catch(()=>null);
-		return { status: res.status, json: j };
-	}
-	async function loadStructure() {
-		const r = await safeFetchJson(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`);
-		if(r && r.status >= 200 && r.status < 300 && r.json && r.json.record) {
-			structure = r.json.record;
-			if(!structure.folders) structure.folders = [""];
-			if(!structure.files) structure.files = {};
-		} else {
-			structure = { folders: [""], files: {} };
-			await saveStructure();
-		}
-		renderFolderControls();
-	}
-	async function saveStructure() {
-		if(!JSONBIN_SECRET) return;
-		await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-Master-Key': '$2a$10$9sO/ja29sMebpWNvsWmp5.dJ6lv7CPeLBMRFaA/cAEwz42ii6qlCS'
-			},
-			body: JSON.stringify(structure)
-		});
-	}
+	let folderTree = {
+		folders: []
+	};
+	let selectedFolderPath = "";
+	let allFiles = [];
+	let moveContext = {
+		fromKey: "",
+		baseName: "",
+		toPath: ""
+	};
+
 	function setStatus(msg, type) {
 		statusEl.className = 'status' + (type ? ' ' + type : '');
-		statusEl.textContent = msg || '';
+		statusEl.textContent = msg || ''
 	}
+
 	function sanitizeName(name) {
 		const base = name.replace(/\s+/g, '_').replace(/[^\w.\-]/g, '');
-		return base.replace(/^\.+/, '');
+		return base.replace(/^\.+/, '')
 	}
+
 	function uid() {
-		return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+		return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8)
 	}
+
 	function formatDisplayName(filename) {
-		let name = filename.replace(/^[^_]+_/, '');
+		let name = filename.replace(/^[^/]+\/+/, '');
+		name = name.replace(/^[^_]+_/, '');
 		name = name.replace(/\.pdf$/i, '');
 		name = name.replace(/_/g, ' ');
 		name = name.replace(/\s+/g, ' ').trim();
-		return name;
+		return name
+	}
+
+	function pathJoin(a, b) {
+		if(!a) return b || '';
+		if(!b) return a;
+		return a.replace(/\/+$/, '') + '/' + b.replace(/^\/+/, '')
+	}
+
+	function getDirname(key) {
+		const i = key.lastIndexOf('/');
+		return i === -1 ? '' : key.slice(0, i)
+	}
+
+	function getBasename(key) {
+		const i = key.lastIndexOf('/');
+		return i === -1 ? key : key.slice(i + 1)
+	}
+
+	function uniquePathsFromTree(tree, prefix = "") {
+		let arr = [""];
+		for(const f of tree.folders || []) {
+			const p = pathJoin(prefix, f.name);
+			arr.push(p);
+			arr = arr.concat(uniquePathsFromTree({
+				folders: f.children || []
+			}, p))
+		}
+		return Array.from(new Set(arr))
+	}
+
+	function ensurePathInTree(path) {
+		const parts = (path || "").split('/').filter(Boolean);
+		let node = folderTree;
+		for(const part of parts) {
+			let next = (node.folders || []).find(x => x.name === part);
+			if(!next) {
+				if(!node.folders) node.folders = [];
+				next = {
+					name: part,
+					children: []
+				};
+				node.folders.push(next)
+			}
+			node = {
+				folders: next.children
+			}
+		}
+	}
+	async function jsonbinFetchLatest() {
+		try {
+			const r = await fetch(BIN_URL_LATEST);
+			if(!r.ok) return null;
+			const j = await r.json();
+			return j.record || null
+		} catch {
+			return null
+		}
+	}
+	async function jsonbinSave(record) {
+		if(!JSONBIN_KEY) return false;
+		const r = await fetch(BIN_URL, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-Master-Key': JSONBIN_KEY
+			},
+			body: JSON.stringify(record)
+		});
+		if(!r.ok) {
+			return false
+		}
+		return true
+	}
+
+	function renderUploadPathSelect() {
+		const paths = uniquePathsFromTree(folderTree);
+		uploadPathSelect.innerHTML = '';
+		for(const p of paths) {
+			const opt = document.createElement('option');
+			opt.value = p;
+			opt.textContent = p ? '/' + p : '/(root)';
+			uploadPathSelect.appendChild(opt)
+		}
+	}
+
+	function renderSelectedPath() {
+		selectedPathEl.textContent = selectedFolderPath ? '/' + selectedFolderPath : '/'
+	}
+
+	function renderTreeWithFiles(container, tree, files, clickFolderCb) {
+		container.innerHTML = '';
+		const rootUl = document.createElement('ul');
+		container.appendChild(rootUl);
+
+		function liFolder(path, name) {
+			const li = document.createElement('li');
+			const row = document.createElement('div');
+			row.className = 'node';
+			const btn = document.createElement('button');
+			btn.className = 'btn';
+			btn.style.padding = '4px 8px';
+			btn.textContent = '▾';
+			btn.dataset.expanded = '1';
+			btn.onclick = () => {
+				const exp = btn.dataset.expanded === '1';
+				btn.dataset.expanded = exp ? '0' : '1';
+				btn.textContent = exp ? '▸' : '▾';
+				content.style.display = exp ? 'none' : 'block'
+			};
+			const a = document.createElement('a');
+			a.href = "#";
+			a.textContent = name || '(root)';
+			a.onclick = (e) => {
+				e.preventDefault();
+				clickFolderCb(path)
+			};
+			row.appendChild(btn);
+			row.appendChild(a);
+			li.appendChild(row);
+			const content = document.createElement('div');
+			content.style.marginLeft = '16px';
+			li.appendChild(content);
+			return {
+				li,
+				content
+			}
+		}
+
+		function addFolderNode(parentUl, nodePath, node) {
+			const {
+				li,
+				content
+			} = liFolder(nodePath, node.name);
+			parentUl.appendChild(li);
+			const subUl = document.createElement('ul');
+			content.appendChild(subUl);
+			for(const child of (node.children || [])) {
+				const childPath = pathJoin(nodePath, child.name);
+				addFolderNode(subUl, childPath, child)
+			}
+			const subFiles = files.filter(f => getDirname(f.key) === nodePath);
+			if(subFiles.length) {
+				const filesUl = document.createElement('ul');
+				for(const f of subFiles) {
+					const li = document.createElement('li');
+					const row = document.createElement('div');
+					row.className = 'file-item';
+					const span = document.createElement('span');
+					span.className = 'fname';
+					span.textContent = getBasename(f.key);
+					const a = document.createElement('a');
+					a.href = f.publicUrl;
+					a.target = '_blank';
+					a.rel = 'noopener';
+					a.textContent = 'Open';
+					a.style.marginLeft = '8px';
+					const btn = document.createElement('button');
+					btn.className = 'btn';
+					btn.style.padding = '4px 8px';
+					btn.textContent = 'Move';
+					btn.onclick = () => openPathModal(f.key);
+					row.appendChild(span);
+					row.appendChild(a);
+					row.appendChild(btn);
+					li.appendChild(row);
+					filesUl.appendChild(li)
+				}
+				content.appendChild(filesUl)
+			}
+		}
+		const inferredFolders = new Set(files.map(f => getDirname(f.key)).filter(Boolean));
+		for(const p of inferredFolders) {
+			ensurePathInTree(p)
+		}
+		const header = liFolder('', '(root)');
+		rootUl.appendChild(header.li);
+		const rootFiles = files.filter(f => getDirname(f.key) === '');
+		if(rootFiles.length) {
+			const filesUl = document.createElement('ul');
+			for(const f of rootFiles) {
+				const li = document.createElement('li');
+				const row = document.createElement('div');
+				row.className = 'file-item';
+				const span = document.createElement('span');
+				span.className = 'fname';
+				span.textContent = getBasename(f.key);
+				const a = document.createElement('a');
+				a.href = f.publicUrl;
+				a.target = '_blank';
+				a.rel = 'noopener';
+				a.textContent = 'Open';
+				a.style.marginLeft = '8px';
+				const btn = document.createElement('button');
+				btn.className = 'btn';
+				btn.style.padding = '4px 8px';
+				btn.textContent = 'Move';
+				btn.onclick = () => openPathModal(f.key);
+				row.appendChild(span);
+				row.appendChild(a);
+				row.appendChild(btn);
+				li.appendChild(row);
+				filesUl.appendChild(li)
+			}
+			header.content.appendChild(filesUl)
+		}
+		const subUl = document.createElement('ul');
+		header.content.appendChild(subUl);
+		for(const f of folderTree.folders || []) {
+			addFolderNode(subUl, f.name, f)
+		}
+	}
+
+	function renderFolderManagerTree() {
+		renderTreeWithFiles(structureTreeEl, folderTree, allFiles, (path) => {
+			selectedFolderPath = path || '';
+			renderSelectedPath();
+			updateUploadSelection(path)
+		})
+	}
+
+	function updateUploadSelection(path) {
+		const opts = [...uploadPathSelect.options];
+		const found = opts.find(o => o.value === path);
+		if(found) uploadPathSelect.value = path
 	}
 	dropzone.addEventListener('click', () => fileInput.click());
 	chooseBtn.addEventListener('click', () => fileInput.click());
 	dropzone.addEventListener('dragover', (e) => {
 		e.preventDefault();
-		dropzone.classList.add('dragover');
+		dropzone.classList.add('dragover')
 	});
 	dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
 	dropzone.addEventListener('drop', (e) => {
@@ -414,388 +730,358 @@
 		dropzone.classList.remove('dragover');
 		if(!e.dataTransfer.files || !e.dataTransfer.files.length) return;
 		const file = e.dataTransfer.files[0];
-		handleSelect(file);
+		handleSelect(file)
 	});
 	fileInput.addEventListener('change', (e) => {
 		const file = e.target.files && e.target.files[0];
-		handleSelect(file);
+		handleSelect(file)
 	});
+
 	function handleSelect(file) {
 		if(!file) return;
 		if(file.type !== 'application/pdf') {
 			setStatus('Only PDFs are allowed.', 'err');
 			selectedFile = null;
-			return;
+			return
 		}
 		const maxBytes = 20 * 1024 * 1024;
 		if(file.size > maxBytes) {
 			setStatus('File too large. Max 20 MB.', 'err');
 			selectedFile = null;
-			return;
+			return
 		}
 		selectedFile = file;
-		setStatus(`Selected: ${file.name} (${(file.size/1024/1024).toFixed(2)} MB)`);
+		setStatus(`Selected: ${file.name} (${(file.size/1024/1024).toFixed(2)} MB)`)
 	}
 	uploadBtn.addEventListener('click', async () => {
 		if(!selectedFile) {
 			setStatus('Pick a PDF first.', 'err');
-			return;
+			return
 		}
 		try {
-			const targetFolder = uploadFolderSelect.value;
-			await uploadPdf(selectedFile, targetFolder);
+			await uploadPdf(selectedFile, uploadPathSelect.value || '');
 			selectedFile = null;
 			fileInput.value = '';
 			setStatus('Upload complete.', 'ok');
-			await refreshAll();
+			await reloadAll()
 		} catch (err) {
-			setStatus(err.message || 'Upload failed.', 'err');
+			setStatus(err.message || 'Upload failed.', 'err')
 		}
 	});
-	refreshBtn.addEventListener('click', refreshAll);
-	createFolderBtn.addEventListener('click', async () => {
-		const name = (newFolderName.value || '').trim();
-		const parent = newFolderParent.value || "";
-		if(!name) return;
-		let newPath = parent ? `${parent}/${name}` : name;
-		newPath = newPath.replace(/\/\/+/g, '/').replace(/^\//, '').replace(/\/$/, '');
-		if(structure.folders.includes(newPath)) {
-			newFolderName.value = '';
-			await renderFolderControls();
-			return;
-		}
-		structure.folders.push(newPath);
-		structure.folders.sort();
-		newFolderName.value = '';
-		await saveStructure();
-		await renderFolderControls();
-	});
-	folderSearch.addEventListener('input', ()=> renderFolderControls());
-	searchInput.addEventListener('input', ()=> renderGallery());
-	exportStructureBtn.addEventListener('click', ()=> {
-		const blob = new Blob([JSON.stringify(structure, null, 2)], {type:'application/json'});
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = 'folders-structure.json';
-		document.body.appendChild(a);
-		a.click();
-		a.remove();
-		URL.revokeObjectURL(url);
-	});
-	importStructureBtn.addEventListener('click', ()=> {
-		const inp = document.createElement('input');
-		inp.type = 'file';
-		inp.accept = 'application/json';
-		inp.onchange = async (e) => {
-			const f = e.target.files[0];
-			if(!f) return;
-			const text = await f.text();
-			try {
-				const obj = JSON.parse(text);
-				if(!obj.folders) obj.folders = [""];
-				if(!obj.files) obj.files = {};
-				structure = obj;
-				await saveStructure();
-				await renderFolderControls();
-				await refreshAll();
-			} catch(e) {}
-		};
-		inp.click();
-	});
-	async function uploadPdf(file, folder) {
+	refreshBtn.addEventListener('click', reloadAll);
+	async function uploadPdf(file, folderPath) {
 		setStatus('Uploading…');
 		const safeName = sanitizeName(file.name);
-		const id = uid();
-		const baseName = `${id}_${safeName}`;
-		const filePath = folder ? `${folder}/${baseName}` : baseName;
-		const { data, error } = await supabase.storage.from(BUCKET).upload(filePath, file, {
+		const baseKey = (folderPath ? folderPath + '/' : '') + `${uid()}_${safeName}`;
+		const {
+			data,
+			error
+		} = await supabase.storage.from(BUCKET).upload(baseKey, file, {
 			contentType: file.type || 'application/pdf',
 			cacheControl: '3600',
 			upsert: false
 		});
 		if(error) throw error;
-		structure.files[id] = { filename: baseName, path: folder || "" };
-		await saveStructure();
-		return data;
+		return data
 	}
-	async function listStorage() {
-		const { data, error } = await supabase.storage.from(BUCKET).list('', {
-			limit: 1000,
-			offset: 0,
-			sortBy: {
-				column: 'updated_at',
-				order: 'desc'
-			}
-		});
-		if(error) {
-			setStatus(error.message, 'err');
-			return [];
-		}
-		return data || [];
-	}
-	function getIdFromName(name) {
-		const basename = name.split('/').pop();
-		const id = basename.split('_')[0];
-		return id;
-	}
-	function getFolderFromObject(objName) {
-		const id = getIdFromName(objName);
-		if(structure.files && structure.files[id] && typeof structure.files[id].path === 'string') {
-			return structure.files[id].path;
-		}
-		const parts = objName.split('/');
-		if(parts.length > 1) {
-			return parts.slice(0, -1).join('/');
-		}
-		return "";
-	}
-	async function moveFile(oldName, newFolder) {
-		const basename = oldName.split('/').pop();
-		const newName = newFolder ? `${newFolder}/${basename}` : basename;
-		let moveResult = null;
-		if(supabase.storage.from(BUCKET).move) {
-			try {
-				const { data, error } = await supabase.storage.from(BUCKET).move(oldName, newName);
-				if(error) throw error;
-				moveResult = data;
-			} catch(e) {
-				moveResult = null;
+	async function listRecursive(prefix = "") {
+		const out = [];
+		async function walk(path) {
+			const {
+				data,
+				error
+			} = await supabase.storage.from(BUCKET).list(path, {
+				limit: 1000
+			});
+			if(error) throw error;
+			for(const item of data || []) {
+				const key = pathJoin(path, item.name);
+				if(item.metadata === null) {
+					await walk(key)
+				} else {
+					const {
+						data: pub
+					} = supabase.storage.from(BUCKET).getPublicUrl(key);
+					out.push({
+						key,
+						publicUrl: pub.publicUrl
+					})
+				}
 			}
 		}
-		if(!moveResult) {
-			const { data: publicData, error: pubErr } = supabase.storage.from(BUCKET).getPublicUrl(oldName);
-			const url = publicData && publicData.publicUrl;
-			if(!url) throw new Error('Move failed');
-			const res = await fetch(url);
-			const blob = await res.blob();
-			const { data: up, error: upErr } = await supabase.storage.from(BUCKET).upload(newName, blob, { contentType: blob.type || 'application/pdf', upsert: false });
-			if(upErr) throw upErr;
-			const { error: delErr } = await supabase.storage.from(BUCKET).remove([oldName]);
-			if(delErr) throw delErr;
-		}
+		await walk(prefix);
+		return out
 	}
-	async function refreshAll() {
-		setStatus('Loading…');
-		await loadStructure();
-		storageList = await listStorage();
-		renderFolderControls();
-		renderGallery();
-		setStatus('');
-	}
-	function renderFolderControls() {
-		const q = (folderSearch.value || '').toLowerCase().trim();
-		const folders = Array.from(new Set(structure.folders)).sort((a,b)=> (a||'').localeCompare(b||''));
-		newFolderParent.innerHTML = '';
-		uploadFolderSelect.innerHTML = '';
-		const addOption = (sel, val) => {
-			const o = document.createElement('option');
-			o.value = val;
-			o.textContent = val || '(root)';
-			sel.appendChild(o);
-		};
-		addOption(newFolderParent, "");
-		addOption(uploadFolderSelect, "");
-		for(const f of folders) {
-			addOption(newFolderParent, f);
-			addOption(uploadFolderSelect, f);
-		}
-		folderTree.innerHTML = '';
-		for(const f of folders) {
-			if(q && !(f||'(root)').toLowerCase().includes(q)) continue;
-			const row = document.createElement('div');
-			row.className = 'folder-row';
-			const left = document.createElement('div');
-			left.className = 'folder-name';
-			const name = document.createElement('div');
-			name.style.fontWeight = '700';
-			name.textContent = f || '(root)';
-			const count = storageList.filter(s => getFolderFromObject(s.name) === f).length;
-			const small = document.createElement('div');
-			small.className = 'small';
-			small.textContent = `${count} file${count!==1?'s':''}`;
-			left.appendChild(name);
-			left.appendChild(small);
-			const actions = document.createElement('div');
-			actions.className = 'folder-actions';
-			const renameBtn = document.createElement('button');
-			renameBtn.className = 'btn';
-			renameBtn.textContent = 'Rename';
-			const delBtn = document.createElement('button');
-			delBtn.className = 'btn';
-			delBtn.textContent = 'Delete';
-			renameBtn.addEventListener('click', async () => {
-				const newName = prompt('New folder name', f || '');
-				if(newName === null) return;
-				const trimmed = (newName || '').trim();
-				if(trimmed === '') return;
-				const parent = "";
-				const newPath = parent ? `${parent}/${trimmed}` : trimmed;
-				const oldPath = f;
-				if(oldPath === newPath) return;
-				structure.folders = structure.folders.map(x => x === oldPath ? newPath : x);
-				for(const id of Object.keys(structure.files)) {
-					const p = structure.files[id].path || "";
-					if(p === oldPath || p.startsWith(oldPath + '/')) {
-						const suffix = p.slice(oldPath.length);
-						structure.files[id].path = (newPath + suffix).replace(/^\/+/,'');
-					}
-				}
-				await saveStructure();
-				await refreshAll();
-			});
-			delBtn.addEventListener('click', async () => {
-				const ok = confirm(`Delete folder "${f || '(root)'}"? Files in this folder will be moved to root.`);
-				if(!ok) return;
-				structure.folders = structure.folders.filter(x => x !== f);
-				for(const id of Object.keys(structure.files)) {
-					if(structure.files[id].path === f || (f && structure.files[id].path && structure.files[id].path.startsWith(f + '/'))) {
-						structure.files[id].path = "";
-					}
-				}
-				await saveStructure();
-				await refreshAll();
-			});
-			actions.appendChild(renameBtn);
-			if(f) actions.appendChild(delBtn);
-			row.appendChild(left);
-			row.appendChild(actions);
-			folderTree.appendChild(row);
-		}
-	}
-	function renderGallery() {
+	async function loadPdfsFlat() {
 		galleryEl.innerHTML = '';
-		const q = (searchInput.value || '').toLowerCase().trim();
-		if(!storageList || storageList.length === 0) {
+		setStatus('Loading…');
+		const files = await listRecursive('');
+		allFiles = files;
+		renderFolderManagerTree();
+		if(!files.length) {
 			emptyStateEl.style.display = 'block';
-			return;
+			setStatus('');
+			return
 		}
 		emptyStateEl.style.display = 'none';
-		for(const obj of storageList) {
-			const id = getIdFromName(obj.name);
-			const folder = getFolderFromObject(obj.name);
-			const displayName = formatDisplayName(obj.name.split('/').pop());
-			if(q) {
-				if(!displayName.toLowerCase().includes(q) && !(folder || '(root)').toLowerCase().includes(q)) continue;
-			}
-			const { data: pub } = supabase.storage.from(BUCKET).getPublicUrl(obj.name);
-			const publicUrl = pub && pub.publicUrl;
+		for(const f of files) {
 			const card = document.createElement('div');
 			card.className = 'card';
 			const header = document.createElement('div');
 			header.className = 'card-header';
 			const name = document.createElement('div');
 			name.className = 'name';
-			name.title = obj.name;
-			name.textContent = displayName;
+			name.title = f.key;
+			name.textContent = formatDisplayName(getBasename(f.key));
 			const links = document.createElement('div');
 			links.className = 'links';
 			const aOpen = document.createElement('a');
-			aOpen.href = publicUrl;
+			aOpen.href = f.publicUrl;
 			aOpen.target = '_blank';
 			aOpen.rel = 'noopener';
 			aOpen.textContent = 'Open';
 			const aDownload = document.createElement('a');
-			aDownload.href = publicUrl;
+			aDownload.href = f.publicUrl;
 			aDownload.download = '';
 			aDownload.textContent = 'Download';
+			const btnPath = document.createElement('a');
+			btnPath.href = '#';
+			btnPath.textContent = 'Path';
+			btnPath.onclick = (e) => {
+				e.preventDefault();
+				openPathModal(f.key)
+			};
 			links.appendChild(aOpen);
 			links.appendChild(aDownload);
+			links.appendChild(btnPath);
 			header.appendChild(name);
-			const right = document.createElement('div');
-			right.style.display = 'flex';
-			right.style.alignItems = 'center';
-			right.style.gap = '8px';
-			const pathBtn = document.createElement('button');
-			pathBtn.className = 'path-btn';
-			pathBtn.textContent = folder || '(root)';
-			pathBtn.addEventListener('click', ()=> openPathModal(obj));
-			right.appendChild(pathBtn);
-			header.appendChild(right);
-			card.appendChild(header);
+			header.appendChild(links);
 			const iframe = document.createElement('iframe');
 			iframe.className = 'viewer';
-			iframe.src = publicUrl + '#view=FitH';
+			iframe.src = f.publicUrl + '#view=FitH';
+			card.appendChild(header);
 			card.appendChild(iframe);
-			galleryEl.appendChild(card);
+			galleryEl.appendChild(card)
+		}
+		setStatus('')
+	}
+	async function loadFolderTree() {
+		const rec = await jsonbinFetchLatest();
+		folderTree = rec && rec.folders ? rec : {
+			folders: []
+		};
+		renderUploadPathSelect();
+		renderFolderManagerTree()
+	}
+	async function saveFolderTree() {
+		await jsonbinSave(folderTree);
+		renderUploadPathSelect();
+		renderFolderManagerTree()
+	}
+	reloadStructureBtn.addEventListener('click', reloadAll);
+	addFolderBtn.addEventListener('click', async () => {
+		const name = (newFolderNameInput.value || '').trim();
+		if(!name) {
+			setStatus('Enter a folder name.', 'err');
+			return
+		}
+		if(/[\\]/.test(name) || name.includes('/')) {
+			setStatus('Folder name cannot contain "/" or "\\".', 'err');
+			return
+		}
+		ensurePathInTree(selectedFolderPath);
+		const parts = (selectedFolderPath || "").split('/').filter(Boolean);
+		let node = folderTree;
+		for(const p of parts) {
+			node = (node.folders || []).find(x => x.name === p);
+			node = {
+				folders: node.children
+			}
+		}
+		if(!node.folders) node.folders = [];
+		if(node.folders.find(x => x.name === name)) {
+			setStatus('Folder already exists here.', 'err');
+			return
+		}
+		node.folders.push({
+			name,
+			children: []
+		});
+		try {
+			await saveFolderTree();
+			newFolderNameInput.value = '';
+			setStatus('Folder created.', 'ok')
+		} catch (e) {
+			setStatus('Folder saved locally (no JSONBin key).', 'ok')
+		}
+	});
+	renameFolderBtn.addEventListener('click', async () => {
+		if(!selectedFolderPath) {
+			setStatus('Select a folder to rename.', 'err');
+			return
+		}
+		const newName = (newFolderNameInput.value || '').trim();
+		if(!newName) {
+			setStatus('Enter a new name.', 'err');
+			return
+		}
+		if(newName.includes('/') || /[\\]/.test(newName)) {
+			setStatus('Invalid name.', 'err');
+			return
+		}
+		const parts = selectedFolderPath.split('/').filter(Boolean);
+		const oldName = parts.pop();
+		const parentPath = parts.join('/');
+		let parent = folderTree;
+		for(const p of parts) {
+			parent = (parent.folders || []).find(x => x.name === p);
+			parent = {
+				folders: parent.children
+			}
+		}
+		if(!parent.folders) {
+			setStatus('Internal error.', 'err');
+			return
+		}
+		if(parent.folders.find(x => x.name === newName)) {
+			setStatus('Name already exists.', 'err');
+			return
+		}
+		const nodeObj = (parent.folders || []).find(x => x.name === oldName);
+		const oldPrefix = selectedFolderPath;
+		const newPrefix = pathJoin(parentPath, newName);
+		try {
+			await moveAllUnderPrefix(oldPrefix, newPrefix);
+			nodeObj.name = newName;
+			try {
+				await saveFolderTree();
+				setStatus('Folder renamed.', 'ok')
+			} catch {
+				setStatus('Folder renamed locally (no JSONBin key).', 'ok')
+			}
+			selectedFolderPath = newPrefix;
+			renderSelectedPath();
+			await reloadAll();
+		} catch (e) {
+			setStatus(e.message || 'Rename failed.', 'err')
+		}
+	});
+	removeFolderBtn.addEventListener('click', async () => {
+		if(!selectedFolderPath) {
+			setStatus('Select a folder to remove.', 'err');
+			return
+		}
+		const hasFiles = allFiles.some(f => f.key.startsWith(selectedFolderPath + '/'));
+		if(hasFiles) {
+			setStatus('Folder not empty. Move files first.', 'err');
+			return
+		}
+		const parts = selectedFolderPath.split('/').filter(Boolean);
+		const name = parts.pop();
+		const parentPath = parts.join('/');
+		let parent = folderTree;
+		for(const p of parts) {
+			parent = (parent.folders || []).find(x => x.name === p);
+			parent = {
+				folders: parent.children
+			}
+		}
+		if(!parent.folders) {
+			setStatus('Internal error.', 'err');
+			return
+		}
+		const nodeObj = parent.folders.find(x => x.name === name);
+		if(nodeObj && nodeObj.children && nodeObj.children.length) {
+			setStatus('Folder has subfolders. Remove them first.', 'err');
+			return
+		}
+		parent.folders = parent.folders.filter(x => x.name !== name);
+		try {
+			await saveFolderTree();
+			selectedFolderPath = parentPath;
+			renderSelectedPath();
+			renderFolderManagerTree();
+			renderUploadPathSelect();
+			setStatus('Folder removed.', 'ok')
+		} catch (e) {
+			selectedFolderPath = parentPath;
+			renderSelectedPath();
+			renderFolderManagerTree();
+			renderUploadPathSelect();
+			setStatus('Folder removed locally (no JSONBin key).', 'ok')
+		}
+	});
+	async function moveAllUnderPrefix(oldPrefix, newPrefix) {
+		const items = allFiles.filter(f => f.key.startsWith(oldPrefix + '/'));
+		for(const f of items) {
+			const rest = f.key.slice(oldPrefix.length);
+			const newKey = (newPrefix ? newPrefix : '') + rest;
+			const {
+				error
+			} = await supabase.storage.from(BUCKET).move(f.key, newKey);
+			if(error) throw error
 		}
 	}
-	const pathModal = document.getElementById('pathModal');
-	const modalFileName = document.getElementById('modalFileName');
-	const modalFolderSelect = document.getElementById('modalFolderSelect');
-	const modalMoveBtn = document.getElementById('modalMoveBtn');
-	const modalRemoveFromFolderBtn = document.getElementById('modalRemoveFromFolderBtn');
-	const modalCloseBtn = document.getElementById('modalCloseBtn');
-	const modalStatus = document.getElementById('modalStatus');
-	let modalCurrent = null;
-	function openPathModal(obj) {
-		modalCurrent = obj;
-		modalFileName.textContent = obj.name.split('/').pop();
-		populateModalFolderSelect();
-		const currentFolder = getFolderFromObject(obj.name);
-		modalFolderSelect.value = currentFolder || "";
-		modalStatus.textContent = '';
-		pathModal.classList.add('open');
+
+	function openPathModal(key) {
+		moveContext.fromKey = key;
+		moveContext.baseName = getBasename(key);
+		moveContext.toPath = getDirname(key);
+		currentFilePathEl.textContent = key;
+		modalFileNameEl.textContent = moveContext.baseName;
+		typedPathInput.value = getDirname(key);
+		updateResultingKeyPreview();
+		renderTreeWithFiles(modalTreeEl, folderTree, [], (path) => {
+			typedPathInput.value = path || '';
+			updateResultingKeyPreview()
+		});
+		pathModal.style.display = 'flex'
 	}
+
 	function closePathModal() {
-		modalCurrent = null;
-		pathModal.classList.remove('open');
+		pathModal.style.display = 'none'
 	}
-	modalCloseBtn.addEventListener('click', ()=> closePathModal());
-	modalRemoveFromFolderBtn.addEventListener('click', async ()=> {
-		if(!modalCurrent) return;
-		const oldName = modalCurrent.name;
-		const id = getIdFromName(oldName);
-		try {
-			modalStatus.textContent = 'Moving…';
-			await moveFile(oldName, "");
-			if(structure.files[id]) structure.files[id].path = "";
-			await saveStructure();
-			await refreshAll();
+
+	function updateResultingKeyPreview() {
+		const typed = (typedPathInput.value || '').replace(/^\/+|\/+$/g, '');
+		const newKey = (typed ? typed + '/' : '') + moveContext.baseName;
+		resultingKeyEl.textContent = newKey;
+		moveContext.toPath = typed
+	}
+	typedPathInput.addEventListener('input', updateResultingKeyPreview);
+	closePathModalBtn.addEventListener('click', closePathModal);
+	moveConfirmBtn.addEventListener('click', async () => {
+		const newKey = (moveContext.toPath ? moveContext.toPath + '/' : '') + moveContext.baseName;
+		if(newKey === moveContext.fromKey) {
 			closePathModal();
-		} catch(e) {
-			modalStatus.textContent = 'Error moving file';
+			return
+		}
+		setStatus('Moving…');
+		try {
+			if(moveContext.toPath) ensurePathInTree(moveContext.toPath);
+			await supabase.storage.from(BUCKET).move(moveContext.fromKey, newKey);
+			try {
+				await saveFolderTree()
+			} catch {}
+			setStatus('Moved.', 'ok');
+			closePathModal();
+			await reloadAll();
+		} catch (e) {
+			setStatus(e.message || 'Move failed.', 'err')
 		}
 	});
-	modalMoveBtn.addEventListener('click', async ()=> {
-		if(!modalCurrent) return;
-		const newFolder = modalFolderSelect.value || "";
-		const oldName = modalCurrent.name;
-		const id = getIdFromName(oldName);
-		try {
-			modalStatus.textContent = 'Moving…';
-			await moveFile(oldName, newFolder);
-			if(!structure.files[id]) structure.files[id] = { filename: oldName.split('/').pop(), path: newFolder };
-			else structure.files[id].path = newFolder;
-			await saveStructure();
-			await refreshAll();
-			closePathModal();
-		} catch(e) {
-			modalStatus.textContent = 'Error moving file';
-		}
-	});
-	function populateModalFolderSelect() {
-		modalFolderSelect.innerHTML = '';
-		const folders = Array.from(new Set(structure.folders)).sort((a,b)=> (a||'').localeCompare(b||''));
-		const optRoot = document.createElement('option');
-		optRoot.value = "";
-		optRoot.textContent = '(root)';
-		modalFolderSelect.appendChild(optRoot);
-		for(const f of folders) {
-			if(!f) continue;
-			const o = document.createElement('option');
-			o.value = f;
-			o.textContent = f;
-			modalFolderSelect.appendChild(o);
-		}
+	async function reloadAll() {
+		await loadFolderTree();
+		await loadPdfsFlat()
 	}
 	async function init() {
-		await loadStructure();
-		storageList = await listStorage();
-		renderFolderControls();
-		renderGallery();
+		await loadFolderTree();
+		renderUploadPathSelect();
+		renderSelectedPath();
+		await loadPdfsFlat()
 	}
 	init();
 	</script>
 </body>
+
 </html>
