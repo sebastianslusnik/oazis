@@ -11,7 +11,6 @@
 body { margin: 0; background: linear-gradient(135deg, var(--bg), var(--bg-2)); background-attachment: fixed; color: var(--ink); font: 14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
 .app { display: flex; height: 100dvh; backdrop-filter: saturate(115%) blur(0px); }
 .left { width: 300px; min-width: 240px; max-width: 380px; border-right: 1px solid var(--border); background: color-mix(in oklab, var(--card) 92%, transparent); display: flex; flex-direction: column; }
-.logo { padding: 16px 18px; border-bottom: 1px solid var(--border); font-weight: 800; letter-spacing: .3px; font-size: 18px; background: linear-gradient(90deg, var(--primary), var(--primary-600), var(--primary-700), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .folders { flex: 1; overflow: auto; padding: 10px; }
 .folder { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; transition: transform .12s ease, background .12s ease, box-shadow .12s ease, border-color .12s ease; border: 1px solid transparent; }
 .folder:hover { background: var(--soft); border-color: var(--border); box-shadow: 0 1px 0 rgba(0,0,0,.02); transform: translateY(-1px); }
@@ -32,7 +31,7 @@ button:focus-visible, .button:focus-visible, input:focus-visible, select:focus-v
 .right .toolbar button { border-radius: var(--radius-sm); }
 .content { padding: 12px; overflow: auto; }
 table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-th, td { padding: 12px 14px; border-bottom: 1px solid var(--border); text-align: left; }
+th, td { padding: 12px 14px; border-bottom: 1px solid var(--border); text-align: left; text-transform: uppercase}
 th { background: linear-gradient(180deg, color-mix(in oklab, var(--soft) 40%, white) 0%, color-mix(in oklab, var(--soft) 20%, white) 100%); font-weight: 700; font-size: 13px; color: color-mix(in oklab, var(--ink) 78%, black); user-select: none; cursor: default; }
 th.sortable { cursor: pointer; }
 tbody tr:hover { background: color-mix(in oklab, var(--soft) 35%, white); }
@@ -78,6 +77,7 @@ table th:nth-child(3), table td:nth-child(3), table th:nth-child(4), table td:nt
     align-items: center;
     gap: .75rem;
     font-weight: 800;
+	padding: 12px;
 }
 .logo {
     width: 40px;
