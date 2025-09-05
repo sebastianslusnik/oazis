@@ -1,707 +1,556 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<title>Bunny Storage File Manager</title>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Oazis File Manager</title>
+	<script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
 	<style>
 	:root {
-		--bg: #111;
-		--fg: #eee;
-		--muted: #bbb;
-		--line: #2a2a2a;
-		--accent: #666;
-		--accent2: #888;
-		--danger: #a33;
-		--ok: #3a3
+		--bg: #f7f7f7;
+		--panel: #ffffff;
+		--text: #222;
+		--muted: #888;
+		--border: #e5e5e5;
+		--accent: #333;
 	}
 
 	* {
-		box-sizing: border-box
-	}
-
-	html,
-	body {
-		height: 100%
+		box-sizing: border-box;
 	}
 
 	body {
 		margin: 0;
-		background: #000;
-		color: var(--fg);
-		font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Helvetica, Arial, sans-serif
+		background: var(--bg);
+		color: var(--text);
+		font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
 	}
 
-	.container {
-		max-width: 1100px;
-		margin: 0 auto;
-		padding: 20px
-	}
-
-	.header {
+	header {
+		padding: 12px 16px;
+		border-bottom: 1px solid var(--border);
+		background: var(--panel);
 		display: flex;
-		flex-wrap: wrap;
-		gap: 10px;
+		align-items: center;
+		gap: 8px;
+	}
+
+	header h1 {
+		margin: 0;
+		font-size: 16px;
+		font-weight: 600;
+		letter-spacing: .2px;
+	}
+
+	.app {
+		display: flex;
+		height: calc(100vh - 50px);
+	}
+
+	.left {
+		width: 280px;
+		min-width: 240px;
+		max-width: 360px;
+		border-right: 1px solid var(--border);
+		background: var(--panel);
+		display: flex;
+		flex-direction: column;
+	}
+
+	.left .toolbar {
+		padding: 10px;
+		border-bottom: 1px solid var(--border);
+		display: flex;
+		gap: 8px;
+	}
+
+	.left .toolbar input {
+		flex: 1;
+		padding: 8px;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		background: white;
+	}
+
+	.left .toolbar button {
+		padding: 8px 10px;
+		border: 1px solid var(--border);
+		background: #f2f2f2;
+		color: var(--accent);
+		border-radius: 6px;
+		cursor: pointer;
+	}
+
+	.folders {
+		overflow: auto;
+		padding: 6px;
+	}
+
+	.folder {
+		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin-bottom: 10px
-	}
-
-	.breadcrumb {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 6px;
-		align-items: center
-	}
-
-	.breadcrumb a {
-		color: var(--muted);
-		text-decoration: none;
-		padding: 2px 6px;
-		border: 1px solid var(--line);
-		border-radius: 4px
-	}
-
-	.breadcrumb a:hover {
-		background: #111;
-		color: #fff
-	}
-
-	.toolbar {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-		align-items: center
-	}
-
-	button,
-	input[type=file] {
-		background: #111;
-		color: var(--fg);
-		border: 1px solid var(--line);
 		padding: 8px 10px;
 		border-radius: 6px;
-		cursor: pointer
+		cursor: pointer;
 	}
 
-	button:hover {
-		background: #151515
+	.folder:hover {
+		background: #f3f3f3;
 	}
 
-	button.primary {
-		border-color: var(--accent2)
+	.folder.active {
+		background: #eaeaea;
 	}
 
-	button.danger {
-		border-color: var(--danger);
-		color: #f3caca
+	.folder .name {
+		font-weight: 500;
 	}
 
-	.status {
-		min-height: 22px;
+	.folder .actions {
+		display: flex;
+		gap: 6px;
+		opacity: .8;
+	}
+
+	.folder .actions button {
+		border: none;
+		background: transparent;
+		padding: 4px 6px;
+		cursor: pointer;
 		color: var(--muted);
-		margin-top: 10px
 	}
 
-	.table-wrap {
-		border: 1px solid var(--line);
-		border-radius: 8px;
-		overflow: hidden
+	.right {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.right .toolbar {
+		padding: 10px;
+		border-bottom: 1px solid var(--border);
+		background: var(--panel);
+		display: flex;
+		gap: 8px;
+		align-items: center;
+		flex-wrap: wrap;
+	}
+
+	select,
+	input[type="text"] {
+		padding: 8px;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		background: white;
+	}
+
+	input[type="file"] {
+		border: 1px dashed var(--border);
+		padding: 8px;
+		border-radius: 6px;
+		background: white;
+	}
+
+	.right .toolbar button {
+		padding: 8px 12px;
+		border: 1px solid var(--border);
+		background: #f2f2f2;
+		color: var(--accent);
+		border-radius: 6px;
+		cursor: pointer;
+	}
+
+	.content {
+		padding: 8px;
+		overflow: auto;
 	}
 
 	table {
 		width: 100%;
 		border-collapse: collapse;
-		background: #0a0a0a
+		background: var(--panel);
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		overflow: hidden;
 	}
 
 	th,
 	td {
 		padding: 10px 12px;
-		border-bottom: 1px solid var(--line);
-		vertical-align: middle
+		border-bottom: 1px solid var(--border);
+		text-align: left;
 	}
 
 	th {
-		background: #0f0f0f;
-		text-align: left;
-		color: #ddd;
-		font-weight: 600
+		background: #fafafa;
+		font-weight: 600;
+		font-size: 13px;
+		color: #444;
 	}
 
-	tr:hover td {
-		background: #0f0f0f
+	tbody tr:hover {
+		background: #f9f9f9;
 	}
 
-	.type {
+	.muted {
+		color: var(--muted);
+	}
+
+	.empty {
+		padding: 16px;
+		color: var(--muted);
+	}
+
+	.grow {
+		flex: 1;
+	}
+
+	.status {
+		margin-left: auto;
 		font-size: 12px;
-		color: var(--muted)
-	}
-
-	.size {
-		white-space: nowrap
-	}
-
-	.actions {
-		display: flex;
-		gap: 6px;
-		flex-wrap: wrap
-	}
-
-	.badge {
-		display: inline-block;
-		padding: 2px 6px;
-		border: 1px solid var(--line);
-		border-radius: 999px;
-		color: #ccc;
-		font-size: 12px
-	}
-
-	footer {
-		opacity: .7;
-		margin-top: 20px;
-		font-size: 12px;
-		color: #888
-	}
-
-	.hidden {
-		display: none
-	}
-
-	.progress {
-		height: 6px;
-		background: #151515;
-		border: 1px solid var(--line);
-		border-radius: 6px;
-		overflow: hidden
-	}
-
-	.progress>div {
-		height: 100%;
-		background: linear-gradient(90deg, #444, #777);
-		width: 0%
-	}
-
-	.small {
-		font-size: 12px;
-		color: #aaa
-	}
-
-	input[type=text] {
-		background: #0a0a0a;
-		border: 1px solid var(--line);
-		color: #fff;
-		border-radius: 6px;
-		padding: 8px 10px
-	}
-
-	.row-title {
-		display: flex;
-		gap: 8px;
-		align-items: center
-	}
-
-	.icon {
-		width: 18px;
-		height: 18px;
-		display: inline-block;
-		border: 1px solid var(--line);
-		border-radius: 4px
-	}
-
-	.icon.folder {
-		background: #111
-	}
-
-	.icon.file {
-		background: #090909
+		color: var(--muted);
 	}
 	</style>
 </head>
 
 <body>
-	<div class="container">
-		<div class="header">
-			<div class="breadcrumb" id="breadcrumb"></div>
-			<div class="toolbar"> <button id="btnUp">Up</button> <button id="btnRefresh">Refresh</button> <button id="btnNewFolder" class="primary">New Folder</button> <label> <input type="file" id="fileInput" multiple class="hidden"> <button id="btnUpload" class="primary">Upload Files</button> </label> </div>
-		</div>
-		<div class="table-wrap">
-			<table>
-				<thead>
-					<tr>
-						<th>Name</th>
-						<th>Type</th>
-						<th class="size">Size</th>
-						<th>Modified</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody id="tbody"></tbody>
-			</table>
-		</div>
-		<div class="status" id="status"></div>
-		<div id="globalProgress" class="progress hidden">
-			<div></div>
-		</div>
-		<footer>
-			<div class="small">Move: enter a destination folder path relative to /1164453/, for example: images or images/2025</div>
-		</footer>
+	<header>
+		<h1>Oazis File Manager</h1>
+		<div class="status" id="status">Ready</div>
+	</header>
+	<div class="app">
+		<aside class="left">
+			<div class="toolbar"> <input id="newFolderName" type="text" placeholder="New folder name" /> <button id="btnCreateFolder" title="Create folder">Add</button> </div>
+			<div class="folders" id="foldersList"></div>
+		</aside>
+		<main class="right">
+			<div class="toolbar">
+				<div>Folder:</div> <select id="folderSelect"></select>
+				<div class="grow"></div> <input type="file" id="fileInput" /> <input type="text" id="customFileId" placeholder="Optional custom File ID" /> <button id="btnUpload">Upload</button>
+			</div>
+			<div class="content">
+				<table id="filesTable">
+					<thead>
+						<tr>
+							<th>File Name</th>
+							<th>File ID</th>
+							<th>Size</th>
+							<th>Created</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody id="filesBody">
+						<tr>
+							<td colspan="5" class="empty">Select a folder...</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</main>
 	</div>
+
 	<script>
-	const CONFIG = {
-		zone: 'oazis',
-		accessKey: '6b50ffa1-b890-4094-ac781b47265e-19f9-4fd0',
-		root: '/1164453/'
-	}
-	const API = 'https://oazis.b-cdn.netMain'
-	let currentPath = CONFIG.root.endsWith('/') ? CONFIG.root : CONFIG.root + '/';
-	const tbody = document.getElementById('tbody');
-	const breadcrumbEl = document.getElementById('breadcrumb');
-	const statusEl = document.getElementById('status');
-	const fileInput = document.getElementById('fileInput');
-	const globalProgress = document.getElementById('globalProgress');
-	function setStatus(t, ok) {
-		statusEl.textContent = t || '';
-		statusEl.style.color = ok ? '#8fd18f' : '#bbb'
-	}
+const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
+const APPWRITE_PROJECT_ID = 'oazissebike';
+const APPWRITE_BUCKET_ID = 'oazissebike';
+const APPWRITE_API_KEY = 'standard_d58aa133fc638f7765b7f59950ec4860d5b2bc0ed9a61159d173c4cc8a5aa4968e726aa198447e264c21068e47e7bc087625947ec0b52579487c5ad775011646037bdfac41402e5cef446c143ccd5c50c4fd6e5a06ab3945ba8e78388aaf0d34930a4f26458790e656d73681d81994693de06edf9fb7de6d030ccc8e6f45a3fe';
+const JSONBIN_BIN_ID = '68b9d3d8d0ea881f4071c182';
+const JSONBIN_MASTER_KEY = '$2a$10$9sO/ja29sMebpWNvsWmp5.dJ6lv7CPeLBMRFaA/cAEwz42ii6qlCS';
+const JSONBIN_BASE = 'https://api.jsonbin.io/v3';
+let folders = [];
+let activeFolderIndex = -1;
+const client = new Appwrite.Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID).setKey(APPWRITE_API_KEY);
+const storage = new Appwrite.Storage(client);
+const statusEl = document.getElementById('status');
+const foldersListEl = document.getElementById('foldersList');
+const folderSelectEl = document.getElementById('folderSelect');
+const filesBodyEl = document.getElementById('filesBody');
+const newFolderNameEl = document.getElementById('newFolderName');
+const btnCreateFolderEl = document.getElementById('btnCreateFolder');
+const fileInputEl = document.getElementById('fileInput');
+const customFileIdEl = document.getElementById('customFileId');
+const btnUploadEl = document.getElementById('btnUpload');
 
-	function showProgress(p) {
-		if(p == null) {
-			globalProgress.classList.add('hidden');
-			globalProgress.firstElementChild.style.width = '0%';
-			return
-		}
-		globalProgress.classList.remove('hidden');
-		globalProgress.firstElementChild.style.width = (Math.max(0, Math.min(100, p))).toFixed(0) + '%'
-	}
+function setStatus(msg) {
+	statusEl.textContent = msg;
+}
+async function fetchFolders() {
+	setStatus('Loading folders...');
+	const res = await fetch(`${JSONBIN_BASE}/b/${JSONBIN_BIN_ID}/latest`, {
+		headers: {
+			'X-Master-Key': JSONBIN_MASTER_KEY,
+			'X-Bin-Meta': 'false',
+			'Content-Type': 'application/json'
+		},
+		cache: 'no-store'
+	});
+	if(!res.ok) throw new Error('Failed to load folders');
+	const data = await res.json();
+	folders = Array.isArray(data.folders) ? data.folders : [];
+	setStatus('Folders loaded');
+}
+async function saveFolders() {
+	setStatus('Saving...');
+	const res = await fetch(`${JSONBIN_BASE}/b/${JSONBIN_BIN_ID}`, {
+		method: 'PUT',
+		headers: {
+			'X-Master-Key': JSONBIN_MASTER_KEY,
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			folders
+		})
+	});
+	if(!res.ok) throw new Error('Failed to save folders');
+	setStatus('Saved');
+}
 
-	function normPath(p) {
-		if(!p.startsWith('/')) p = '/' + p;
-		if(!p.endsWith('/')) p = p + '/';
-		return p
+function renderFoldersList() {
+	foldersListEl.innerHTML = '';
+	folders.forEach((f, idx) => {
+		const row = document.createElement('div');
+		row.className = 'folder' + (idx === activeFolderIndex ? ' active' : '');
+		row.onclick = () => {
+			activeFolderIndex = idx;
+			renderFoldersList();
+			renderFolderSelect();
+			loadFilesForActiveFolder();
+		};
+		const name = document.createElement('div');
+		name.className = 'name';
+		name.textContent = f.name;
+		const actions = document.createElement('div');
+		actions.className = 'actions';
+		const renameBtn = document.createElement('button');
+		renameBtn.title = 'Rename';
+		renameBtn.textContent = 'Rename';
+		renameBtn.onclick = (e) => {
+			e.stopPropagation();
+			renameFolder(idx);
+		};
+		const delBtn = document.createElement('button');
+		delBtn.title = 'Delete';
+		delBtn.textContent = 'Delete';
+		delBtn.onclick = (e) => {
+			e.stopPropagation();
+			deleteFolder(idx);
+		};
+		actions.append(renameBtn, delBtn);
+		row.append(name, actions);
+		foldersListEl.appendChild(row);
+	});
+	if(folders.length === 0) {
+		const empty = document.createElement('div');
+		empty.className = 'empty';
+		empty.style.padding = '12px';
+		empty.textContent = 'No folders. Create one.';
+		foldersListEl.appendChild(empty);
 	}
+}
 
-	function cleanPath(p) {
-		let s = p.replace(/\/+/g, '/');
-		if(!s.startsWith('/')) s = '/' + s;
-		return s
+function renderFolderSelect() {
+	folderSelectEl.innerHTML = '';
+	folders.forEach((f, idx) => {
+		const opt = document.createElement('option');
+		opt.value = idx;
+		opt.textContent = f.name;
+		folderSelectEl.appendChild(opt);
+	});
+	if(activeFolderIndex >= 0 && activeFolderIndex < folders.length) {
+		folderSelectEl.value = String(activeFolderIndex);
 	}
+	folderSelectEl.onchange = () => {
+		activeFolderIndex = parseInt(folderSelectEl.value, 10);
+		renderFoldersList();
+		loadFilesForActiveFolder();
+	};
+}
 
-	function buildUrl(p) {
-		let parts = [CONFIG.zone].concat(cleanPath(p).slice(1).split('/').filter(Boolean));
-		let encoded = parts.map(encodeURIComponent).join('/');
-		let url = API + '/' + encoded;
-		if(p.endsWith('/')) url += '/';
-		return url
+function sanitizedFolderName(name) {
+	return String(name || '').trim();
+}
+async function createFolder() {
+	const name = sanitizedFolderName(newFolderNameEl.value);
+	if(!name) {
+		alert('Enter folder name');
+		return;
 	}
+	if(folders.find(f => f.name.toLowerCase() === name.toLowerCase())) {
+		alert('Folder already exists');
+		return;
+	}
+	folders.push({
+		name,
+		files: []
+	});
+	await saveFolders().catch(err => alert(err.message));
+	newFolderNameEl.value = '';
+	activeFolderIndex = folders.length - 1;
+	renderFoldersList();
+	renderFolderSelect();
+	loadFilesForActiveFolder();
+}
+async function renameFolder(idx) {
+	const current = folders[idx];
+	const newName = prompt('Rename folder', current.name);
+	if(newName === null) return;
+	const name = sanitizedFolderName(newName);
+	if(!name) {
+		alert('Invalid name');
+		return;
+	}
+	if(folders.find((f, i) => i !== idx && f.name.toLowerCase() === name.toLowerCase())) {
+		alert('Folder with this name already exists');
+		return;
+	}
+	folders[idx].name = name;
+	await saveFolders().catch(err => alert(err.message));
+	renderFoldersList();
+	renderFolderSelect();
+}
+async function deleteFolder(idx) {
+	const f = folders[idx];
+	if(f.files && f.files.length > 0) {
+		alert('Folder is not empty. Remove files first.');
+		return;
+	}
+	if(!confirm(`Delete folder "${f.name}"?`)) return;
+	folders.splice(idx, 1);
+	if(activeFolderIndex === idx) activeFolderIndex = -1;
+	await saveFolders().catch(err => alert(err.message));
+	renderFoldersList();
+	renderFolderSelect();
+	filesBodyEl.innerHTML = `<tr><td colspan="5" class="empty">Select a folder...</td></tr>`;
+}
 
-	function parentPath(p) {
-		let s = cleanPath(p);
-		if(s === '/') return '/';
-		let parts = s.split('/').filter(Boolean);
-		if(parts.length <= 1) return '/';
-		parts.pop();
-		return '/' + parts.join('/') + '/'
+function formatBytes(bytes) {
+	const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+	if(bytes === 0) return '0 B';
+	const i = Math.floor(Math.log(bytes) / Math.log(1024));
+	return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
+}
+async function loadFilesForActiveFolder() {
+	filesBodyEl.innerHTML = '';
+	if(activeFolderIndex < 0 || !folders[activeFolderIndex]) {
+		filesBodyEl.innerHTML = `<tr><td colspan="5" class="empty">Select a folder...</td></tr>`;
+		return;
 	}
-
-	function formatBytes(b) {
-		if(b == null || isNaN(b)) return '';
-		let u = ['B', 'KB', 'MB', 'GB', 'TB'];
-		let i = 0;
-		let n = b;
-		while(n >= 1024 && i < u.length - 1) {
-			n /= 1024;
-			i++
-		}
-		return n.toFixed(n >= 10 || i === 0 ? 0 : 1) + ' ' + u[i]
+	const ids = folders[activeFolderIndex].files || [];
+	if(ids.length === 0) {
+		filesBodyEl.innerHTML = `<tr><td colspan="5" class="empty">No files in this folder.</td></tr>`;
+		return;
 	}
-
-	function formatDate(d) {
-		if(!d) return '';
-		let dt = new Date(d);
-		if(isNaN(dt)) return '';
-		return dt.toLocaleString()
-	}
-	async function api(path, opts) {
-		let o = opts || {};
-		o.headers = Object.assign({
-			'AccessKey': CONFIG.accessKey
-		}, o.headers || {});
-		let res = await fetch(buildUrl(path), o);
-		return res
-	}
-	async function list(path) {
-		let res = await api(path, {
-			headers: {
-				'Accept': 'application/json'
-			}
-		});
-		if(!res.ok) throw new Error('List failed ' + res.status);
-		return res.json()
-	}
-	async function createDir(path) {
-		let res = await api(path, {
-			method: 'PUT',
-			headers: {
-				'Content-Length': '0',
-				'Directory': 'true'
-			}
-		});
-		if(!res.ok && res.status !== 201 && res.status !== 409) throw new Error('Create folder failed ' + res.status)
-	}
-	async function deleteFile(path) {
-		let res = await api(path, {
-			method: 'DELETE'
-		});
-		if(!res.ok && res.status !== 404) throw new Error('Delete failed ' + res.status)
-	}
-	async function downloadFile(path) {
-		let res = await api(path, {});
-		if(!res.ok) throw new Error('Download failed ' + res.status);
-		return res.blob()
-	}
-	async function uploadFile(path, file, onProgress) {
-		let controller = new AbortController();
-		let reader = file.stream().getReader();
-		let chunks = [];
-		let uploaded = 0;
-		const total = file.size;
-		for(;;) {
-			let {
-				done,
-				value
-			} = await reader.read();
-			if(done) break;
-			chunks.push(value);
-			uploaded += value.byteLength;
-			if(onProgress) onProgress(Math.min(100, Math.round(uploaded / Math.max(1, total) * 100)))
-		}
-		let body = new Blob(chunks, {
-			type: 'application/octet-stream'
-		});
-		let res = await api(path, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/octet-stream'
-			},
-			body,
-			signal: controller.signal
-		});
-		if(!res.ok) throw new Error('Upload failed ' + res.status)
-	}
-	async function ensureDirChain(dir) {
-		let p = cleanPath(dir);
-		if(!p.endsWith('/')) p += '/';
-		let base = '/';
-		let segments = p.split('/').filter(Boolean);
-		for(let i = 0; i < segments.length; i++) {
-			base += segments[i] + '/';
-			try {
-				await createDir(base)
-			} catch (e) {}
-		}
-	}
-	async function deleteFolderRecursively(dir) {
-		let items = await list(dir);
-		for(let it of items) {
-			if(it.IsDirectory) {
-				await deleteFolderRecursively(dir + it.ObjectName + '/')
-			} else {
-				await deleteFile(dir + it.ObjectName)
-			}
-		}
-		await deleteFile(dir)
-	}
-	async function moveFile(oldPath, newPath) {
-		let blob = await downloadFile(oldPath);
-		let parent = newPath.split('/').slice(0, -1).join('/') + '/';
-		await ensureDirChain(parent);
-		let res = await api(newPath, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/octet-stream'
-			},
-			body: blob
-		});
-		if(!res.ok) throw new Error('Move upload failed ' + res.status);
-		await deleteFile(oldPath)
-	}
-	async function moveFolder(oldDir, newDir) {
-		let nd = normPath(newDir);
-		let od = normPath(oldDir);
-		await ensureDirChain(nd);
-		await moveFolderRecurse(od, nd);
-		await deleteFolderRecursively(od)
-	}
-	async function moveFolderRecurse(src, dst) {
-		let items = await list(src);
-		for(let it of items) {
-			if(it.IsDirectory) {
-				await ensureDirChain(dst + it.ObjectName + '/');
-				await moveFolderRecurse(src + it.ObjectName + '/', dst + it.ObjectName + '/')
-			} else {
-				await moveFile(src + it.ObjectName, dst + it.ObjectName)
-			}
-		}
-	}
-
-	function renderBreadcrumb() {
-		breadcrumbEl.innerHTML = '';
-		let full = cleanPath(currentPath);
-		let parts = full.split('/').filter(Boolean);
-		let acc = '/';
-		let baseParts = cleanPath(CONFIG.root).split('/').filter(Boolean);
-		let startIndex = 0;
-		let accParts = [];
-		for(let i = 0; i < parts.length; i++) {
-			accParts.push(parts[i]);
-			acc = '/' + accParts.join('/') + '/';
-			let label = i < baseParts.length ? parts[i] : parts[i];
-			let a = document.createElement('a');
-			a.href = '#';
-			a.textContent = label;
-			a.onclick = (e) => {
-				e.preventDefault();
-				currentPath = acc;
-				load()
-			};
-			breadcrumbEl.appendChild(a)
-		}
-	}
-
-	function rowActions(item, isDir) {
-		let wrap = document.createElement('div');
-		wrap.className = 'actions';
-		if(isDir) {
-			let open = document.createElement('button');
-			open.textContent = 'Open';
-			open.onclick = () => {
-				currentPath = cleanPath(currentPath + item.ObjectName + '/');
-				load()
-			};
-			wrap.appendChild(open);
-			let rename = document.createElement('button');
-			rename.textContent = 'Rename';
-			rename.onclick = async () => {
-				let nn = prompt('New folder name', item.ObjectName);
-				if(!nn || nn === item.ObjectName) return;
-				setStatus('Renaming...', true);
-				try {
-					await moveFolder(currentPath + item.ObjectName + '/', currentPath + nn + '/');
-					setStatus('Folder renamed', true);
-					load()
-				} catch (e) {
-					setStatus(String(e))
-				}
-			};
-			wrap.appendChild(rename);
-			let move = document.createElement('button');
-			move.textContent = 'Move';
-			move.onclick = async () => {
-				let dest = prompt('Destination folder relative to ' + CONFIG.root, '');
-				if(dest === null) return;
-				dest = dest.trim();
-				let destPath = dest ? normPath(CONFIG.root + dest) : currentPath;
-				setStatus('Moving folder...', true);
-				try {
-					await moveFolder(currentPath + item.ObjectName + '/', destPath + item.ObjectName + '/');
-					setStatus('Folder moved', true);
-					load()
-				} catch (e) {
-					setStatus(String(e))
-				}
-			};
-			wrap.appendChild(move);
-			let del = document.createElement('button');
-			del.className = 'danger';
-			del.textContent = 'Delete';
-			del.onclick = async () => {
-				if(!confirm('Delete folder and all contents?')) return;
-				setStatus('Deleting...', true);
-				try {
-					await deleteFolderRecursively(currentPath + item.ObjectName + '/');
-					setStatus('Folder deleted', true);
-					load()
-				} catch (e) {
-					setStatus(String(e))
-				}
-			};
-			wrap.appendChild(del)
-		} else {
-			let download = document.createElement('button');
-			download.textContent = 'Download';
-			download.onclick = async () => {
-				try {
-					setStatus('Preparing download...', true);
-					let blob = await downloadFile(currentPath + item.ObjectName);
-					let a = document.createElement('a');
-					a.href = URL.createObjectURL(blob);
-					a.download = item.ObjectName;
-					document.body.appendChild(a);
-					a.click();
-					a.remove();
-					URL.revokeObjectURL(a.href);
-					setStatus('Download started', true)
-				} catch (e) {
-					setStatus(String(e))
-				}
-			};
-			wrap.appendChild(download);
-			let rename = document.createElement('button');
-			rename.textContent = 'Rename';
-			rename.onclick = async () => {
-				let nn = prompt('New file name', item.ObjectName);
-				if(!nn || nn === item.ObjectName) return;
-				setStatus('Renaming...', true);
-				try {
-					await moveFile(currentPath + item.ObjectName, currentPath + nn);
-					setStatus('File renamed', true);
-					load()
-				} catch (e) {
-					setStatus(String(e))
-				}
-			};
-			wrap.appendChild(rename);
-			let move = document.createElement('button');
-			move.textContent = 'Move';
-			move.onclick = async () => {
-				let dest = prompt('Destination folder relative to ' + CONFIG.root, '');
-				if(dest === null) return;
-				dest = dest.trim();
-				let destPath = dest ? normPath(CONFIG.root + dest) : currentPath;
-				setStatus('Moving file...', true);
-				try {
-					await moveFile(currentPath + item.ObjectName, destPath + item.ObjectName);
-					setStatus('File moved', true);
-					load()
-				} catch (e) {
-					setStatus(String(e))
-				}
-			};
-			wrap.appendChild(move);
-			let del = document.createElement('button');
-			del.className = 'danger';
-			del.textContent = 'Delete';
-			del.onclick = async () => {
-				if(!confirm('Delete file?')) return;
-				setStatus('Deleting...', true);
-				try {
-					await deleteFile(currentPath + item.ObjectName);
-					setStatus('File deleted', true);
-					load()
-				} catch (e) {
-					setStatus(String(e))
-				}
-			};
-			wrap.appendChild(del)
-		}
-		return wrap
-	}
-
-	function render(items) {
-		tbody.innerHTML = '';
-		renderBreadcrumb();
-		if(!Array.isArray(items) || !items.length) {
-			let tr = document.createElement('tr');
-			let td = document.createElement('td');
-			td.colSpan = 5;
-			td.style.color = '#888';
-			td.textContent = 'Empty';
-			tr.appendChild(td);
-			tbody.appendChild(tr);
-			return
-		}
-		items.sort((a, b) => Number(b.IsDirectory) - Number(a.IsDirectory) || a.ObjectName.localeCompare(b.ObjectName))
-		 for(let it of items) {
-			let tr = document.createElement('tr');
-			let nameTd = document.createElement('td');
-			let row = document.createElement('div');
-			row.className = 'row-title';
-			let icon = document.createElement('span');
-			icon.className = 'icon ' + (it.IsDirectory ? 'folder' : 'file');
-			row.appendChild(icon);
-			let name = document.createElement('span');
-			name.textContent = it.ObjectName;
-			row.appendChild(name);
-			nameTd.appendChild(row);
-			tr.appendChild(nameTd);
-			let typeTd = document.createElement('td');
-			typeTd.innerHTML = it.IsDirectory ? '<span class="badge">Folder</span>' : '<span class="badge">File</span>';
-			tr.appendChild(typeTd);
-			let sizeTd = document.createElement('td');
-			sizeTd.className = 'size';
-			sizeTd.textContent = it.IsDirectory ? '' : formatBytes(it.Length);
-			tr.appendChild(sizeTd);
-			let dateTd = document.createElement('td');
-			dateTd.textContent = formatDate(it.LastChanged);
-			tr.appendChild(dateTd);
-			let actionsTd = document.createElement('td');
-			actionsTd.appendChild(rowActions(it, it.IsDirectory));
-			tr.appendChild(actionsTd);
-			tbody.appendChild(tr)
-		}
-	}
-	async function load() {
-		setStatus('Loading...', true);
+	setStatus('Loading files...');
+	for(const id of ids) {
 		try {
-			let data = await list(currentPath);
-			render(data);
-			setStatus('')
+			const meta = await storage.getFile(APPWRITE_BUCKET_ID, id);
+			const tr = document.createElement('tr');
+			const downloadUrl = storage.getFileDownload(APPWRITE_BUCKET_ID, id);
+			tr.innerHTML = ` <td>${meta.name || '(unnamed)'}</td> <td class="muted">${meta.$id}</td> <td>${formatBytes(meta.sizeOriginal || meta.size || 0)}</td> <td>${new Date(meta.$createdAt || meta.dateCreated || Date.now()).toLocaleString()}</td> <td> <a href="${downloadUrl}" target="_blank" rel="noopener">Download</a> &nbsp;|&nbsp; <a href="#" data-id="${id}" class="delete-file">Delete</a> </td> `;
+			filesBodyEl.appendChild(tr);
 		} catch (e) {
-			setStatus(String(e))
+			const tr = document.createElement('tr');
+			tr.innerHTML = ` <td colspan="5" class="muted">Failed to load file ${id}: ${e.message}</td> `;
+			filesBodyEl.appendChild(tr);
 		}
 	}
-	document.getElementById('btnRefresh').onclick = () => load()
-	document.getElementById('btnUp').onclick = () => {
-		let p = parentPath(currentPath);
-		if(p === currentPath) return;
-		currentPath = p;
-		load()
+	filesBodyEl.querySelectorAll('.delete-file').forEach(a => {
+		a.addEventListener('click', async (e) => {
+			e.preventDefault();
+			const id = e.target.getAttribute('data-id');
+			await deleteFile(id);
+		});
+	});
+	setStatus('Ready');
+}
+
+function makeCustomIdFromFile(file) {
+	const base = file.name.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9._-]/g, '').toLowerCase();
+	const ts = Date.now().toString(36);
+	return `${ts}-${base}`.slice(0, 128);
+}
+async function uploadFile() {
+	if(activeFolderIndex < 0) {
+		alert('Select a folder');
+		return;
 	}
-	document.getElementById('btnNewFolder').onclick = async () => {
-		let name = prompt('Folder name');
-		if(!name) return;
-		name = name.trim();
-		if(!name) return;
-		setStatus('Creating folder...', true);
-		try {
-			await createDir(currentPath + name + '/');
-			setStatus('Folder created', true);
-			load()
-		} catch (e) {
-			setStatus(String(e))
-		}
+	const file = fileInputEl.files[0];
+	if(!file) {
+		alert('Choose a file');
+		return;
 	}
-	document.getElementById('btnUpload').onclick = () => fileInput.click()
-	 fileInput.onchange = async (e) => {
-		let files = [...e.target.files];
-		if(!files.length) return;
-		let total = files.reduce((a, f) => a + f.size, 0);
-		let done = 0;
-		showProgress(0);
-		setStatus('Uploading...', true);
-		for(let f of files) {
-			try {
-				await uploadFile(currentPath + f.name, f, p => {
-					let prev = done + Math.floor(f.size * (p / 100));
-					let overall = 100 * (prev / Math.max(1, total));
-					showProgress(overall)
-				});
-				done += f.size;
-				showProgress(100 * (done / Math.max(1, total)))
-			} catch (err) {
-				setStatus('Upload failed: ' + err);
-				showProgress(null);
-				return
-			}
-		}
-		setStatus('Upload complete', true);
-		showProgress(null);
-		fileInput.value = '';
-		load()
+	let fileId = customFileIdEl.value.trim();
+	if(!fileId) fileId = makeCustomIdFromFile(file);
+	setStatus('Uploading...');
+	let created;
+	try {
+		created = await storage.createFile(APPWRITE_BUCKET_ID, Appwrite.ID.custom(fileId), file);
+	} catch (e) {
+		alert('Upload failed: ' + e.message);
+		setStatus('Upload failed');
+		return;
 	}
-	load()
-	</script>
+	try {
+		const f = folders[activeFolderIndex];
+		if(!Array.isArray(f.files)) f.files = [];
+		if(!f.files.includes(created.$id)) f.files.push(created.$id);
+		await saveFolders();
+		renderFoldersList();
+		renderFolderSelect();
+		await loadFilesForActiveFolder();
+		fileInputEl.value = '';
+		customFileIdEl.value = '';
+		setStatus('Upload complete');
+	} catch (e) {
+		alert('Uploaded, but failed to sync folder list: ' + e.message);
+		setStatus('Sync error');
+	}
+}
+async function deleteFile(fileId) {
+	if(!confirm(`Delete file ${fileId}?`)) return;
+	setStatus('Deleting file...');
+	try {
+		await storage.deleteFile(APPWRITE_BUCKET_ID, fileId);
+	} catch (e) {
+		alert('Failed to delete file in Appwrite: ' + e.message);
+		setStatus('Delete failed');
+		return;
+	}
+	try {
+		const f = folders[activeFolderIndex];
+		f.files = (f.files || []).filter(id => id !== fileId);
+		await saveFolders();
+		await loadFilesForActiveFolder();
+		setStatus('File deleted');
+	} catch (e) {
+		alert('Deleted from storage, but failed to update folder: ' + e.message);
+		setStatus('Partial delete');
+	}
+}
+btnCreateFolderEl.addEventListener('click', createFolder);
+newFolderNameEl.addEventListener('keydown', (e) => {
+	if(e.key === 'Enter') createFolder();
+});
+btnUploadEl.addEventListener('click', uploadFile);
+(async function init() {
+	try {
+		await fetchFolders();
+	} catch (e) {
+		alert('Failed to load folders from JSONBin: ' + e.message);
+	}
+	renderFoldersList();
+	renderFolderSelect();
+	if(folders.length > 0) {
+		activeFolderIndex = 0;
+		renderFoldersList();
+		renderFolderSelect();
+		loadFilesForActiveFolder();
+	}
+	setStatus('Ready');
+})();
+</script>
 </body>
 
 </html>
