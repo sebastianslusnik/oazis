@@ -334,8 +334,8 @@ function getDisplayName(raw) {
 	const n = String(raw || '');
 	const idx = n.lastIndexOf('.');
 	let base = idx > 0 ? n.slice(0, idx) : n;
-	base = base.replace(/_/g, '');
-	base = base.trim();
+	base = base.replace(/[_-]+/g, ' ');
+	base = base.replace(/\s+/g, ' ').trim();
 	return base || '(unnamed)';
 }
 function getExt(raw) {
