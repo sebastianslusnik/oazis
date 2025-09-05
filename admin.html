@@ -228,7 +228,9 @@
 		<main class="right">
 			<div class="toolbar">
 				<div>Folder:</div> <select id="folderSelect"></select>
-				<div class="grow"></div> <input type="file" id="fileInput" /> <input type="text" id="customFileId" placeholder="Optional custom File ID" /> <button id="btnUpload">Upload</button>
+				<div class="grow"></div> <input type="file" id="fileInput" />
+				<input type="text" id="customFileId" placeholder="Auto-generated File ID" readonly />
+				<button id="btnUpload">Upload</button>
 			</div>
 			<div class="content">
 				<table id="filesTable">
@@ -463,11 +465,15 @@ async function loadFilesForActiveFolder() {
 	});
 	setStatus('Ready');
 }
-
-function makeCustomIdFromFile(file) {
-	const base = file.name.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9._-]/g, '').toLowerCase();
-	const ts = Date.now().toString(36);
-	return `${ts}-${base}`.slice(0, 128);
+function generateRandomId32() {
+	const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+	const rnd = new Uint32Array(32);
+	crypto.getRandomValues(rnd);
+	let out = '';
+	for (let i = 0; i < rnd.length; i++) {
+		out += chars[rnd[i] % chars.length];
+	}
+	return out;
 }
 async function uploadFile() {
 	if(activeFolderIndex < 0) {
@@ -480,7 +486,11 @@ async function uploadFile() {
 		return;
 	}
 	let fileId = customFileIdEl.value.trim();
-	if(!fileId) fileId = makeCustomIdFromFile(file);
+	if (!fileId) {
+	// Safety net: should already be set by file selection, but generate if missing
+	fileId = generateRandomId32();
+	customFileIdEl.value = fileId;
+	}
 	setStatus('Uploading...');
 	let created;
 	try {
@@ -530,6 +540,9 @@ async function deleteFile(fileId) {
 btnCreateFolderEl.addEventListener('click', createFolder);
 newFolderNameEl.addEventListener('keydown', (e) => {
 	if(e.key === 'Enter') createFolder();
+});
+fileInputEl.addEventListener('change', () => {
+customFileIdEl.value = generateRandomId32();
 });
 btnUploadEl.addEventListener('click', uploadFile);
 (async function init() {
