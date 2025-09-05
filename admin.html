@@ -1,793 +1,914 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Oazis File Manager</title>
-	<script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
-	<style>
-	:root {
-		--bg: #f7f7f7;
-		--panel: #ffffff;
-		--text: #222;
-		--muted: #888;
-		--border: #e5e5e5;
-		--accent: #333;
-		--accent-2: #0a66c2;
-	}
-
-	* {
-		box-sizing: border-box;
-	}
-
-	body {
-		margin: 0;
-		background: var(--bg);
-		color: var(--text);
-		font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-	}
-
-	.app {
-		display: flex;
-		height: 100vh;
-	}
-
-	.left {
-		width: 300px;
-		min-width: 240px;
-		max-width: 380px;
-		border-right: 1px solid var(--border);
-		background: var(--panel);
-		display: flex;
-		flex-direction: column;
-	}
-
-	.logo {
-		padding: 14px 16px;
-		border-bottom: 1px solid var(--border);
-		font-weight: 700;
-		letter-spacing: .2px;
-	}
-
-	.folders {
-		flex: 1;
-		overflow: auto;
-		padding: 6px;
-	}
-
-	.folder {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 8px 10px;
-		border-radius: 6px;
-		cursor: pointer;
-	}
-
-	.folder:hover {
-		background: #f3f3f3;
-	}
-
-	.folder.active {
-		background: #eaeaea;
-	}
-
-	.folder .name {
-		font-weight: 500;
-	}
-
-	.folder .actions {
-		display: flex;
-		gap: 6px;
-		opacity: .85;
-	}
-
-	.folder .actions button {
-		border: none;
-		background: transparent;
-		padding: 4px 6px;
-		cursor: pointer;
-		color: var(--muted);
-	}
-
-	.createbar {
-		padding: 10px;
-		border-top: 1px solid var(--border);
-	}
-
-	.createbar button {
-		padding: 8px 12px;
-		border: 1px solid var(--border);
-		background: #f2f2f2;
-		color: var(--accent);
-		border-radius: 6px;
-		cursor: pointer;
-		width: 100%;
-	}
-
-	.statusBar {
-		padding: 10px 12px;
-		border-top: 1px solid var(--border);
-		font-size: 12px;
-		color: var(--muted);
-	}
-
-	.right {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-	}
-
-	.right .toolbar {
-		padding: 10px;
-		border-bottom: 1px solid var(--border);
-		background: var(--panel);
-		display: flex;
-		gap: 8px;
-		align-items: center;
-		flex-wrap: wrap;
-	}
-
-	.right .toolbar input[type="text"] {
-		padding: 8px;
-		border: 1px solid var(--border);
-		border-radius: 6px;
-		background: white;
-		min-width: 240px;
-	}
-
-	.right .toolbar button {
-		padding: 8px 12px;
-		border: 1px solid var(--border);
-		background: #f2f2f2;
-		color: var(--accent);
-		border-radius: 6px;
-		cursor: pointer;
-	}
-
-	.content {
-		padding: 8px;
-		overflow: auto;
-	}
-
-	table {
-		width: 100%;
-		border-collapse: collapse;
-		background: var(--panel);
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		overflow: hidden;
-	}
-
-	th,
-	td {
-		padding: 10px 12px;
-		border-bottom: 1px solid var(--border);
-		text-align: left;
-	}
-
-	th {
-		background: #fafafa;
-		font-weight: 600;
-		font-size: 13px;
-		color: #444;
-		user-select: none;
-		cursor: default;
-	}
-
-	th.sortable {
-		cursor: pointer;
-	}
-
-	tbody tr:hover {
-		background: #f9f9f9;
-	}
-
-	.muted {
-		color: var(--muted);
-	}
-
-	.empty {
-		padding: 16px;
-		color: var(--muted);
-	}
-
-	.grow {
-		flex: 1;
-	}
-
-	.modal {
-		position: fixed;
-		inset: 0;
-		display: none;
-		align-items: center;
-		justify-content: center;
-		background: rgba(0, 0, 0, .3);
-		padding: 16px;
-		z-index: 1000;
-	}
-
-	.modal.show {
-		display: flex;
-	}
-
-	.modal-box {
-		width: 100%;
-		max-width: 420px;
-		background: white;
-		border: 1px solid var(--border);
-		border-radius: 10px;
-		overflow: hidden;
-	}
-
-	.modal-head {
-		padding: 12px 14px;
-		border-bottom: 1px solid var(--border);
-		font-weight: 600;
-	}
-
-	.modal-body {
-		padding: 12px 14px;
-		display: grid;
-		gap: 10px;
-	}
-
-	.modal-body input,
-	.modal-body select {
-		padding: 8px;
-		border: 1px solid var(--border);
-		border-radius: 6px;
-		background: white;
-	}
-
-	.modal-foot {
-		display: flex;
-		gap: 8px;
-		justify-content: flex-end;
-		padding: 12px 14px;
-		border-top: 1px solid var(--border);
-	}
-
-	.btn-primary {
-		background: #eef6ff;
-		border-color: #d6e8ff;
-		color: var(--accent-2);
-	}
-
-	.btn-danger {
-		background: #fff2f2;
-		border-color: #ffdede;
-		color: #b60a0a;
-	}
-
-	.badge {
-		display: inline-block;
-		background: #eef6ff;
-		border: 1px solid #e0ecff;
-		color: #0a66c2;
-		border-radius: 999px;
-		padding: 2px 8px;
-		font-size: 12px;
-	}
-	</style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Oazis File Manager</title>
+<script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+<style>
+:root {
+	--bg: linear-gradient(135deg, #fef3ff 0%, #f0fbff 50%, #fffceb 100%);
+	--panel: #ffffff;
+	--text: #1f2430;
+	--muted: #6b7280;
+	--border: #e6e6ef;
+	--accent: #6b4eff;
+	--accent-2: #0ea5e9;
+	--accent-3: #f97316;
+	--success: #16a34a;
+	--danger: #ef4444;
+	--ring: rgba(107, 78, 255, .35);
+}
+* {
+	box-sizing: border-box;
+}
+body {
+	margin: 0;
+	background: var(--bg);
+	background-attachment: fixed;
+	color: var(--text);
+	font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+.app {
+	display: flex;
+	height: 100vh;
+	backdrop-filter: saturate(120%) blur(0px);
+}
+.left {
+	width: 300px;
+	min-width: 240px;
+	max-width: 380px;
+	border-right: 1px solid var(--border);
+	background: rgba(255, 255, 255, .9);
+	display: flex;
+	flex-direction: column;
+}
+.logo {
+	padding: 16px 18px;
+	border-bottom: 1px solid var(--border);
+	font-weight: 800;
+	letter-spacing: .3px;
+	font-size: 18px;
+	background: linear-gradient(90deg, #6b4eff, #0ea5e9, #f97316);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+.folders {
+	flex: 1;
+	overflow: auto;
+	padding: 10px;
+}
+.folder {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 12px;
+	border-radius: 12px;
+	cursor: pointer;
+	transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+	border: 1px solid transparent;
+}
+.folder:hover {
+	background: #f9f6ff;
+	border-color: #efeafe;
+	box-shadow: 0 1px 0 rgba(0,0,0,.02);
+	transform: translateY(-1px);
+}
+.folder.active {
+	background: #eefaff;
+	border-color: #dff1ff;
+	box-shadow: 0 2px 10px rgba(14,165,233,.08);
+}
+.folder .name {
+	font-weight: 600;
+}
+.folder .actions {
+	display: flex;
+	gap: 6px;
+	opacity: .9;
+}
+.folder .actions button {
+	border: none;
+	background: transparent;
+	padding: 6px 8px;
+	cursor: pointer;
+	color: var(--muted);
+	border-radius: 8px;
+	transition: background .12s ease, color .12s ease;
+}
+.folder .actions button:hover {
+	background: #f2f6ff;
+	color: var(--accent);
+}
+.createbar {
+	padding: 12px;
+	border-top: 1px solid var(--border);
+}
+button, .button {
+	padding: 10px 14px;
+	border: 1px solid var(--border);
+	background: linear-gradient(180deg, #ffffff 0%, #f6f7ff 100%);
+	color: var(--accent);
+	border-radius: 12px;
+	cursor: pointer;
+	transition: transform .1s ease, box-shadow .1s ease, background .1s ease, color .1s ease;
+}
+button:hover, .button:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 6px 20px rgba(107,78,255,.12);
+}
+button:active, .button:active {
+	transform: translateY(0);
+	box-shadow: none;
+}
+button:focus-visible, .button:focus-visible, input:focus-visible, select:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 4px var(--ring);
+}
+.statusBar {
+	padding: 12px 14px;
+	border-top: 1px solid var(--border);
+	font-size: 12px;
+	color: var(--muted);
+	background: rgba(255,255,255,.6);
+}
+.right {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+.right .toolbar {
+	padding: 12px;
+	border-bottom: 1px solid var(--border);
+	background: rgba(255,255,255,.85);
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	flex-wrap: wrap;
+}
+.right .toolbar input[type="text"] {
+	padding: 10px 12px;
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	background: white;
+	min-width: 240px;
+	transition: box-shadow .1s ease;
+}
+.right .toolbar button {
+	border-radius: 12px;
+}
+.content {
+	padding: 12px;
+	overflow: auto;
+}
+table {
+	width: 100%;
+	border-collapse: collapse;
+	background: var(--panel);
+	border: 1px solid var(--border);
+	border-radius: 16px;
+	overflow: hidden;
+	box-shadow: 0 12px 30px rgba(31,36,48,.04);
+}
+th, td {
+	padding: 12px 14px;
+	border-bottom: 1px solid var(--border);
+	text-align: left;
+}
+th {
+	background: linear-gradient(180deg, #fafaff 0%, #f4f6ff 100%);
+	font-weight: 700;
+	font-size: 13px;
+	color: #374151;
+	user-select: none;
+	cursor: default;
+}
+th.sortable {
+	cursor: pointer;
+}
+tbody tr:hover {
+	background: #fbfdff;
+}
+.muted {
+	color: var(--muted);
+}
+.empty {
+	padding: 18px;
+	color: var(--muted);
+}
+.grow {
+	flex: 1;
+}
+.modal {
+	position: fixed;
+	inset: 0;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	background: radial-gradient(1200px 600px at 10% 10%, rgba(107,78,255,.08), transparent 40%), radial-gradient(1200px 800px at 90% 90%, rgba(14,165,233,.08), transparent 40%), rgba(9,9,11,.45);
+	padding: 16px;
+	z-index: 1000;
+}
+.modal.show {
+	display: flex;
+	animation: fadein .18s ease-out;
+}
+@keyframes fadein {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+.modal-box {
+	width: 100%;
+	max-width: 520px;
+	background: white;
+	border: 1px solid var(--border);
+	border-radius: 18px;
+	overflow: hidden;
+	box-shadow: 0 20px 60px rgba(31,36,48,.18), 0 2px 8px rgba(31,36,48,.08);
+	transform: translateY(10px) scale(.98);
+	animation: pop .22s ease-out forwards;
+}
+@keyframes pop {
+	to { transform: translateY(0) scale(1); }
+}
+.modal-head {
+	padding: 14px 16px;
+	border-bottom: 1px solid var(--border);
+	font-weight: 800;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+.modal-head .emoji {
+	font-size: 20px;
+}
+.modal-body {
+	padding: 14px 16px;
+	display: grid;
+	gap: 12px;
+}
+.modal-body input, .modal-body select {
+	padding: 10px 12px;
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	background: white;
+}
+.modal-foot {
+	display: flex;
+	gap: 10px;
+	justify-content: flex-end;
+	padding: 14px 16px;
+	border-top: 1px solid var(--border);
+}
+.btn-primary {
+	background: linear-gradient(180deg, #f0f6ff 0%, #e8f1ff 100%);
+	border-color: #d6e8ff;
+	color: var(--accent-2);
+}
+.btn-danger {
+	background: linear-gradient(180deg, #fff1f1 0%, #ffe6e6 100%);
+	border-color: #ffdede;
+	color: var(--danger);
+}
+.btn-success {
+	background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%);
+	border-color: #bbf7d0;
+	color: var(--success);
+}
+.badge {
+	display: inline-block;
+	background: linear-gradient(180deg, #eef6ff 0%, #e7f1ff 100%);
+	border: 1px solid #e0ecff;
+	color: #0a66c2;
+	border-radius: 999px;
+	padding: 3px 9px;
+	font-size: 12px;
+}
+a {
+	color: var(--accent);
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+.pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	border-radius: 999px;
+	background: linear-gradient(180deg, #fff 0%, #f7f7ff 100%);
+	border: 1px solid var(--border);
+}
+.toolbar .button-upload {
+	background: linear-gradient(90deg, #6b4eff, #0ea5e9);
+	border-color: transparent;
+	color: white;
+}
+.toolbar .button-upload:hover {
+	box-shadow: 0 10px 25px rgba(14,165,233,.22);
+}
+</style>
 </head>
-
 <body>
-	<div class="app">
-		<aside class="left">
-			<div class="logo">Oazis File Manager</div>
-			<div class="folders" id="foldersList"></div>
-			<div class="createbar"> <button id="btnOpenCreateFolder">+ Create folder</button> </div>
-			<div class="statusBar" id="status">Ready</div>
-		</aside>
-		<main class="right">
-			<div class="toolbar"> <input type="text" id="searchInput" placeholder="Search files" />
-				<div class="grow"></div> <button id="btnOpenUpload">Upload files</button>
-			</div>
-			<div class="content">
-				<table id="filesTable">
-					<thead>
-						<tr>
-							<th class="sortable" data-sort="name" id="thName">Name</th>
-							<th>Size</th>
-							<th class="sortable" data-sort="created" id="thCreated">Created</th>
-							<th>Actions</th>
-						</tr>
-					</thead>
-					<tbody id="filesBody">
-						<tr>
-							<td colspan="4" class="empty">Select a folder or All files.</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</main>
-	</div>
-	<div class="modal" id="createFolderModal">
-		<div class="modal-box">
-			<div class="modal-head">Create folder</div>
-			<div class="modal-body"> <input id="createFolderName" type="text" placeholder="Folder name" /> </div>
-			<div class="modal-foot"> <button id="btnCancelCreateFolder">Cancel</button> <button id="btnSaveCreateFolder" class="btn-primary">Save</button> </div>
+<div class="app">
+	<aside class="left">
+		<div class="logo">Oazis File Manager</div>
+		<div class="folders" id="foldersList"></div>
+		<div class="createbar"><button id="btnOpenCreateFolder">+ Create folder</button></div>
+		<div class="statusBar" id="status">Ready</div>
+	</aside>
+	<main class="right">
+		<div class="toolbar">
+			<input type="text" id="searchInput" placeholder="Search files" />
+			<div class="grow"></div>
+			<button id="btnOpenUpload" class="button-upload">Upload files</button>
+		</div>
+		<div class="content">
+			<table id="filesTable">
+				<thead>
+					<tr>
+						<th class="sortable" data-sort="name" id="thName">Name</th>
+						<th>Size</th>
+						<th class="sortable" data-sort="created" id="thCreated">Created</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody id="filesBody">
+					<tr>
+						<td colspan="4" class="empty">Select a folder or All files.</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</main>
+</div>
+<div class="modal" id="createFolderModal">
+	<div class="modal-box">
+		<div class="modal-head"><span class="emoji">📁</span> Create folder</div>
+		<div class="modal-body">
+			<input id="createFolderName" type="text" placeholder="Folder name" />
+		</div>
+		<div class="modal-foot">
+			<button id="btnCancelCreateFolder">Cancel</button>
+			<button id="btnSaveCreateFolder" class="btn-primary">Save</button>
 		</div>
 	</div>
-	<div class="modal" id="uploadModal">
-		<div class="modal-box">
-			<div class="modal-head">Upload files</div>
-			<div class="modal-body"> <select id="uploadTargetFolder"></select> <input type="file" id="uploadFilesInput" multiple />
-				<div class="muted" id="uploadHint"></div>
-			</div>
-			<div class="modal-foot"> <button id="btnCancelUpload">Cancel</button> <button id="btnStartUpload" class="btn-primary">Upload</button> </div>
+</div>
+<div class="modal" id="uploadModal">
+	<div class="modal-box">
+		<div class="modal-head"><span class="emoji">🌈</span> Upload files</div>
+		<div class="modal-body">
+			<select id="uploadTargetFolder"></select>
+			<input type="file" id="uploadFilesInput" multiple />
+			<div class="muted" id="uploadHint"></div>
+		</div>
+		<div class="modal-foot">
+			<button id="btnCancelUpload">Cancel</button>
+			<button id="btnStartUpload" class="btn-primary">Upload</button>
 		</div>
 	</div>
-	<script>
-	const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
-	const APPWRITE_PROJECT_ID = 'oazissebike';
-	const APPWRITE_BUCKET_ID = 'oazissebike';
-	const JSONBIN_BIN_ID = '68b9d3d8d0ea881f4071c182';
-	const JSONBIN_MASTER_KEY = '$2a$10$9sO/ja29sMebpWNvsWmp5.dJ6lv7CPeLBMRFaA/cAEwz42ii6qlCS';
-	const JSONBIN_BASE = 'https://api.jsonbin.io/v3';
-	let folders = [];
-	let activeView = {
-		type: 'all',
-		index: -1
+</div>
+<div class="modal" id="dialogModal">
+	<div class="modal-box">
+		<div class="modal-head" id="dialogTitle"></div>
+		<div class="modal-body" id="dialogBody"></div>
+		<div class="modal-foot" id="dialogFoot"></div>
+	</div>
+</div>
+<script>
+const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
+const APPWRITE_PROJECT_ID = 'oazissebike';
+const APPWRITE_BUCKET_ID = 'oazissebike';
+const JSONBIN_BIN_ID = '68b9d3d8d0ea881f4071c182';
+const JSONBIN_MASTER_KEY = '$2a$10$9sO/ja29sMebpWNvsWmp5.dJ6lv7CPeLBMRFaA/cAEwz42ii6qlCS';
+const JSONBIN_BASE = 'https://api.jsonbin.io/v3';
+let folders = [];
+let activeView = { type: 'all', index: -1 };
+let currentFiles = [];
+let sortBy = 'created';
+let sortDir = 'desc';
+let searchQuery = '';
+const client = new Appwrite.Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID);
+const storage = new Appwrite.Storage(client);
+const statusEl = document.getElementById('status');
+const foldersListEl = document.getElementById('foldersList');
+const filesBodyEl = document.getElementById('filesBody');
+const searchInputEl = document.getElementById('searchInput');
+const btnOpenCreateFolder = document.getElementById('btnOpenCreateFolder');
+const createFolderModal = document.getElementById('createFolderModal');
+const createFolderNameEl = document.getElementById('createFolderName');
+const btnCancelCreateFolder = document.getElementById('btnCancelCreateFolder');
+const btnSaveCreateFolder = document.getElementById('btnSaveCreateFolder');
+const uploadModal = document.getElementById('uploadModal');
+const uploadTargetFolderEl = document.getElementById('uploadTargetFolder');
+const uploadFilesInputEl = document.getElementById('uploadFilesInput');
+const uploadHintEl = document.getElementById('uploadHint');
+const btnOpenUpload = document.getElementById('btnOpenUpload');
+const btnCancelUpload = document.getElementById('btnCancelUpload');
+const btnStartUpload = document.getElementById('btnStartUpload');
+const thName = document.getElementById('thName');
+const thCreated = document.getElementById('thCreated');
+const metaCache = new Map();
+const dialogModal = document.getElementById('dialogModal');
+const dialogTitle = document.getElementById('dialogTitle');
+const dialogBody = document.getElementById('dialogBody');
+const dialogFoot = document.getElementById('dialogFoot');
+
+function setStatus(msg) {
+	statusEl.textContent = msg;
+}
+async function fetchFolders() {
+	setStatus('Loading folders...');
+	const res = await fetch(`${JSONBIN_BASE}/b/${JSONBIN_BIN_ID}/latest`, {
+		headers: { 'X-Master-Key': JSONBIN_MASTER_KEY, 'X-Bin-Meta': 'false', 'Content-Type': 'application/json' },
+		cache: 'no-store'
+	});
+	if(!res.ok) throw new Error('Failed to load folders.');
+	const data = await res.json();
+	folders = Array.isArray(data.folders) ? data.folders : [];
+	setStatus('Folders loaded.');
+}
+async function saveFolders() {
+	setStatus('Saving...');
+	const res = await fetch(`${JSONBIN_BASE}/b/${JSONBIN_BIN_ID}`, {
+		method: 'PUT',
+		headers: { 'X-Master-Key': JSONBIN_MASTER_KEY, 'Content-Type': 'application/json' },
+		body: JSON.stringify({ folders })
+	});
+	if(!res.ok) throw new Error('Failed to save folders.');
+	setStatus('Saved.');
+}
+function sanitizedFolderName(name) {
+	return String(name || '').trim();
+}
+function openModal(modal) {
+	modal.classList.add('show');
+}
+function closeModal(modal) {
+	modal.classList.remove('show');
+}
+function makeBadgeCount(n) {
+	return '<span class="badge">' + n + '</span>';
+}
+function renderFoldersList() {
+	foldersListEl.innerHTML = '';
+	const allRow = document.createElement('div');
+	allRow.className = 'folder' + (activeView.type === 'all' ? ' active' : '');
+	allRow.onclick = () => {
+		activeView = { type: 'all', index: -1 };
+		renderFoldersList();
+		loadFilesForCurrentView();
 	};
-	let currentFiles = [];
-	let sortBy = 'created';
-	let sortDir = 'desc';
-	let searchQuery = '';
-	const client = new Appwrite.Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID);
-	const storage = new Appwrite.Storage(client);
-	const statusEl = document.getElementById('status');
-	const foldersListEl = document.getElementById('foldersList');
-	const filesBodyEl = document.getElementById('filesBody');
-	const searchInputEl = document.getElementById('searchInput');
-	const btnOpenCreateFolder = document.getElementById('btnOpenCreateFolder');
-	const createFolderModal = document.getElementById('createFolderModal');
-	const createFolderNameEl = document.getElementById('createFolderName');
-	const btnCancelCreateFolder = document.getElementById('btnCancelCreateFolder');
-	const btnSaveCreateFolder = document.getElementById('btnSaveCreateFolder');
-	const uploadModal = document.getElementById('uploadModal');
-	const uploadTargetFolderEl = document.getElementById('uploadTargetFolder');
-	const uploadFilesInputEl = document.getElementById('uploadFilesInput');
-	const uploadHintEl = document.getElementById('uploadHint');
-	const btnOpenUpload = document.getElementById('btnOpenUpload');
-	const btnCancelUpload = document.getElementById('btnCancelUpload');
-	const btnStartUpload = document.getElementById('btnStartUpload');
-	const thName = document.getElementById('thName');
-	const thCreated = document.getElementById('thCreated');
-	const metaCache = new Map();
-
-	function setStatus(msg) {
-		statusEl.textContent = msg;
-	}
-	async function fetchFolders() {
-		setStatus('Loading folders...');
-		const res = await fetch(`${JSONBIN_BASE}/b/${JSONBIN_BIN_ID}/latest`, {
-			headers: {
-				'X-Master-Key': JSONBIN_MASTER_KEY,
-				'X-Bin-Meta': 'false',
-				'Content-Type': 'application/json'
-			},
-			cache: 'no-store'
-		});
-		if(!res.ok) throw new Error('Failed to load folders');
-		const data = await res.json();
-		folders = Array.isArray(data.folders) ? data.folders : [];
-		setStatus('Folders loaded');
-	}
-	async function saveFolders() {
-		setStatus('Saving...');
-		const res = await fetch(`${JSONBIN_BASE}/b/${JSONBIN_BIN_ID}`, {
-			method: 'PUT',
-			headers: {
-				'X-Master-Key': JSONBIN_MASTER_KEY,
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				folders
-			})
-		});
-		if(!res.ok) throw new Error('Failed to save folders');
-		setStatus('Saved');
-	}
-
-	function sanitizedFolderName(name) {
-		return String(name || '').trim();
-	}
-
-	function openModal(modal) {
-		modal.classList.add('show');
-	}
-
-	function closeModal(modal) {
-		modal.classList.remove('show');
-	}
-
-	function renderFoldersList() {
-		foldersListEl.innerHTML = '';
-		const allRow = document.createElement('div');
-		allRow.className = 'folder' + (activeView.type === 'all' ? ' active' : '');
-		allRow.onclick = () => {
-			activeView = {
-				type: 'all',
-				index: -1
-			};
+	const allName = document.createElement('div');
+	allName.className = 'name';
+	allName.innerHTML = 'All files ' + makeBadgeCount(getAllIds().length);
+	const allActions = document.createElement('div');
+	allActions.className = 'actions';
+	allRow.append(allName, allActions);
+	foldersListEl.appendChild(allRow);
+	folders.forEach((f, idx) => {
+		const row = document.createElement('div');
+		row.className = 'folder' + (activeView.type === 'folder' && activeView.index === idx ? ' active' : '');
+		row.onclick = () => {
+			activeView = { type: 'folder', index: idx };
 			renderFoldersList();
 			loadFilesForCurrentView();
 		};
-		const allName = document.createElement('div');
-		allName.className = 'name';
-		allName.innerHTML = 'All files <span class="badge">' + getAllIds().length + '</span>';
-		const allActions = document.createElement('div');
-		allActions.className = 'actions';
-		allRow.append(allName, allActions);
-		foldersListEl.appendChild(allRow);
-		folders.forEach((f, idx) => {
-			const row = document.createElement('div');
-			row.className = 'folder' + (activeView.type === 'folder' && activeView.index === idx ? ' active' : '');
-			row.onclick = () => {
-				activeView = {
-					type: 'folder',
-					index: idx
-				};
-				renderFoldersList();
-				loadFilesForCurrentView();
-			};
-			const name = document.createElement('div');
-			name.className = 'name';
-			name.textContent = f.name;
-			const actions = document.createElement('div');
-			actions.className = 'actions';
-			const renameBtn = document.createElement('button');
-			renameBtn.title = 'Rename';
-			renameBtn.textContent = 'Rename';
-			renameBtn.onclick = (e) => {
-				e.stopPropagation();
-				renameFolder(idx);
-			};
-			const delBtn = document.createElement('button');
-			delBtn.title = 'Delete';
-			delBtn.textContent = 'Delete';
-			delBtn.onclick = (e) => {
-				e.stopPropagation();
-				deleteFolder(idx);
-			};
-			actions.append(renameBtn, delBtn);
-			row.append(name, actions);
-			foldersListEl.appendChild(row);
-		});
-		if(folders.length === 0) {
-			const empty = document.createElement('div');
-			empty.className = 'empty';
-			empty.style.padding = '12px';
-			empty.textContent = 'No folders. Create one.';
-			foldersListEl.appendChild(empty);
-		}
-	}
-	async function createFolder(nameIn) {
-		const name = sanitizedFolderName(nameIn);
-		if(!name) {
-			alert('Enter folder name.');
-			return;
-		}
-		if(folders.find(f => f.name.toLowerCase() === name.toLowerCase())) {
-			alert('Folder already exists.');
-			return;
-		}
-		folders.push({
-			name,
-			files: []
-		});
-		await saveFolders().catch(err => alert(err.message));
-		activeView = {
-			type: 'folder',
-			index: folders.length - 1
+		const name = document.createElement('div');
+		name.className = 'name';
+		name.textContent = f.name;
+		const actions = document.createElement('div');
+		actions.className = 'actions';
+		const renameBtn = document.createElement('button');
+		renameBtn.title = 'Rename';
+		renameBtn.textContent = '✏️';
+		renameBtn.onclick = (e) => {
+			e.stopPropagation();
+			renameFolder(idx);
 		};
-		renderFoldersList();
-		loadFilesForCurrentView();
+		const delBtn = document.createElement('button');
+		delBtn.title = 'Delete';
+		delBtn.textContent = '🗑️';
+		delBtn.onclick = (e) => {
+			e.stopPropagation();
+			deleteFolder(idx);
+		};
+		actions.append(renameBtn, delBtn);
+		row.append(name, actions);
+		foldersListEl.appendChild(row);
+	});
+	if(folders.length === 0) {
+		const empty = document.createElement('div');
+		empty.className = 'empty';
+		empty.style.padding = '12px';
+		empty.textContent = 'No folders. Create one.';
+		foldersListEl.appendChild(empty);
 	}
-	async function renameFolder(idx) {
-		const current = folders[idx];
-		const newName = prompt('Rename folder', current.name);
-		if(newName === null) return;
-		const name = sanitizedFolderName(newName);
-		if(!name) {
-			alert('Invalid name.');
-			return;
-		}
-		if(folders.find((f, i) => i !== idx && f.name.toLowerCase() === name.toLowerCase())) {
-			alert('Folder with this name already exists.');
-			return;
-		}
-		folders[idx].name = name;
-		await saveFolders().catch(err => alert(err.message));
-		renderFoldersList();
+}
+async function createFolder(nameIn) {
+	const name = sanitizedFolderName(nameIn);
+	if(!name) {
+		await showAlert('Enter a folder name.', 'Let’s name it');
+		return false;
 	}
-	async function deleteFolder(idx) {
-		const f = folders[idx];
-		if(f.files && f.files.length > 0) {
-			alert('Folder is not empty. Remove files first.');
-			return;
-		}
-		if(!confirm(`Delete folder "${f.name}"?`)) return;
-		folders.splice(idx, 1);
-		if(activeView.type === 'folder') {
-			if(activeView.index === idx) activeView = {
-				type: 'all',
-				index: -1
-			};
-			else if(activeView.index > idx) activeView.index -= 1;
-		}
-		await saveFolders().catch(err => alert(err.message));
-		renderFoldersList();
-		loadFilesForCurrentView();
+	if(folders.find(f => f.name.toLowerCase() === name.toLowerCase())) {
+		await showAlert('That folder already exists.', 'Duplicate folder');
+		return false;
 	}
-
-	function formatBytes(bytes) {
-		const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-		if(bytes === 0) return '0 B';
-		const i = Math.floor(Math.log(bytes) / Math.log(1024));
-		return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
+	folders.push({ name, files: [] });
+	try {
+		await saveFolders();
+	} catch (err) {
+		await showAlert(err.message, 'Save failed');
+		return false;
 	}
-
-	function getActiveIds() {
-		if(activeView.type === 'all') return getAllIds();
-		const f = folders[activeView.index];
-		return Array.isArray(f?.files) ? f.files : [];
+	activeView = { type: 'folder', index: folders.length - 1 };
+	renderFoldersList();
+	loadFilesForCurrentView();
+	return true;
+}
+async function renameFolder(idx) {
+	const current = folders[idx];
+	const newName = await showPrompt('Rename folder', current.name);
+	if(newName === null) return;
+	const name = sanitizedFolderName(newName);
+	if(!name) {
+		await showAlert('Enter a valid name.', 'Invalid name');
+		return;
 	}
-
-	function getAllIds() {
-		const set = new Set();
-		for(const f of folders) {
-			for(const id of f.files || []) set.add(id);
+	if(folders.find((f, i) => i !== idx && f.name.toLowerCase() === name.toLowerCase())) {
+		await showAlert('A folder with this name already exists.', 'Duplicate name');
+		return;
+	}
+	folders[idx].name = name;
+	try {
+		await saveFolders();
+	} catch (err) {
+		await showAlert(err.message, 'Save failed');
+		return;
+	}
+	renderFoldersList();
+}
+async function deleteFolder(idx) {
+	const f = folders[idx];
+	if(f.files && f.files.length > 0) {
+		await showAlert('This folder is not empty. Remove files first.', 'Cannot delete');
+		return;
+	}
+	const ok = await showConfirm(`Delete folder "${f.name}"?`, 'Delete folder');
+	if(!ok) return;
+	folders.splice(idx, 1);
+	if(activeView.type === 'folder') {
+		if(activeView.index === idx) activeView = { type: 'all', index: -1 };
+		else if(activeView.index > idx) activeView.index -= 1;
+	}
+	try {
+		await saveFolders();
+	} catch (e) {
+		await showAlert(e.message, 'Save failed');
+	}
+	renderFoldersList();
+	loadFilesForCurrentView();
+}
+function formatBytes(bytes) {
+	const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+	if(bytes === 0) return '0 B';
+	const i = Math.floor(Math.log(bytes) / Math.log(1024));
+	return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
+}
+function getActiveIds() {
+	if(activeView.type === 'all') return getAllIds();
+	const f = folders[activeView.index];
+	return Array.isArray(f?.files) ? f.files : [];
+}
+function getAllIds() {
+	const set = new Set();
+	for(const f of folders) {
+		for(const id of f.files || []) set.add(id);
+	}
+	return Array.from(set);
+}
+async function ensureMeta(ids) {
+	for(const id of ids) {
+		if(metaCache.has(id)) continue;
+		try {
+			const meta = await storage.getFile(APPWRITE_BUCKET_ID, id);
+			metaCache.set(id, meta);
+		} catch (e) {
+			const errMeta = { $id: id, name: `(missing ${id})`, sizeOriginal: 0, $createdAt: Date.now(), _error: true };
+			metaCache.set(id, errMeta);
 		}
-		return Array.from(set);
 	}
-	async function ensureMeta(ids) {
-		for(const id of ids) {
-			if(metaCache.has(id)) continue;
-			try {
-				const meta = await storage.getFile(APPWRITE_BUCKET_ID, id);
-				metaCache.set(id, meta);
-			} catch (e) {
-				const errMeta = {
-					$id: id,
-					name: `(missing ${id})`,
-					sizeOriginal: 0,
-					$createdAt: Date.now(),
-					_error: true
-				};
-				metaCache.set(id, errMeta);
-			}
-		}
+}
+function applySearchAndSort(items) {
+	let out = items;
+	if(searchQuery) {
+		const q = searchQuery.toLowerCase();
+		out = out.filter(m => String(m.name || '').toLowerCase().includes(q));
 	}
-
-	function applySearchAndSort(items) {
-		let out = items;
-		if(searchQuery) {
-			const q = searchQuery.toLowerCase();
-			out = out.filter(m => String(m.name || '').toLowerCase().includes(q));
-		}
-		out = out.slice().sort((a, b) => {
-			if(sortBy === 'name') {
-				const an = String(a.name || '').toLowerCase();
-				const bn = String(b.name || '').toLowerCase();
-				if(an < bn) return sortDir === 'asc' ? -1 : 1;
-				if(an > bn) return sortDir === 'asc' ? 1 : -1;
-				return 0;
-			}
-			if(sortBy === 'created') {
-				const ad = new Date(a.$createdAt || a.dateCreated || 0).getTime();
-				const bd = new Date(b.$createdAt || b.dateCreated || 0).getTime();
-				if(ad < bd) return sortDir === 'asc' ? -1 : 1;
-				if(ad > bd) return sortDir === 'asc' ? 1 : -1;
-				return 0;
-			}
+	out = out.slice().sort((a, b) => {
+		if(sortBy === 'name') {
+			const an = String(a.name || '').toLowerCase();
+			const bn = String(b.name || '').toLowerCase();
+			if(an < bn) return sortDir === 'asc' ? -1 : 1;
+			if(an > bn) return sortDir === 'asc' ? 1 : -1;
 			return 0;
+		}
+		if(sortBy === 'created') {
+			const ad = new Date(a.$createdAt || a.dateCreated || 0).getTime();
+			const bd = new Date(b.$createdAt || b.dateCreated || 0).getTime();
+			if(ad < bd) return sortDir === 'asc' ? -1 : 1;
+			if(ad > bd) return sortDir === 'asc' ? 1 : -1;
+			return 0;
+		}
+		return 0;
+	});
+	return out;
+}
+function renderFilesTable() {
+	filesBodyEl.innerHTML = '';
+	if(currentFiles.length === 0) {
+		filesBodyEl.innerHTML = `<tr><td colspan="4" class="empty">No files.</td></tr>`;
+		return;
+	}
+	const filtered = applySearchAndSort(currentFiles);
+	if(filtered.length === 0) {
+		filesBodyEl.innerHTML = `<tr><td colspan="4" class="empty">No files match your search.</td></tr>`;
+		return;
+	}
+	for(const meta of filtered) {
+		const id = meta.$id;
+		const tr = document.createElement('tr');
+		const downloadUrl = storage.getFileDownload(APPWRITE_BUCKET_ID, id);
+		tr.innerHTML = ` <td>${meta.name || '(unnamed)'}</td> <td>${formatBytes(meta.sizeOriginal || meta.size || 0)}</td> <td>${new Date(meta.$createdAt || meta.dateCreated || Date.now()).toLocaleString()}</td> <td> <a href="${downloadUrl}" target="_blank" rel="noopener">Download</a> &nbsp;|&nbsp; <a href="#" data-id="${id}" class="delete-file">Delete</a> </td> `;
+		filesBodyEl.appendChild(tr);
+	}
+	filesBodyEl.querySelectorAll('.delete-file').forEach(a => {
+		a.addEventListener('click', async (e) => {
+			e.preventDefault();
+			const id = e.currentTarget.getAttribute('data-id');
+			await deleteFileById(id);
 		});
-		return out;
-	}
-
-	function renderFilesTable() {
-		filesBodyEl.innerHTML = '';
-		if(currentFiles.length === 0) {
-			filesBodyEl.innerHTML = `<tr><td colspan="4" class="empty">No files.</td></tr>`;
-			return;
-		}
-		const filtered = applySearchAndSort(currentFiles);
-		if(filtered.length === 0) {
-			filesBodyEl.innerHTML = `<tr><td colspan="4" class="empty">No files match your search.</td></tr>`;
-			return;
-		}
-		for(const meta of filtered) {
-			const id = meta.$id;
-			const tr = document.createElement('tr');
-			const downloadUrl = storage.getFileDownload(APPWRITE_BUCKET_ID, id);
-			tr.innerHTML = ` <td>${meta.name || '(unnamed)'}</td> <td>${formatBytes(meta.sizeOriginal || meta.size || 0)}</td> <td>${new Date(meta.$createdAt || meta.dateCreated || Date.now()).toLocaleString()}</td> <td> <a href="${downloadUrl}" target="_blank" rel="noopener">Download</a> &nbsp;|&nbsp; <a href="#" data-id="${id}" class="delete-file">Delete</a> </td> `;
-			filesBodyEl.appendChild(tr);
-		}
-		filesBodyEl.querySelectorAll('.delete-file').forEach(a => {
-			a.addEventListener('click', async (e) => {
-				e.preventDefault();
-				const id = e.currentTarget.getAttribute('data-id');
-				await deleteFileById(id);
-			});
-		});
-	}
-	async function loadFilesForCurrentView() {
-		filesBodyEl.innerHTML = '';
-		const ids = getActiveIds();
-		if(ids.length === 0) {
-			currentFiles = [];
-			renderFilesTable();
-			return;
-		}
-		setStatus('Loading files...');
-		await ensureMeta(ids);
-		currentFiles = ids.map(id => metaCache.get(id)).filter(Boolean);
+	});
+}
+async function loadFilesForCurrentView() {
+	filesBodyEl.innerHTML = '';
+	const ids = getActiveIds();
+	if(ids.length === 0) {
+		currentFiles = [];
 		renderFilesTable();
-		setStatus('Ready');
+		return;
 	}
-	async function deleteFileById(fileId) {
-		if(!confirm(`Delete file ${fileId}?`)) return;
-		setStatus('Deleting file...');
-		try {
-			await storage.deleteFile(APPWRITE_BUCKET_ID, fileId);
-		} catch (e) {
-			alert('Failed to delete file in Appwrite: ' + e.message);
-			setStatus('Delete failed');
-			return;
-		}
-		try {
-			for(const f of folders) {
-				f.files = (f.files || []).filter(id => id !== fileId);
-			}
-			await saveFolders();
-			metaCache.delete(fileId);
-			await loadFilesForCurrentView();
-			setStatus('File deleted');
-		} catch (e) {
-			alert('Deleted from storage, but failed to update folders: ' + e.message);
-			setStatus('Partial delete');
-		}
+	setStatus('Loading files...');
+	await ensureMeta(ids);
+	currentFiles = ids.map(id => metaCache.get(id)).filter(Boolean);
+	renderFilesTable();
+	setStatus('Ready');
+}
+async function deleteFileById(fileId) {
+	const ok = await showConfirm(`Delete file ${fileId}?`, 'Delete file');
+	if(!ok) return;
+	setStatus('Deleting file...');
+	try {
+		await storage.deleteFile(APPWRITE_BUCKET_ID, fileId);
+	} catch (e) {
+		await showAlert('Failed to delete file in Appwrite: ' + e.message, 'Delete failed');
+		setStatus('Delete failed');
+		return;
 	}
-
-	function refreshUploadFolderSelect() {
-		uploadTargetFolderEl.innerHTML = '';
-		if(folders.length === 0) {
-			const opt = document.createElement('option');
-			opt.value = '';
-			opt.textContent = 'No folders available';
-			uploadTargetFolderEl.appendChild(opt);
-			uploadTargetFolderEl.disabled = true;
-			uploadHintEl.textContent = 'Create a folder first.';
-			btnStartUpload.disabled = true;
-			return;
+	try {
+		for(const f of folders) {
+			f.files = (f.files || []).filter(id => id !== fileId);
 		}
-		folders.forEach((f, idx) => {
-			const opt = document.createElement('option');
-			opt.value = String(idx);
-			opt.textContent = f.name;
-			uploadTargetFolderEl.appendChild(opt);
-		});
-		uploadTargetFolderEl.disabled = false;
-		btnStartUpload.disabled = false;
-		uploadHintEl.textContent = 'You can select multiple files.';
-		if(activeView.type === 'folder' && activeView.index >= 0 && activeView.index < folders.length) {
-			uploadTargetFolderEl.value = String(activeView.index);
-		} else {
-			uploadTargetFolderEl.value = '0';
-		}
-	}
-	async function uploadMultipleFiles() {
-		const idx = parseInt(uploadTargetFolderEl.value, 10);
-		if(Number.isNaN(idx) || !folders[idx]) {
-			alert('Choose a target folder.');
-			return;
-		}
-		const files = Array.from(uploadFilesInputEl.files || []);
-		if(files.length === 0) {
-			alert('Choose files to upload.');
-			return;
-		}
-		setStatus('Uploading...');
-		let added = 0;
-		for(const file of files) {
-			try {
-				const created = await storage.createFile(APPWRITE_BUCKET_ID, Appwrite.ID.unique(), file);
-				const f = folders[idx];
-				if(!Array.isArray(f.files)) f.files = [];
-				if(!f.files.includes(created.$id)) f.files.push(created.$id);
-				added += 1;
-			} catch (e) {
-				alert('Upload failed for ' + file.name + ': ' + e.message);
-			}
-		}
-		try {
-			await saveFolders();
-			if(activeView.type === 'folder' && activeView.index !== idx) {
-				activeView = {
-					type: 'folder',
-					index: idx
-				};
-			}
-			closeModal(uploadModal);
-			uploadFilesInputEl.value = '';
-			await loadFilesForCurrentView();
-			setStatus(added > 0 ? 'Upload complete' : 'No files uploaded');
-		} catch (e) {
-			alert('Uploaded, but failed to sync folders: ' + e.message);
-			setStatus('Sync error');
-		}
-	}
-	btnOpenCreateFolder.addEventListener('click', () => {
-		createFolderNameEl.value = '';
-		openModal(createFolderModal);
-		setTimeout(() => createFolderNameEl.focus(), 50);
-	});
-	btnCancelCreateFolder.addEventListener('click', () => {
-		closeModal(createFolderModal);
-	});
-	btnSaveCreateFolder.addEventListener('click', async () => {
-		const name = createFolderNameEl.value;
-		await createFolder(name);
-		closeModal(createFolderModal);
-	});
-	createFolderNameEl.addEventListener('keydown', async (e) => {
-		if(e.key === 'Enter') {
-			await createFolder(createFolderNameEl.value);
-			closeModal(createFolderModal);
-		}
-		if(e.key === 'Escape') {
-			closeModal(createFolderModal);
-		}
-	});
-	btnOpenUpload.addEventListener('click', () => {
-		refreshUploadFolderSelect();
-		uploadFilesInputEl.value = '';
-		openModal(uploadModal);
-	});
-	btnCancelUpload.addEventListener('click', () => {
-		closeModal(uploadModal);
-	});
-	btnStartUpload.addEventListener('click', uploadMultipleFiles);
-	searchInputEl.addEventListener('input', () => {
-		searchQuery = searchInputEl.value.trim();
-		renderFilesTable();
-	});
-
-	function updateSortIndicators() {
-		thName.textContent = 'Name' + (sortBy === 'name' ? (sortDir === 'asc' ? ' ▲' : ' ▼') : '');
-		thCreated.textContent = 'Created' + (sortBy === 'created' ? (sortDir === 'asc' ? ' ▲' : ' ▼') : '');
-	}
-
-	function setSort(by) {
-		if(sortBy === by) {
-			sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-		} else {
-			sortBy = by;
-			sortDir = by === 'name' ? 'asc' : 'desc';
-		}
-		updateSortIndicators();
-		renderFilesTable();
-	}
-	thName.classList.add('sortable');
-	thCreated.classList.add('sortable');
-	thName.addEventListener('click', () => setSort('name'));
-	thCreated.addEventListener('click', () => setSort('created'));
-	updateSortIndicators();
-	(async function init() {
-		try {
-			await fetchFolders();
-		} catch (e) {
-			alert('Failed to load folders from JSONBin: ' + e.message);
-		}
-		renderFoldersList();
+		await saveFolders();
+		metaCache.delete(fileId);
 		await loadFilesForCurrentView();
-		setStatus('Ready');
-	})();
-	</script>
-</body>
+		setStatus('File deleted.');
+	} catch (e) {
+		await showAlert('Deleted from storage, but failed to update folders: ' + e.message, 'Sync issue');
+		setStatus('Partial delete.');
+	}
+}
+function refreshUploadFolderSelect() {
+	uploadTargetFolderEl.innerHTML = '';
+	if(folders.length === 0) {
+		const opt = document.createElement('option');
+		opt.value = '';
+		opt.textContent = 'No folders available';
+		uploadTargetFolderEl.appendChild(opt);
+		uploadTargetFolderEl.disabled = true;
+		uploadHintEl.textContent = 'Create a folder first.';
+		btnStartUpload.disabled = true;
+		return;
+	}
+	folders.forEach((f, idx) => {
+		const opt = document.createElement('option');
+		opt.value = String(idx);
+		opt.textContent = f.name;
+		uploadTargetFolderEl.appendChild(opt);
+	});
+	uploadTargetFolderEl.disabled = false;
+	btnStartUpload.disabled = false;
+	uploadHintEl.textContent = 'You can select multiple files.';
+	if(activeView.type === 'folder' && activeView.index >= 0 && activeView.index < folders.length) {
+		uploadTargetFolderEl.value = String(activeView.index);
+	} else {
+		uploadTargetFolderEl.value = '0';
+	}
+}
+async function uploadMultipleFiles() {
+	const idx = parseInt(uploadTargetFolderEl.value, 10);
+	if(Number.isNaN(idx) || !folders[idx]) {
+		await showAlert('Choose a target folder.', 'No folder selected');
+		return;
+	}
+	const files = Array.from(uploadFilesInputEl.files || []);
+	if(files.length === 0) {
+		await showAlert('Choose files to upload.', 'No files selected');
+		return;
+	}
+	setStatus('Uploading...');
+	let added = 0;
+	for(const file of files) {
+		try {
+			const created = await storage.createFile(APPWRITE_BUCKET_ID, Appwrite.ID.unique(), file);
+			const f = folders[idx];
+			if(!Array.isArray(f.files)) f.files = [];
+			if(!f.files.includes(created.$id)) f.files.push(created.$id);
+			added += 1;
+		} catch (e) {
+			await showAlert('Upload failed for ' + file.name + ': ' + e.message, 'Upload failed');
+		}
+	}
+	try {
+		await saveFolders();
+		if(activeView.type === 'folder' && activeView.index !== idx) {
+			activeView = { type: 'folder', index: idx };
+		}
+		closeModal(uploadModal);
+		uploadFilesInputEl.value = '';
+		await loadFilesForCurrentView();
+		setStatus(added > 0 ? 'Upload complete.' : 'No files uploaded.');
+	} catch (e) {
+		await showAlert('Uploaded, but failed to sync folders: ' + e.message, 'Sync error');
+		setStatus('Sync error.');
+	}
+}
+btnOpenCreateFolder.addEventListener('click', () => {
+	createFolderNameEl.value = '';
+	openModal(createFolderModal);
+	setTimeout(() => createFolderNameEl.focus(), 50);
+});
+btnCancelCreateFolder.addEventListener('click', () => {
+	closeModal(createFolderModal);
+});
+btnSaveCreateFolder.addEventListener('click', async () => {
+	const ok = await createFolder(createFolderNameEl.value);
+	if(ok) closeModal(createFolderModal);
+});
+createFolderNameEl.addEventListener('keydown', async (e) => {
+	if(e.key === 'Enter') {
+		const ok = await createFolder(createFolderNameEl.value);
+		if(ok) closeModal(createFolderModal);
+	}
+	if(e.key === 'Escape') {
+		closeModal(createFolderModal);
+	}
+});
+btnOpenUpload.addEventListener('click', () => {
+	refreshUploadFolderSelect();
+	uploadFilesInputEl.value = '';
+	openModal(uploadModal);
+});
+btnCancelUpload.addEventListener('click', () => {
+	closeModal(uploadModal);
+});
+btnStartUpload.addEventListener('click', uploadMultipleFiles);
+searchInputEl.addEventListener('input', () => {
+	searchQuery = searchInputEl.value.trim();
+	renderFilesTable();
+});
+function updateSortIndicators() {
+	thName.textContent = 'Name' + (sortBy === 'name' ? (sortDir === 'asc' ? ' ▲' : ' ▼') : '');
+	thCreated.textContent = 'Created' + (sortBy === 'created' ? (sortDir === 'asc' ? ' ▲' : ' ▼') : '');
+}
+function setSort(by) {
+	if(sortBy === by) {
+		sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+	} else {
+		sortBy = by;
+		sortDir = by === 'name' ? 'asc' : 'desc';
+	}
+	updateSortIndicators();
+	renderFilesTable();
+}
+thName.classList.add('sortable');
+thCreated.classList.add('sortable');
+thName.addEventListener('click', () => setSort('name'));
+thCreated.addEventListener('click', () => setSort('created'));
+updateSortIndicators();
 
+function showDialog(options) {
+	return new Promise((resolve) => {
+		dialogTitle.innerHTML = '';
+		dialogBody.innerHTML = '';
+		dialogFoot.innerHTML = '';
+		const titleText = options.title || '';
+		const emoji = options.emoji || '';
+		const titleEl = document.createElement('div');
+		titleEl.innerHTML = (emoji ? `<span class="emoji">${emoji}</span> ` : '') + titleText;
+		dialogTitle.appendChild(titleEl);
+		if(typeof options.body === 'string') {
+			const p = document.createElement('div');
+			p.textContent = options.body;
+			dialogBody.appendChild(p);
+		} else if(options.body instanceof Node) {
+			dialogBody.appendChild(options.body);
+		}
+		const btnCancel = document.createElement('button');
+		btnCancel.textContent = options.cancelText || 'Cancel';
+		if(options.cancelClass) btnCancel.className = options.cancelClass;
+		const btnOk = document.createElement('button');
+		btnOk.textContent = options.okText || 'OK';
+		btnOk.className = options.okClass || 'btn-primary';
+		if(options.showCancel !== false) dialogFoot.appendChild(btnCancel);
+		dialogFoot.appendChild(btnOk);
+		let closed = false;
+		function done(val) {
+			if(closed) return;
+			closed = true;
+			closeModal(dialogModal);
+			cleanup();
+			resolve(val);
+		}
+		function onKey(e) {
+			if(e.key === 'Escape') done(options.escValue !== undefined ? options.escValue : null);
+			if(e.key === 'Enter' && options.acceptsEnter) {
+				e.preventDefault();
+				btnOk.click();
+			}
+		}
+		function cleanup() {
+			btnCancel.removeEventListener('click', onCancel);
+			btnOk.removeEventListener('click', onOk);
+			document.removeEventListener('keydown', onKey);
+			dialogModal.removeEventListener('click', onBackdrop);
+		}
+		function onCancel() {
+			done(options.cancelValue !== undefined ? options.cancelValue : null);
+		}
+		function onOk() {
+			if(typeof options.onOk === 'function') {
+				const result = options.onOk();
+				done(result);
+			} else {
+				done(true);
+			}
+		}
+		function onBackdrop(e) {
+			if(e.target === dialogModal && options.backdropClose) {
+				done(options.backdropValue !== undefined ? options.backdropValue : null);
+			}
+		}
+		btnCancel.addEventListener('click', onCancel);
+		btnOk.addEventListener('click', onOk);
+		document.addEventListener('keydown', onKey);
+		dialogModal.addEventListener('click', onBackdrop);
+		openModal(dialogModal);
+		if(options.focusEl) setTimeout(() => options.focusEl.focus(), 50);
+	});
+}
+function showAlert(message, title) {
+	return showDialog({ title: title || 'Notice', emoji: '✨', body: message, okText: 'OK', okClass: 'btn-success', showCancel: false, acceptsEnter: true });
+}
+function showConfirm(message, title) {
+	return showDialog({ title: title || 'Please confirm', emoji: '❓', body: message, okText: 'Yes', cancelText: 'No', okClass: 'btn-danger', cancelClass: '', acceptsEnter: true }).then(v => !!v);
+}
+function showPrompt(title, defaultValue) {
+	const wrap = document.createElement('div');
+	const input = document.createElement('input');
+	input.type = 'text';
+	input.value = defaultValue || '';
+	input.placeholder = 'Type here';
+	wrap.appendChild(input);
+	return showDialog({ title: title || 'Enter value', emoji: '✏️', body: wrap, okText: 'Save', cancelText: 'Cancel', okClass: 'btn-primary', acceptsEnter: true, focusEl: input, onOk: () => input.value }).then(v => {
+		if(v === null) return null;
+		return v;
+	});
+}
+
+(async function init() {
+	try {
+		await fetchFolders();
+	} catch (e) {
+		await showAlert('Failed to load folders from JSONBin: ' + e.message + '.', 'Load error');
+	}
+	renderFoldersList();
+	await loadFilesForCurrentView();
+	setStatus('Ready');
+})();
+</script>
+</body>
 </html>
