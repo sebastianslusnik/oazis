@@ -15,8 +15,9 @@ body { margin: 0; background: linear-gradient(135deg, var(--bg), var(--bg-2)); b
 .folder { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; transition: transform .12s ease, background .12s ease, box-shadow .12s ease, border-color .12s ease; border: 1px solid transparent; }
 .folder:hover { background: var(--soft); border-color: var(--border); box-shadow: 0 1px 0 rgba(0,0,0,.02); transform: translateY(-1px); }
 .folder.active { background: color-mix(in oklab, var(--soft) 70%, white); border-color: var(--border); box-shadow: var(--shadow); }
-.folder .name { font-weight: 600; }
-.folder .actions { display: flex; gap: 6px; opacity: .9; }
+.folder .name { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.folder .actions { display: flex; gap: 6px; opacity: 0; pointer-events: none; transition: opacity .12s ease; }
+.folder:hover .actions { opacity: 1; pointer-events: auto; }
 .folder .actions button { border: none; background: transparent; padding: 6px 8px; cursor: pointer; color: var(--muted); border-radius: 8px; transition: background .12s ease, color .12s ease; }
 .folder .actions button:hover { background: color-mix(in oklab, var(--soft) 60%, white); color: var(--primary-700); }
 .createbar { padding: 12px; border-top: 1px solid var(--border); }
@@ -31,7 +32,7 @@ button:focus-visible, .button:focus-visible, input:focus-visible, select:focus-v
 .right .toolbar button { border-radius: var(--radius-sm); }
 .content { padding: 12px; overflow: auto; }
 table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-th, td { padding: 12px 14px; border-bottom: 1px solid var(--border); text-align: left; text-transform: uppercase}
+th, td { padding: 12px 14px; border-bottom: 1px solid var(--border); text-align: left; text-transform: uppercase; }
 th { background: linear-gradient(180deg, color-mix(in oklab, var(--soft) 40%, white) 0%, color-mix(in oklab, var(--soft) 20%, white) 100%); font-weight: 700; font-size: 13px; color: color-mix(in oklab, var(--ink) 78%, black); user-select: none; cursor: default; }
 th.sortable { cursor: pointer; }
 tbody tr:hover { background: color-mix(in oklab, var(--soft) 35%, white); }
@@ -223,6 +224,7 @@ function sanitizedFolderName(name) { return String(name || '').trim(); }
 function openModal(modal) { modal.classList.add('show'); }
 function closeModal(modal) { modal.classList.remove('show'); }
 function makeBadgeCount(n) { return '<span class="badge">' + n + '</span>'; }
+function createBadgeEl(n) { const s = document.createElement('span'); s.className = 'badge'; s.textContent = String(n); return s; }
 function renderFoldersList() {
 	foldersListEl.innerHTML = '';
 	const allRow = document.createElement('div');
@@ -242,6 +244,7 @@ function renderFoldersList() {
 		const name = document.createElement('div');
 		name.className = 'name';
 		name.textContent = f.name;
+		name.appendChild(createBadgeEl(Array.isArray(f.files) ? f.files.length : 0));
 		const actions = document.createElement('div');
 		actions.className = 'actions';
 		const renameBtn = document.createElement('button');
@@ -422,6 +425,7 @@ async function deleteFileById(fileId) {
 		}
 		await saveFolders();
 		metaCache.delete(fileId);
+		renderFoldersList();
 		await loadFilesForCurrentView();
 		setStatus('File deleted.');
 	} catch (e) { await showAlert('Deleted from storage, but failed to update folders: ' + e.message, 'Sync issue'); setStatus('Partial delete.'); }
@@ -474,6 +478,7 @@ async function uploadMultipleFiles() {
 	try {
 	 await saveFolders();
 	 if(activeView.type === 'folder' && activeView.index !== idx) { activeView = { type: 'folder', index: idx }; }
+	 renderFoldersList();
 	 closeModal(uploadModal);
 	 uploadFilesInputEl.value = '';
 	 await loadFilesForCurrentView();
