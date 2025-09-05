@@ -250,18 +250,16 @@
 			</div>
 		</main>
 	</div>
-
-	<script>
+<script>
 const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
 const APPWRITE_PROJECT_ID = 'oazissebike';
 const APPWRITE_BUCKET_ID = 'oazissebike';
-const APPWRITE_API_KEY = 'standard_d58aa133fc638f7765b7f59950ec4860d5b2bc0ed9a61159d173c4cc8a5aa4968e726aa198447e264c21068e47e7bc087625947ec0b52579487c5ad775011646037bdfac41402e5cef446c143ccd5c50c4fd6e5a06ab3945ba8e78388aaf0d34930a4f26458790e656d73681d81994693de06edf9fb7de6d030ccc8e6f45a3fe';
 const JSONBIN_BIN_ID = '68b9d3d8d0ea881f4071c182';
 const JSONBIN_MASTER_KEY = '$2a$10$9sO/ja29sMebpWNvsWmp5.dJ6lv7CPeLBMRFaA/cAEwz42ii6qlCS';
 const JSONBIN_BASE = 'https://api.jsonbin.io/v3';
 let folders = [];
 let activeFolderIndex = -1;
-const client = new Appwrite.Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID).setKey(APPWRITE_API_KEY);
+const client = new Appwrite.Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID);
 const storage = new Appwrite.Storage(client);
 const statusEl = document.getElementById('status');
 const foldersListEl = document.getElementById('foldersList');
