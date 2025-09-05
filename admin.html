@@ -71,7 +71,7 @@ th, td { padding: 10px 12px; }
 @media (max-width: 600px) {
 .right .toolbar input[type="text"] { min-width: 0; flex: 1 1 100%; }
 table { display: block; overflow-x: auto; white-space: nowrap; }
-table th:nth-child(2), table td:nth-child(2), table th:nth-child(3), table td:nth-child(3) { display: none; }
+table th:nth-child(3), table td:nth-child(3), table th:nth-child(4), table td:nth-child(4) { display: none; }
 }
 </style>
 </head>
@@ -94,6 +94,7 @@ table th:nth-child(2), table td:nth-child(2), table th:nth-child(3), table td:nt
 				<thead>
 					<tr>
 						<th class="sortable" data-sort="name" id="thName">Name</th>
+						<th>Type</th>
 						<th>Size</th>
 						<th class="sortable" data-sort="created" id="thCreated">Created</th>
 						<th>Actions</th>
@@ -101,7 +102,7 @@ table th:nth-child(2), table td:nth-child(2), table th:nth-child(3), table td:nt
 				</thead>
 				<tbody id="filesBody">
 					<tr>
-						<td colspan="4" class="empty">Select a folder or All files.</td>
+						<td colspan="5" class="empty">Select a folder or All files.</td>
 					</tr>
 				</tbody>
 			</table>
@@ -305,16 +306,30 @@ async function ensureMeta(ids) {
 		}
 	}
 }
+function getDisplayName(raw) {
+	const n = String(raw || '');
+	const idx = n.lastIndexOf('.');
+	let base = idx > 0 ? n.slice(0, idx) : n;
+	base = base.replace(/_/g, '');
+	base = base.trim();
+	return base || '(unnamed)';
+}
+function getExt(raw) {
+	const n = String(raw || '');
+	const idx = n.lastIndexOf('.');
+	if(idx > 0 && idx < n.length - 1) return n.slice(idx + 1).toLowerCase();
+	return '';
+}
 function applySearchAndSort(items) {
 	let out = items;
 	if(searchQuery) {
 		const q = searchQuery.toLowerCase();
-		out = out.filter(m => String(m.name || '').toLowerCase().includes(q));
+		out = out.filter(m => getDisplayName(m.name).toLowerCase().includes(q));
 	}
 	out = out.slice().sort((a, b) => {
 		if(sortBy === 'name') {
-			const an = String(a.name || '').toLowerCase();
-			const bn = String(b.name || '').toLowerCase();
+			const an = getDisplayName(a.name).toLowerCase();
+			const bn = getDisplayName(b.name).toLowerCase();
 			if(an < bn) return sortDir === 'asc' ? -1 : 1;
 			if(an > bn) return sortDir === 'asc' ? 1 : -1;
 			return 0;
@@ -333,19 +348,21 @@ function applySearchAndSort(items) {
 function renderFilesTable() {
 	filesBodyEl.innerHTML = '';
 	if(currentFiles.length === 0) {
-		filesBodyEl.innerHTML = `<tr><td colspan="4" class="empty">No files.</td></tr>`;
+		filesBodyEl.innerHTML = `<tr><td colspan="5" class="empty">No files.</td></tr>`;
 		return;
 	}
 	const filtered = applySearchAndSort(currentFiles);
 	if(filtered.length === 0) {
-		filesBodyEl.innerHTML = `<tr><td colspan="4" class="empty">No files match your search.</td></tr>`;
+		filesBodyEl.innerHTML = `<tr><td colspan="5" class="empty">No files match your search.</td></tr>`;
 		return;
 	}
 	for(const meta of filtered) {
 		const id = meta.$id;
 		const tr = document.createElement('tr');
 		const downloadUrl = storage.getFileDownload(APPWRITE_BUCKET_ID, id);
-		tr.innerHTML = ` <td>${meta.name || '(unnamed)'}</td> <td>${formatBytes(meta.sizeOriginal || meta.size || 0)}</td> <td>${new Date(meta.$createdAt || meta.dateCreated || Date.now()).toLocaleString()}</td> <td> <a href="${downloadUrl}" target="_blank" rel="noopener">Download</a> &nbsp;|&nbsp; <a href="#" data-id="${id}" class="delete-file">Delete</a> </td> `;
+		const displayName = getDisplayName(meta.name || '');
+		const ext = getExt(meta.name || '');
+		tr.innerHTML = ` <td>${displayName}</td> <td>${ext}</td> <td>${formatBytes(meta.sizeOriginal || meta.size || 0)}</td> <td>${new Date(meta.$createdAt || meta.dateCreated || Date.now()).toLocaleString()}</td> <td> <a href="${downloadUrl}" target="_blank" rel="noopener">Download</a> &nbsp;|&nbsp; <a href="#" data-id="${id}" class="delete-file">Delete</a> </td> `;
 		filesBodyEl.appendChild(tr);
 	}
 	filesBodyEl.querySelectorAll('.delete-file').forEach(a => {
