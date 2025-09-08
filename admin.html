@@ -456,7 +456,8 @@ currentFiles = ids.map(id => metaCache.get(id)).filter(Boolean);
 renderFilesTable();
 setStatus('Ready');
 }
-async function deleteFileById(fileId) {
+async function deleteFileById(fileId) {  
+const displayName = getDisplayName(meta.name || '');
 const ok = await showConfirm(`Delete file ${displayName}?`, 'Delete file');
 if(!ok) return;
 setStatus('Deleting file...');
