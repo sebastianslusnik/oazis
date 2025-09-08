@@ -1460,6 +1460,38 @@
 	<div class="mobile-cta">
 	</div>
 	<div class="toast" role="status" aria-live="polite" id="toast">Správa bola úspešne odoslaná!</div>
+	<div id="docs" style="
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100vw;
+      height: 100vh;  
+      opacity: 1;
+      margin: 0;
+      padding: 0;">
+<span id="closeDocs" style="
+      position: absolute;
+      top: 7vh;
+      right: 10vw;
+      transform: translate(0%,-50%);
+      background: #333;
+      color: white;
+      font-weight: 700;
+      padding: 8px 20px;
+      border-radius: 6px;        
+      cursor: pointer;">Close</span>
+<iframe
+style="position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80vw;
+      height: 80vh;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      box-shadow: #ddd 0 10px 30px 0;" src="https://sebastianslusnik.github.io/oazis/documents"></iframe>
+</div>
 	<script>
 	const observer = new IntersectionObserver((entries) => {
 		entries.forEach(e => {
