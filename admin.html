@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OAZIS | File Manager</title>
 <link rel="icon" type="image/png" href="logo-40x40.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,6 +28,7 @@ body { margin: 0; background: white; color: var(--ink); font-family: "Inter" !im
 .folder .actions button:hover { background: color-mix(in oklab, var(--soft) 60%, white); color: var(--primary-700); }
 .folder .count { transition: opacity .12s ease; }
 .folder.has-actions:hover .count { opacity: 0; }
+.folder .actions svg { width: 16px; height: 16px; display: block; }
 .createbar { padding: 12px; border-top: 1px solid var(--border); }
 button, .button { padding: 10px 14px; border: 1px solid var(--border); background: linear-gradient(180deg, var(--card) 0%, color-mix(in oklab, var(--soft) 35%, white) 100%); color: var(--primary-700); border-radius: var(--radius-sm); cursor: pointer; transition: transform .1s ease, box-shadow .1s ease, background .1s ease, color .1s ease, border-color .1s ease; }
 button:hover, .button:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
@@ -107,7 +108,7 @@ table th:nth-child(3), table td:nth-child(3), table th:nth-child(4), table td:nt
 </aside>
 <main class="right">
 <div class="toolbar">
-<input type="text" id="searchInput" placeholder="Search files" />
+<input type="text" id="searchInput" placeholder="Search files">
 <div class="grow"></div>
 <button id="btnOpenUpload" class="button-upload">Upload files</button>
 </div>
@@ -135,7 +136,7 @@ table th:nth-child(3), table td:nth-child(3), table th:nth-child(4), table td:nt
 <div class="modal-box">
 <div class="modal-head"><span class="emoji">📁</span> Create folder</div>
 <div class="modal-body">
-<input id="createFolderName" type="text" placeholder="Folder name" />
+<input id="createFolderName" type="text" placeholder="Folder name">
 </div>
 <div class="modal-foot">
 <button id="btnCancelCreateFolder">Cancel</button>
@@ -148,7 +149,7 @@ table th:nth-child(3), table td:nth-child(3), table th:nth-child(4), table td:nt
 <div class="modal-head"><span class="emoji">🌈</span> Upload files</div>
 <div class="modal-body">
 <select id="uploadTargetFolder"></select>
-<input type="file" id="uploadFilesInput" multiple />
+<input type="file" id="uploadFilesInput" multiple>
 <div class="muted" id="uploadHint"></div>
 </div>
 <div class="modal-foot">
