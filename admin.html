@@ -457,8 +457,7 @@ renderFilesTable();
 setStatus('Ready');
 }
 async function deleteFileById(fileId) {  
-const displayName = getDisplayName(meta.name || '');
-const ok = await showConfirm(`Delete file ${displayName}?`, 'Delete file');
+const ok = await showConfirm(`Delete file with ID ${fileId}?`, 'Delete file');
 if(!ok) return;
 setStatus('Deleting file...');
 try { await storage.deleteFile(APPWRITE_BUCKET_ID, fileId); } catch (e) { await showAlert('Failed to delete file in Appwrite: ' + e.message, 'Delete failed'); setStatus('Delete failed'); return; }
