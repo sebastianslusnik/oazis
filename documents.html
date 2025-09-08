@@ -705,7 +705,7 @@
 	function getActiveIds() {
 		if(activeView.type === 'all') return getAllIds();
 		const f = folders[activeView.index];
-		return Array.isArray(f ? .files) ? f.files : [];
+		return Array.isArray(f?.files) ? f.files : [];
 	}
 
 	function getAllIds() {
