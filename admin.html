@@ -32,7 +32,7 @@ body { margin: 0; background: white; color: var(--ink); font-family: "Inter" !im
 .folder.has-actions:hover .count { display: none; }
 .folder .actions svg { width: 16px; height: 16px; display: block; }
 .createbar { padding: 12px; border-top: 1px solid var(--border); }
-button, .button { padding: 10px 14px; border: none; background: #333; color: white; border-radius: var(--radius-sm); cursor: pointer; transition: s; }
+button, .button { padding: 10px 14px; border: none; background: #333; color: white; border-radius: var(--radius-sm); cursor: pointer; transition: 0s; font-weight: 700}
 #btnOpenCreateFolder {width: -webkit-fill-available}
 button:hover, .button:hover {box-shadow: var(--shadow); }
 button:active, .button:active { transform: translateY(0); box-shadow: none; }
@@ -68,7 +68,7 @@ tbody tr:hover { background: #f1f1f1; }
 a { color: var(--primary-700); text-decoration: none; }
 a:hover { text-decoration: underline; }
 .pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; background: linear-gradient(180deg, #fff 0%, color-mix(in oklab, var(--soft) 25%, white) 100%); border: 1px solid var(--border); }
-.toolbar .button-upload { background: #333; border-color: transparent; color: white; font-weight: 700}
+.toolbar .button-upload { background: #333; border-color: transparent; color: white; font-weight: 700; padding: 10px 22px;}
 .toolbar .button-upload:hover { box-shadow: 0 10px 25px rgba(70, 179, 162, .22); }
 .table-actions { display: flex; gap: 8px; align-items: center; }
 .icon-btn { display: inline-flex; align-items: center; justify-content: center; padding: 6px 8px; border: 1px solid var(--border); background: transparent; border-radius: 10px; color: var(--muted); cursor: pointer; transition: background .12s ease, color .12s ease, border-color .12s ease, box-shadow .12s ease; text-decoration: none; }
@@ -89,7 +89,7 @@ th, td { padding: 10px 12px; }
 table { display: block; overflow-x: auto; white-space: nowrap; }
 table th:nth-child(3), table td:nth-child(3), table th:nth-child(4), table td:nth-child(4) { display: none; }
 }
-.brand { display: flex; align-items: center; gap: .75rem; font-weight: 800; padding: 12px; }
+.brand { display: flex; align-items: center; gap: .75rem; font-weight: 800; padding: 12px; color: #333}
 .logo { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: radial-gradient(circle at 30% 30%, #7ddbcf, var(--primary)); color: white; box-shadow: 0 8px 20px rgba(70, 179, 162, .35); }
 </style>
 </head>
@@ -103,7 +103,7 @@ table th:nth-child(3), table td:nth-child(3), table th:nth-child(4), table td:nt
 <circle cx="18" cy="6" r="3" fill="#fff" opacity=".7"></circle>
 </svg>
 </span>
-<span>OAZIS <font style="font-weight: 300">| ZSS</font></span>
+<span>OAZIS <font style="font-weight: 300">| File Manager</font></span>
 </a>
 <div class="folders" id="foldersList"></div>
 <div class="createbar"><button id="btnOpenCreateFolder">+ Create folder</button></div>
@@ -113,7 +113,7 @@ table th:nth-child(3), table td:nth-child(3), table th:nth-child(4), table td:nt
 <div class="toolbar">
 <input type="text" id="searchInput" placeholder="Search files">
 <div class="grow"></div>
-<button id="btnOpenUpload" class="button-upload">Upload files</button>
+<button id="btnOpenUpload" class="button-upload">+ Upload files</button>
 </div>
 <div class="content">
 <table id="filesTable">
