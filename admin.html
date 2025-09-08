@@ -20,13 +20,14 @@ body { margin: 0; background: white; color: var(--ink); font-family: "Inter" !im
 .folders { flex: 1; overflow: auto; padding: 10px; }
 .folder { display: flex; align-items: center; padding: 5px 10px; border-radius: 4px; cursor: pointer; transition: 0s; border: 0; height: 40px; margin-bottom: 5px; padding-left: 14px;}
 .folder:hover { background: #f1f1f1; border-color: none; box-shadow: none; }
-.folder.active { background: #f1f1f1;  }
+.folder.active { background: #333;  }
+.folder.active .folder .name, .folder.active .folder .actions button { color: #fff;  }
 .folder .name { font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 14px; color: #222; font-weight: 700}
 .folder .rightbox { display: flex; align-items: center; gap: 6px; margin-left: auto; }
 .folder .actions { display: flex; gap: 6px; opacity: 0; pointer-events: none; transition: 0s; }
 .folder:hover .actions { opacity: 1; pointer-events: auto; }
-.folder .actions button { border: none; background: transparent; padding: 6px 8px; cursor: pointer; color: var(--muted); border-radius: 8px; transition: background .12s ease, color .12s ease; display: inline-flex; align-items: center; justify-content: center; }
-.folder .actions button:hover { background: color-mix(in oklab, var(--soft) 60%, white); color: var(--primary-700); }
+.folder .actions button { border: none; background: transparent; padding: 6px 8px; cursor: pointer; color: #333; border-radius: 8px; transition: background .12s ease, color .12s ease; display: inline-flex; align-items: center; justify-content: center; }
+.folder .actions button:hover { background: #e1e1e1; color: #222; }
 .folder .count { transition: 0s; font-family: "IBM Plex Mono", monospace !important; color: #222; font-weight: 700}
 .folder.has-actions:hover .count { display: none; }
 .folder .actions svg { width: 16px; height: 16px; display: block; }
@@ -43,7 +44,7 @@ button:focus-visible, .button:focus-visible, input:focus-visible, select:focus-v
 .content { padding: 0; overflow: visible; }
 table { width: 100%; border-collapse: collapse; background: var(--card); border: none; border-radius: 0; overflow: hidden; box-shadow: none; }
 th, td { padding: 10px 20px; border-bottom: 1px solid var(--border); text-align: left; text-transform: uppercase; font-size: 14px; padding-right: 0; }
-th { background: linear-gradient(180deg, color-mix(in oklab, var(--soft) 40%, white) 0%, color-mix(in oklab, var(--soft) 20%, white) 100%); font-weight: 700; font-size: 13px; color: color-mix(in oklab, var(--ink) 78%, black); user-select: none; cursor: default; }
+th { background: #333; font-weight: 700; font-size: 13px; color: white; user-select: none; cursor: default; }
 th.sortable { cursor: pointer; }
 tbody tr:hover { background: color-mix(in oklab, var(--soft) 35%, white); }
 .muted { color: var(--muted); }
