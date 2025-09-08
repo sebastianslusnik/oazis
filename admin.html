@@ -21,7 +21,7 @@ body { margin: 0; background: white; color: var(--ink); font-family: "Inter" !im
 .folder { display: flex; align-items: center; padding: 5px 10px; border-radius: 4px; cursor: pointer; transition: 0s; border: 0; height: 40px; margin-bottom: 5px; padding-left: 14px;}
 .folder:hover { background: #f1f1f1; border-color: none; box-shadow: none; }
 .folder.active { background: #333;  }
-.folder.active .name, .folder.active .actions button { color: #fff;  }
+.folder.active .name, .folder.active .actions button, .folder.active .folder.count { color: #fff; !important; }
 .folder .name { font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 14px; color: #222; font-weight: 700}
 .folder .rightbox { display: flex; align-items: center; gap: 6px; margin-left: auto; }
 .folder .actions { display: flex; gap: 6px; opacity: 0; pointer-events: none; transition: 0s; }
