@@ -23,11 +23,11 @@ body { margin: 0; background: white; color: var(--ink); font-family: "Inter" !im
 .folder.active { background: color-mix(in oklab, var(--soft) 70%, white); border-color: var(--border); box-shadow: var(--shadow); }
 .folder .name { font-weight: 600; display: flex; align-items: center; gap: 8px; }
 .folder .rightbox { display: flex; align-items: center; gap: 6px; margin-left: auto; }
-.folder .actions { display: flex; gap: 6px; opacity: 0; pointer-events: none; transition: opacity .12s ease; }
+.folder .actions { display: flex; gap: 6px; opacity: 0; pointer-events: none; transition: 0s; }
 .folder:hover .actions { opacity: 1; pointer-events: auto; }
 .folder .actions button { border: none; background: transparent; padding: 6px 8px; cursor: pointer; color: var(--muted); border-radius: 8px; transition: background .12s ease, color .12s ease; display: inline-flex; align-items: center; justify-content: center; }
 .folder .actions button:hover { background: color-mix(in oklab, var(--soft) 60%, white); color: var(--primary-700); }
-.folder .count { transition: opacity .12s ease; font-family: "IBM Plex Mono", monospace !important;}
+.folder .count { transition: 0s; font-family: "IBM Plex Mono", monospace !important;}
 .folder.has-actions:hover .count { display: none; }
 .folder .actions svg { width: 16px; height: 16px; display: block; }
 .createbar { padding: 12px; border-top: 1px solid var(--border); }
@@ -62,7 +62,7 @@ tbody tr:hover { background: color-mix(in oklab, var(--soft) 35%, white); }
 .btn-primary { background: linear-gradient(180deg, color-mix(in oklab, var(--soft) 55%, white) 0%, color-mix(in oklab, var(--bg-2) 65%, white) 100%); border-color: var(--border); color: var(--primary-700); }
 .btn-danger { background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 25%, white) 0%, color-mix(in oklab, var(--accent) 10%, white) 100%); border-color: var(--border); color: var(--ink); }
 .btn-success { background: linear-gradient(180deg, color-mix(in oklab, var(--soft) 65%, white) 0%, color-mix(in oklab, var(--bg-2) 50%, white) 100%); border-color: var(--border); color: var(--primary-700); }
-.badge { display: inline-block; background: linear-gradient(180deg, color-mix(in oklab, var(--soft) 60%, white) 0%, color-mix(in oklab, var(--soft) 35%, white) 100%); border: 1px solid var(--border); color: var(--primary-700); border-radius: 999px; padding: 3px 9px; font-size: 12px; }
+.badge { display: inline-block; background: transparent; border: none; color: var(--primary-700); border-radius: 0; padding: 3px 9px; font-size: 12px; }
 a { color: var(--primary-700); text-decoration: none; }
 a:hover { text-decoration: underline; }
 .pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; background: linear-gradient(180deg, #fff 0%, color-mix(in oklab, var(--soft) 25%, white) 100%); border: 1px solid var(--border); }
