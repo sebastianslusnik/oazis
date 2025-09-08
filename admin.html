@@ -23,12 +23,12 @@ body { margin: 0; background: white; color: var(--ink); font-family: "Inter" !im
 .folder.active { background: color-mix(in oklab, var(--soft) 70%, white); border-color: var(--border); box-shadow: var(--shadow); }
 .folder .name { font-weight: 600; display: flex; align-items: center; gap: 8px; }
 .folder .rightbox { display: flex; align-items: center; gap: 6px; margin-left: auto; }
-.folder .actions { display: flex; gap: 6px; opacity: 0; pointer-events: none; transition: opacity .12s ease; position: absolute; margin-left: -41px; z-index: 999999; }
+.folder .actions { display: flex; gap: 6px; opacity: 0; pointer-events: none; transition: opacity .12s ease; }
 .folder:hover .actions { opacity: 1; pointer-events: auto; }
 .folder .actions button { border: none; background: transparent; padding: 6px 8px; cursor: pointer; color: var(--muted); border-radius: 8px; transition: background .12s ease, color .12s ease; display: inline-flex; align-items: center; justify-content: center; }
 .folder .actions button:hover { background: color-mix(in oklab, var(--soft) 60%, white); color: var(--primary-700); }
 .folder .count { transition: opacity .12s ease; font-family: "IBM Plex Mono", monospace !important;}
-.folder.has-actions:hover .count { opacity: 0; }
+.folder.has-actions:hover .count { display: none; }
 .folder .actions svg { width: 16px; height: 16px; display: block; }
 .createbar { padding: 12px; border-top: 1px solid var(--border); }
 button, .button { padding: 10px 14px; border: 1px solid var(--border); background: linear-gradient(180deg, var(--card) 0%, color-mix(in oklab, var(--soft) 35%, white) 100%); color: var(--primary-700); border-radius: var(--radius-sm); cursor: pointer; transition: transform .1s ease, box-shadow .1s ease, background .1s ease, color .1s ease, border-color .1s ease; }
