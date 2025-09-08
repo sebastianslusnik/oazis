@@ -11,14 +11,14 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
 :root { --bg: #f6fbf9; --bg-2: #eef7f4; --soft: #e8f5f1; --primary: #46b3a2; --primary-600: #3aa494; --primary-700: #2c8d7e; --accent: #f4c88f; --ink: #10211c; --muted: #5a746f; --card: #ffffff; --border: rgba(16, 33, 28, .08); --shadow: 0 10px 30px rgba(25, 68, 60, .08), 0 2px 6px rgba(25, 68, 60, .05); --radius: 18px; --radius-sm: 12px; --radius-lg: 28px; --ring: rgba(70, 179, 162, .28); }
 * { box-sizing: border-box; font-family: "Inter" !important; }
 body { margin: 0; background: white; color: var(--ink); font-family: "Inter" !important; }
 .app { display: flex; height: 100dvh; backdrop-filter: saturate(115%) blur(0px); }
 .left { width: 300px; min-width: 240px; max-width: 380px; border-right: 1px solid var(--border); background: color-mix(in oklab, var(--card) 92%, transparent); display: flex; flex-direction: column; }
 .folders { flex: 1; overflow: auto; padding: 10px; }
-.folder { display: flex; align-items: center; padding: 5px 10px; border-radius: 4px; cursor: pointer; transition: 0s; border: 0; height: 40px; margin-bottom: 5px; padding-left: 14px;}
+.folder { display: flex; align-items: center; padding: 5px 10px; border-radius: 6px; cursor: pointer; transition: 0s; border: 0; height: 40px; margin-bottom: 5px; padding-left: 14px;}
 .folder:hover { background: #f1f1f1; border-color: none; box-shadow: none; }
 .folder.active { background: #333;  }
 .folder.active .name, .folder.active .actions button, .folder.active .badge.count { color: #fff; !important; }
@@ -28,20 +28,20 @@ body { margin: 0; background: white; color: var(--ink); font-family: "Inter" !im
 .folder:hover .actions { opacity: 1; pointer-events: auto; }
 .folder .actions button { border: none; background: transparent; padding: 6px 8px; cursor: pointer; color: #333; border-radius: 8px; transition: background .12s ease, color .12s ease; display: inline-flex; align-items: center; justify-content: center; }
 .folder .actions button:hover { background: #e1e1e1; color: #222; }
-.folder .count { transition: 0s; font-family: "IBM Plex Mono", monospace !important; color: #222; font-weight: 700}
+.folder .count { transition: 0s; font-family: "Roboto Mono", monospace !important; color: #222; font-weight: 700}
 .folder.has-actions:hover .count { display: none; }
 .folder .actions svg { width: 16px; height: 16px; display: block; }
 .createbar { padding: 12px; border-top: 1px solid var(--border); }
-button, .button { padding: 10px 14px; border: none; background: #333; color: white; border-radius: var(--radius-sm); cursor: pointer; transition: 0s; font-weight: 700}
+button, .button { padding: 10px 14px; border: none; background: #333; color: white; border-radius:6px; cursor: pointer; transition: 0s; font-weight: 700}
 #btnOpenCreateFolder {width: -webkit-fill-available}
-button:hover, .button:hover {box-shadow: var(--shadow); }
+button:hover, .button:hover {box-shadow: #f1f1f1; }
 button:active, .button:active { transform: translateY(0); box-shadow: none; }
-button:focus-visible, .button:focus-visible, input:focus-visible, select:focus-visible { outline: none; box-shadow: 0 0 0 4px var(--ring); }
+button:focus-visible, .button:focus-visible, input:focus-visible, select:focus-visible { outline: none; box-shadow: 0 0 0 4px #f1f1f1; }
 .statusBar { padding: 12px 14px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); background: color-mix(in oklab, var(--card) 88%, transparent); }
 .right { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 .right .toolbar { padding: 18px 12px; border-bottom: none; background: color-mix(in oklab, var(--card) 92%, transparent); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.right .toolbar input[type="text"] { padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: white; min-width: 220px; flex: 1 1 260px; transition: box-shadow .1s ease, border-color .1s ease; }
-.right .toolbar button { border-radius: var(--radius-sm); }
+.right .toolbar input[type="text"] { padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; background: white; min-width: 320px; flex: 1 1 360px; transition: 0S; }
+.right .toolbar button { border-radius: 6px; }
 .content { padding: 0; overflow: visible; }
 table { width: 100%; border-collapse: collapse; background: var(--card); border: none; border-radius: 0; overflow: hidden; box-shadow: none; }
 th, td { padding: 10px 20px; border-bottom: 1px solid var(--border); text-align: left; text-transform: uppercase; font-size: 14px; padding-right: 0; }
@@ -69,7 +69,7 @@ a { color: var(--primary-700); text-decoration: none; }
 a:hover { text-decoration: underline; }
 .pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; background: linear-gradient(180deg, #fff 0%, color-mix(in oklab, var(--soft) 25%, white) 100%); border: 1px solid var(--border); }
 .toolbar .button-upload { background: #333; border-color: transparent; color: white; font-weight: 700; padding: 10px 22px;}
-.toolbar .button-upload:hover { box-shadow: 0 10px 25px rgba(70, 179, 162, .22); }
+.toolbar .button-upload:hover { box-shadow: 0 10px 25px #f1f1f1; }
 .table-actions { display: flex; gap: 8px; align-items: center; }
 .icon-btn { display: inline-flex; align-items: center; justify-content: center; padding: 6px 8px; border: 1px solid var(--border); background: transparent; border-radius: 10px; color: var(--muted); cursor: pointer; transition: background .12s ease, color .12s ease, border-color .12s ease, box-shadow .12s ease; text-decoration: none; }
 .icon-btn:hover { background: #333; color: white; }
