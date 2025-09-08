@@ -149,7 +149,7 @@ table th:nth-child(3), table td:nth-child(3), table th:nth-child(4), table td:nt
 </div>
 <div class="modal" id="uploadModal">
 <div class="modal-box">
-<div class="modal-head"><span class="emoji">🌈</span> Upload files</div>
+<div class="modal-head"><span class="emoji">📁</span> Upload files</div>
 <div class="modal-body">
 <select id="uploadTargetFolder"></select>
 <input type="file" id="uploadFilesInput" multiple>
@@ -492,7 +492,7 @@ uploadTargetFolderEl.appendChild(opt);
 });
 uploadTargetFolderEl.disabled = false;
 btnStartUpload.disabled = false;
-uploadHintEl.textContent = 'You can select multiple files.';
+uploadHintEl.textContent = '';
 if(activeView.type === 'folder' && activeView.index >= 0 && activeView.index < folders.length) {
 uploadTargetFolderEl.value = String(activeView.index);
 } else {
@@ -595,8 +595,8 @@ openModal(dialogModal);
 if(options.focusEl) setTimeout(() => options.focusEl.focus(), 50);
 });
 }
-function showAlert(message, title) { return showDialog({ title: title || 'Notice', emoji: '✨', body: message, okText: 'OK', okClass: 'btn-success', showCancel: false, acceptsEnter: true }); }
-function showConfirm(message, title) { return showDialog({ title: title || 'Please confirm', emoji: '❓', body: message, okText: 'Yes', cancelText: 'No', okClass: 'btn-danger', cancelClass: '', acceptsEnter: true }).then(v => !!v); }
+function showAlert(message, title) { return showDialog({ title: title || 'Notice', emoji: '📁', body: message, okText: 'OK', okClass: 'btn-success', showCancel: false, acceptsEnter: true }); }
+function showConfirm(message, title) { return showDialog({ title: title || 'Please confirm', emoji: '📁', body: message, okText: 'Yes', cancelText: 'No', okClass: 'btn-danger', cancelClass: '', acceptsEnter: true }).then(v => !!v); }
 function showPrompt(title, defaultValue) {
 const wrap = document.createElement('div');
 const input = document.createElement('input');
@@ -604,7 +604,7 @@ input.type = 'text';
 input.value = defaultValue || '';
 input.placeholder = 'Type here';
 wrap.appendChild(input);
-return showDialog({ title: title || 'Enter value', emoji: '✏️', body: wrap, okText: 'Save', cancelText: 'Cancel', okClass: 'btn-primary', acceptsEnter: true, focusEl: input, onOk: () => input.value }).then(v => { if(v === null) return null; return v; });
+return showDialog({ title: title || 'Enter value', emoji: '📁', body: wrap, okText: 'Save', cancelText: 'Cancel', okClass: 'btn-primary', acceptsEnter: true, focusEl: input, onOk: () => input.value }).then(v => { if(v === null) return null; return v; });
 }
 (async function init() {
 try { await fetchFolders(); } catch (e) { await showAlert('Failed to load folders from JSONBin: ' + e.message + '.', 'Load error'); }
