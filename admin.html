@@ -20,21 +20,29 @@ body { margin: 0; background: white; color: var(--ink); font-family: "Inter" !im
 .folders { flex: 1; overflow: auto; padding: 10px; }
 .folder { display: flex; align-items: center; padding: 5px 10px; border-radius: 6px; cursor: pointer; transition: 0s; border: 0; height: 40px; margin-bottom: 5px; padding-left: 14px;}
 .folder:hover { background: #f1f1f1; border-color: none; box-shadow: none; }
-.folder.active { background: #333;  }
+.folder.active { background: #333; }
 .folder.active .name, .folder.active .actions button, .folder.active .badge.count { color: #fff; !important; }
-.folder .name { font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 14px; color: #222; font-weight: 700}
+.folder .name { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #222; font-weight: 700 }
 .folder .rightbox { display: flex; align-items: center; gap: 6px; margin-left: auto; }
 .folder .actions { display: flex; gap: 6px; opacity: 0; pointer-events: none; transition: 0s; }
-.folder:hover .actions { opacity: 1; pointer-events: auto; }
+.folder.has-actions:hover .actions { opacity: 1; pointer-events: auto; }
 .folder .actions button { border: none; background: transparent; padding: 6px 8px; cursor: pointer; color: #333; border-radius: 8px; transition: background .12s ease, color .12s ease; display: inline-flex; align-items: center; justify-content: center; }
 .folder .actions button:hover { background: #e1e1e1; color: #222; }
-.folder .count { transition: 0s; font-family: "Roboto Mono", monospace !important; color: #222; font-weight: 700}
+.folder .count { transition: 0s; font-family: "Roboto Mono", monospace !important; color: #222; font-weight: 700 }
 .folder.has-actions:hover .count { display: none; }
 .folder .actions svg { width: 16px; height: 16px; display: block; }
+.folder-separator { height: 1px; background: var(--border); margin: 8px 6px; }
+.folder.internal { background: #f1f1f1 !important; }
+.folder.internal .name, .folder.internal .actions button, .folder.internal .badge.count { color: #222 !important; }
+.folder.internal:hover, .folder.internal.active { background: #333 !important; }
+.folder.internal:hover .name, .folder.internal:hover .actions button, .folder.internal:hover .badge.count, .folder.internal.active .name, .folder.internal.active .actions button, .folder.internal.active .badge.count { color: #fff !important; }
+.folder.dragging { opacity: .6; }
+.folder.drop-before { box-shadow: inset 0 2px 0 var(--primary); }
+.folder.drop-after { box-shadow: inset 0 -2px 0 var(--primary); }
 .createbar { padding: 12px; border-top: 1px solid var(--border); }
-button, .button { padding: 10px 14px; border: none; background: #333; color: white; border-radius:6px; cursor: pointer; transition: 0s; font-weight: 700}
-#btnOpenCreateFolder {width: -webkit-fill-available}
-button:hover, .button:hover {box-shadow: #f1f1f1; }
+button, .button { padding: 10px 14px; border: none; background: #333; color: white; border-radius:6px; cursor: pointer; transition: 0s; font-weight: 700 }
+#btnOpenCreateFolder { width: -webkit-fill-available }
+button:hover, .button:hover { box-shadow: #f1f1f1; }
 button:active, .button:active { transform: translateY(0); box-shadow: none; }
 button:focus-visible, .button:focus-visible, input:focus-visible, select:focus-visible { outline: none; box-shadow: 0 0 0 4px #f1f1f1; }
 .statusBar { padding: 12px 14px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); background: color-mix(in oklab, var(--card) 88%, transparent); }
@@ -45,7 +53,7 @@ button:focus-visible, .button:focus-visible, input:focus-visible, select:focus-v
 .content { padding: 0; overflow: scroll; overflow-x: hidden;}
 table { width: 100%; border-collapse: collapse; background: var(--card); border: none; border-radius: 0; overflow: hidden; box-shadow: none; }
 th, td { padding: 10px 20px; border-bottom: 1px solid var(--border); text-align: left; text-transform: uppercase; font-size: 14px; padding-right: 0; }
-th { background: #fff; font-weight: 700; font-size: 13px; color: black; user-select: none; cursor: default; padding: 12px 20px}
+th { background: #fff; font-weight: 700; font-size: 13px; color: black; user-select: none; cursor: default; padding: 12px 20px }
 th.sortable { cursor: pointer; }
 tbody tr:hover { background: #f1f1f1; }
 .muted { color: var(--muted); }
@@ -74,11 +82,6 @@ a:hover { text-decoration: underline; }
 .icon-btn { display: inline-flex; align-items: center; justify-content: center; padding: 6px 8px; border: 1px solid var(--border); background: transparent; border-radius: 10px; color: var(--muted); cursor: pointer; transition: background .12s ease, color .12s ease, border-color .12s ease, box-shadow .12s ease; text-decoration: none; }
 .icon-btn:hover { background: #333; color: white; }
 .icon-btn svg { width: 16px; height: 16px; display: block; }
-.folder-separator { height: 1px; background: var(--border); margin: 8px 6px; }
-.folder.internal { background: #f1f1f1 !important; }
-.folder.internal .name, .folder.internal .actions button, .folder.internal .badge.count { color: #222 !important; }
-.folder.internal:hover, .folder.internal.active { background: #333 !important; }
-.folder.internal:hover .name, .folder.internal:hover .actions button, .folder.internal:hover .badge.count, .folder.internal.active .name, .folder.internal.active .actions button, .folder.internal.active .badge.count { color: #fff !important; }
 @media (max-width: 1200px) { .left { width: 270px; } }
 @media (max-width: 900px) { .left { width: 240px; } }
 @media (max-width: 760px) {
@@ -175,475 +178,436 @@ table th:nth-child(3), table td:nth-child(3), table th:nth-child(4), table td:nt
 </div>
 </div>
 <script>
-const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
-const APPWRITE_PROJECT_ID = 'oazissebike';
-const APPWRITE_BUCKET_ID = 'oazissebike';
-const JSONBIN_BIN_ID = '68b9d3d8d0ea881f4071c182';
-const JSONBIN_MASTER_KEY = '$2a$10$9sO/ja29sMebpWNvsWmp5.dJ6lv7CPeLBMRFaA/cAEwz42ii6qlCS';
-const JSONBIN_BASE = 'https://api.jsonbin.io/v3';
-let folders = [];
-let activeView = { type: 'all', index: -1 };
-let currentFiles = [];
-let sortBy = 'created';
-let sortDir = 'desc';
-let searchQuery = '';
-const client = new Appwrite.Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID);
-const storage = new Appwrite.Storage(client);
-const statusEl = document.getElementById('status');
-const foldersListEl = document.getElementById('foldersList');
-const filesBodyEl = document.getElementById('filesBody');
-const searchInputEl = document.getElementById('searchInput');
-const btnOpenCreateFolder = document.getElementById('btnOpenCreateFolder');
-const createFolderModal = document.getElementById('createFolderModal');
-const createFolderNameEl = document.getElementById('createFolderName');
-const btnCancelCreateFolder = document.getElementById('btnCancelCreateFolder');
-const btnSaveCreateFolder = document.getElementById('btnSaveCreateFolder');
-const uploadModal = document.getElementById('uploadModal');
-const uploadTargetFolderEl = document.getElementById('uploadTargetFolder');
-const uploadFilesInputEl = document.getElementById('uploadFilesInput');
-const uploadHintEl = document.getElementById('uploadHint');
-const btnOpenUpload = document.getElementById('btnOpenUpload');
-const btnCancelUpload = document.getElementById('btnCancelUpload');
-const btnStartUpload = document.getElementById('btnStartUpload');
-const thName = document.getElementById('thName');
-const thCreated = document.getElementById('thCreated');
-const metaCache = new Map();
-const dialogModal = document.getElementById('dialogModal');
-const dialogTitle = document.getElementById('dialogTitle');
-const dialogBody = document.getElementById('dialogBody');
-const dialogFoot = document.getElementById('dialogFoot');
-function setStatus(msg) { statusEl.textContent = msg; }
-function isInternalName(name) { return String(name || '').trim().toLocaleLowerCase() === 'interné'; }
-function placeInternalLast() {
-if(!Array.isArray(folders) || folders.length < 2) return;
-let activeName = null;
-if(activeView.type === 'folder' && folders[activeView.index]) activeName = folders[activeView.index].name;
-const idx = folders.findIndex(f => isInternalName(f.name));
-if(idx > -1 && idx !== folders.length - 1) {
-const item = folders.splice(idx,1)[0];
-folders.push(item);
-}
-if(activeName) {
-const newIdx = folders.findIndex(f => f.name === activeName);
-if(newIdx > -1) activeView = { type: 'folder', index: newIdx };
-}
-}
-async function fetchFolders() {
+const APPWRITE_ENDPOINT='https://cloud.appwrite.io/v1';
+const APPWRITE_PROJECT_ID='oazissebike';
+const APPWRITE_BUCKET_ID='oazissebike';
+const JSONBIN_BIN_ID='68b9d3d8d0ea881f4071c182';
+const JSONBIN_MASTER_KEY='$2a$10$9sO/ja29sMebpWNvsWmp5.dJ6lv7CPeLBMRFaA/cAEwz42ii6qlCS';
+const JSONBIN_BASE='https://api.jsonbin.io/v3';
+let folders=[];
+let activeView={type:'all',index:-1};
+let currentFiles=[];
+let sortBy='created';
+let sortDir='desc';
+let searchQuery='';
+const client=new Appwrite.Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID);
+const storage=new Appwrite.Storage(client);
+const statusEl=document.getElementById('status');
+const foldersListEl=document.getElementById('foldersList');
+const filesBodyEl=document.getElementById('filesBody');
+const searchInputEl=document.getElementById('searchInput');
+const btnOpenCreateFolder=document.getElementById('btnOpenCreateFolder');
+const createFolderModal=document.getElementById('createFolderModal');
+const createFolderNameEl=document.getElementById('createFolderName');
+const btnCancelCreateFolder=document.getElementById('btnCancelCreateFolder');
+const btnSaveCreateFolder=document.getElementById('btnSaveCreateFolder');
+const uploadModal=document.getElementById('uploadModal');
+const uploadTargetFolderEl=document.getElementById('uploadTargetFolder');
+const uploadFilesInputEl=document.getElementById('uploadFilesInput');
+const uploadHintEl=document.getElementById('uploadHint');
+const btnOpenUpload=document.getElementById('btnOpenUpload');
+const btnCancelUpload=document.getElementById('btnCancelUpload');
+const btnStartUpload=document.getElementById('btnStartUpload');
+const thName=document.getElementById('thName');
+const thCreated=document.getElementById('thCreated');
+const metaCache=new Map();
+const dialogModal=document.getElementById('dialogModal');
+const dialogTitle=document.getElementById('dialogTitle');
+const dialogBody=document.getElementById('dialogBody');
+const dialogFoot=document.getElementById('dialogFoot');
+let dragSrcIndex=null;
+function setStatus(msg){statusEl.textContent=msg}
+function isInternalName(name){return String(name||'').trim().toLocaleLowerCase()==='interné'}
+function toNumPosition(p){const n=parseInt(p,10);return Number.isFinite(n)?n:1e9}
+function sortByPosition(arr){const others=arr.filter(f=>!isInternalName(f.name)).sort((a,b)=>toNumPosition(a.position)-toNumPosition(b.position));const internal=arr.find(f=>isInternalName(f.name));return internal?[...others,internal]:others}
+function setPositions(){let k=1;for(const f of folders){if(isInternalName(f.name)){f.position='last'}else{f.position=String(k++);}}}
+function placeInternalLast(){folders=sortByPosition(folders)}
+async function fetchFolders(){
 setStatus('Loading folders...');
-const res = await fetch(`${JSONBIN_BASE}/b/${JSONBIN_BIN_ID}/latest`, { headers: { 'X-Master-Key': JSONBIN_MASTER_KEY, 'X-Bin-Meta': 'false', 'Content-Type': 'application/json' }, cache: 'no-store' });
-if(!res.ok) throw new Error('Failed to load folders.');
-const data = await res.json();
-folders = Array.isArray(data.folders) ? data.folders : [];
-placeInternalLast();
+const res=await fetch(`${JSONBIN_BASE}/b/${JSONBIN_BIN_ID}/latest`,{headers:{'X-Master-Key':JSONBIN_MASTER_KEY,'X-Bin-Meta':'false','Content-Type':'application/json'},cache:'no-store'});
+if(!res.ok)throw new Error('Failed to load folders.');
+const data=await res.json();
+folders=sortByPosition(Array.isArray(data.folders)?data.folders:[]);
 setStatus('Folders loaded.');
 }
-async function saveFolders() {
+async function saveFolders(){
 placeInternalLast();
+setPositions();
 setStatus('Saving...');
-const res = await fetch(`${JSONBIN_BASE}/b/${JSONBIN_BIN_ID}`, { method: 'PUT', headers: { 'X-Master-Key': JSONBIN_MASTER_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ folders }) });
-if(!res.ok) throw new Error('Failed to save folders.');
+const res=await fetch(`${JSONBIN_BASE}/b/${JSONBIN_BIN_ID}`,{method:'PUT',headers:{'X-Master-Key':JSONBIN_MASTER_KEY,'Content-Type':'application/json'},body:JSON.stringify({folders})});
+if(!res.ok)throw new Error('Failed to save folders.');
 setStatus('Saved.');
 }
-function sanitizedFolderName(name) { return String(name || '').trim(); }
-function openModal(modal) { modal.classList.add('show'); }
-function closeModal(modal) { modal.classList.remove('show'); }
-function createBadgeEl(n) { const s = document.createElement('span'); s.className = 'badge count'; s.textContent = String(n); return s; }
-function folderActionIcon(svgPath) { const btn = document.createElement('button'); btn.innerHTML = svgPath; btn.setAttribute('type','button'); btn.querySelector('svg').setAttribute('aria-hidden','true'); return btn; }
-const ICONS = {
-edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"></path><path d="M14.06 6.19L17.81 9.94"></path><path d="M20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>',
-trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg>',
-download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M5 19h14"></path></svg>'
-};
-function renderFoldersList() {
-foldersListEl.innerHTML = '';
-const allRow = document.createElement('div');
-allRow.className = 'folder' + (activeView.type === 'all' ? ' active' : '');
-allRow.onclick = () => { activeView = { type: 'all', index: -1 }; renderFoldersList(); loadFilesForCurrentView(); };
-const allName = document.createElement('div');
-allName.className = 'name';
-allName.textContent = 'All files';
-const allRight = document.createElement('div');
-allRight.className = 'rightbox';
-const allCount = createBadgeEl(getAllIds().length);
+function sanitizedFolderName(name){return String(name||'').trim()}
+function openModal(modal){modal.classList.add('show')}
+function closeModal(modal){modal.classList.remove('show')}
+function createBadgeEl(n){const s=document.createElement('span');s.className='badge count';s.textContent=String(n);return s}
+function folderActionIcon(svgPath){const btn=document.createElement('button');btn.innerHTML=svgPath;btn.setAttribute('type','button');btn.querySelector('svg').setAttribute('aria-hidden','true');return btn}
+const ICONS={edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"></path><path d="M14.06 6.19L17.81 9.94"></path><path d="M20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>',trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg>',download:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M5 19h14"></path></svg>'};
+function clearDropIndicators(){foldersListEl.querySelectorAll('.drop-before,.drop-after').forEach(n=>{n.classList.remove('drop-before');n.classList.remove('drop-after')})}
+function renderFoldersList(){
+foldersListEl.innerHTML='';
+const allRow=document.createElement('div');
+allRow.className='folder'+(activeView.type==='all'?' active':'');
+allRow.onclick=()=>{activeView={type:'all',index:-1};renderFoldersList();loadFilesForCurrentView()};
+const allName=document.createElement('div');
+allName.className='name';
+allName.textContent='All files';
+const allRight=document.createElement('div');
+allRight.className='rightbox';
+const allCount=createBadgeEl(getAllIds().length);
 allRight.append(allCount);
-allRow.append(allName, allRight);
+allRow.append(allName,allRight);
 foldersListEl.appendChild(allRow);
-const topSep = document.createElement('div');
-topSep.className = 'folder-separator';
+const topSep=document.createElement('div');
+topSep.className='folder-separator';
 foldersListEl.appendChild(topSep);
-const internalIndex = folders.findIndex(f => isInternalName(f.name));
-folders.forEach((f, idx) => {
-if(idx === internalIndex) {
-const sep = document.createElement('div');
-sep.className = 'folder-separator';
-foldersListEl.appendChild(sep);
+const internalIndex=folders.findIndex(f=>isInternalName(f.name));
+folders.forEach((f,idx)=>{
+if(idx===internalIndex){const sep=document.createElement('div');sep.className='folder-separator';foldersListEl.appendChild(sep)}
+const internal=isInternalName(f.name);
+const row=document.createElement('div');
+row.className='folder'+(internal?' internal':' has-actions')+(activeView.type==='folder'&&activeView.index===idx?' active':'');
+row.onclick=()=>{activeView={type:'folder',index:idx};renderFoldersList();loadFilesForCurrentView()};
+if(!internal){row.setAttribute('draggable','true')}
+const name=document.createElement('div');
+name.className='name';
+name.textContent=f.name;
+const right=document.createElement('div');
+right.className='rightbox';
+const actions=document.createElement('div');
+actions.className='actions';
+if(!internal){
+const renameBtn=folderActionIcon(ICONS.edit);
+renameBtn.title='Rename';
+renameBtn.onclick=(e)=>{e.stopPropagation();renameFolder(idx)};
+const delBtn=folderActionIcon(ICONS.trash);
+delBtn.title='Delete';
+delBtn.onclick=(e)=>{e.stopPropagation();deleteFolder(idx)};
+actions.append(renameBtn,delBtn);
 }
-const internal = isInternalName(f.name);
-const row = document.createElement('div');
-row.className = 'folder' + (internal ? ' internal' : ' has-actions') + (activeView.type === 'folder' && activeView.index === idx ? ' active' : '');
-row.onclick = () => { activeView = { type: 'folder', index: idx }; renderFoldersList(); loadFilesForCurrentView(); };
-const name = document.createElement('div');
-name.className = 'name';
-name.textContent = f.name;
-const right = document.createElement('div');
-right.className = 'rightbox';
-const actions = document.createElement('div');
-actions.className = 'actions';
-if(!internal) {
-const renameBtn = folderActionIcon(ICONS.edit);
-renameBtn.title = 'Rename';
-renameBtn.onclick = (e) => { e.stopPropagation(); renameFolder(idx); };
-const delBtn = folderActionIcon(ICONS.trash);
-delBtn.title = 'Delete';
-delBtn.onclick = (e) => { e.stopPropagation(); deleteFolder(idx); };
-actions.append(renameBtn, delBtn);
+const count=createBadgeEl(Array.isArray(f.files)?f.files.length:0);
+right.append(actions,count);
+row.append(name,right);
+if(!internal){
+row.addEventListener('dragstart',(e)=>{dragSrcIndex=idx;row.classList.add('dragging');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',String(idx))});
+row.addEventListener('dragend',()=>{dragSrcIndex=null;row.classList.remove('dragging');clearDropIndicators()});
+row.addEventListener('dragover',(e)=>{e.preventDefault();if(dragSrcIndex===null)return;const rect=row.getBoundingClientRect();const before=(e.clientY-rect.top)<rect.height/2;clearDropIndicators();row.classList.add(before?'drop-before':'drop-after');e.dataTransfer.dropEffect='move'});
+row.addEventListener('dragleave',()=>{row.classList.remove('drop-before');row.classList.remove('drop-after')});
+row.addEventListener('drop',async(e)=>{e.preventDefault();clearDropIndicators();if(dragSrcIndex===null)return;const src=dragSrcIndex;if(src===idx)return;const rect=row.getBoundingClientRect();const before=(e.clientY-rect.top)<rect.height/2;const internalIdx=folders.findIndex(x=>isInternalName(x.name));const item=folders.splice(src,1)[0];let dest=idx;if(src<idx)dest=dest-1;if(!before)dest=dest+1;if(dest>=internalIdx)dest=internalIdx;folders.splice(dest,0,item);placeInternalLast();setPositions();await saveFolders().catch(()=>{});activeView={type:'folder',index:folders.findIndex(x=>x.name===item.name)};renderFoldersList();loadFilesForCurrentView()});
 }
-const count = createBadgeEl(Array.isArray(f.files) ? f.files.length : 0);
-right.append(actions, count);
-row.append(name, right);
 foldersListEl.appendChild(row);
 });
-if(folders.length === 0) {
-const empty = document.createElement('div');
-empty.className = 'empty';
-empty.style.padding = '12px';
-empty.textContent = 'No folders. Create one.';
-foldersListEl.appendChild(empty);
+if(folders.length===0){const empty=document.createElement('div');empty.className='empty';empty.style.padding='12px';empty.textContent='No folders. Create one.';foldersListEl.appendChild(empty)}
 }
-}
-async function createFolder(nameIn) {
-const name = sanitizedFolderName(nameIn);
-if(!name) { await showAlert('Enter a folder name.', 'Let’s name it'); return false; }
-if(folders.find(f => f.name.toLowerCase() === name.toLowerCase())) { await showAlert('That folder already exists.', 'Duplicate folder'); return false; }
-folders.push({ name, files: [] });
+async function createFolder(nameIn){
+const name=sanitizedFolderName(nameIn);
+if(!name){await showAlert('Enter a folder name.','Let’s name it');return false}
+if(folders.find(f=>f.name.toLowerCase()===name.toLowerCase())){await showAlert('That folder already exists.','Duplicate folder');return false}
+const insertIdx=folders.findIndex(f=>isInternalName(f.name));
+const newFolder={name,files:[],position:'1'};
+folders.splice(insertIdx>-1?insertIdx:folders.length,0,newFolder);
 placeInternalLast();
-try { await saveFolders(); } catch (err) { await showAlert(err.message, 'Save failed'); return false; }
-const idx = folders.findIndex(f => f.name === name);
-activeView = { type: 'folder', index: idx > -1 ? idx : folders.length - 1 };
+setPositions();
+try{await saveFolders()}catch(err){await showAlert(err.message,'Save failed');return false}
+const idx=folders.findIndex(f=>f.name===name);
+activeView={type:'folder',index:idx>-1?idx:folders.length-1};
 renderFoldersList();
 loadFilesForCurrentView();
-return true;
+return true
 }
-async function renameFolder(idx) {
-const current = folders[idx];
-if(isInternalName(current.name)) { await showAlert('This folder cannot be renamed.', 'Not allowed'); return; }
-const newName = await showPrompt('Rename folder', current.name);
-if(newName === null) return;
-const name = sanitizedFolderName(newName);
-if(!name) { await showAlert('Enter a valid name.', 'Invalid name'); return; }
-if(folders.find((f, i) => i !== idx && f.name.toLowerCase() === name.toLowerCase())) { await showAlert('A folder with this name already exists.', 'Duplicate name'); return; }
-folders[idx].name = name;
+async function renameFolder(idx){
+const current=folders[idx];
+if(isInternalName(current.name)){await showAlert('This folder cannot be renamed.','Not allowed');return}
+const newName=await showPrompt('Rename folder',current.name);
+if(newName===null)return;
+const name=sanitizedFolderName(newName);
+if(!name){await showAlert('Enter a valid name.','Invalid name');return}
+if(folders.find((f,i)=>i!==idx&&f.name.toLowerCase()===name.toLowerCase())){await showAlert('A folder with this name already exists.','Duplicate name');return}
+folders[idx].name=name;
 placeInternalLast();
-try { await saveFolders(); } catch (err) { await showAlert(err.message, 'Save failed'); return; }
+setPositions();
+try{await saveFolders()}catch(err){await showAlert(err.message,'Save failed');return}
 renderFoldersList();
 }
-async function deleteFolder(idx) {
-const f = folders[idx];
-if(isInternalName(f.name)) { await showAlert('This folder cannot be deleted.', 'Not allowed'); return; }
-if(f.files && f.files.length > 0) { await showAlert('This folder is not empty. Remove files first.', 'Cannot delete'); return; }
-const ok = await showConfirm(`Delete folder "${f.name}"?`, 'Delete folder');
-if(!ok) return;
-folders.splice(idx, 1);
-if(activeView.type === 'folder') {
-if(activeView.index === idx) activeView = { type: 'all', index: -1 };
-else if(activeView.index > idx) activeView.index -= 1;
-}
+async function deleteFolder(idx){
+const f=folders[idx];
+if(isInternalName(f.name)){await showAlert('This folder cannot be deleted.','Not allowed');return}
+if(f.files&&f.files.length>0){await showAlert('This folder is not empty. Remove files first.','Cannot delete');return}
+const ok=await showConfirm(`Delete folder "${f.name}"?`,'Delete folder');
+if(!ok)return;
+folders.splice(idx,1);
+if(activeView.type==='folder'){if(activeView.index===idx)activeView={type:'all',index:-1};else if(activeView.index>idx)activeView.index-=1}
 placeInternalLast();
-try { await saveFolders(); } catch (e) { await showAlert(e.message, 'Save failed'); }
+setPositions();
+try{await saveFolders()}catch(e){await showAlert(e.message,'Save failed')}
 renderFoldersList();
 loadFilesForCurrentView();
 }
-function formatBytes(bytes) {
-const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-if(bytes === 0) return '0 B';
-const i = Math.floor(Math.log(bytes) / Math.log(1024));
-return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
+function formatBytes(bytes){
+const sizes=['B','KB','MB','GB','TB'];
+if(bytes===0)return'0 B';
+const i=Math.floor(Math.log(bytes)/Math.log(1024));
+return(bytes/Math.pow(1024,i)).toFixed(2)+' '+sizes[i]
 }
-function getActiveIds() {
-if(activeView.type === 'all') return getAllIds();
-const f = folders[activeView.index];
-return Array.isArray(f?.files) ? f.files : [];
+function getActiveIds(){
+if(activeView.type==='all')return getAllIds();
+const f=folders[activeView.index];
+return Array.isArray(f?.files)?f.files:[]
 }
-function getAllIds() {
-const set = new Set();
-for(const f of folders) {
-if(isInternalName(f.name)) continue;
-for(const id of f.files || []) set.add(id);
+function getAllIds(){
+const set=new Set();
+for(const f of folders){
+if(isInternalName(f.name))continue;
+for(const id of f.files||[])set.add(id)
 }
-return Array.from(set);
+return Array.from(set)
 }
-async function ensureMeta(ids) {
-for(const id of ids) {
-if(metaCache.has(id)) continue;
-try {
-const meta = await storage.getFile(APPWRITE_BUCKET_ID, id);
-metaCache.set(id, meta);
-} catch (e) {
-const errMeta = { $id: id, name: `(missing ${id})`, sizeOriginal: 0, $createdAt: Date.now(), _error: true };
-metaCache.set(id, errMeta);
+async function ensureMeta(ids){
+for(const id of ids){
+if(metaCache.has(id))continue;
+try{
+const meta=await storage.getFile(APPWRITE_BUCKET_ID,id);
+metaCache.set(id,meta);
+}catch(e){
+const errMeta={$id:id,name:`(missing ${id})`,sizeOriginal:0,$createdAt:Date.now(),_error:true};
+metaCache.set(id,errMeta);
 }
 }
 }
-function getDisplayName(raw) {
-const n = String(raw || '');
-const idx = n.lastIndexOf('.');
-let base = idx > 0 ? n.slice(0, idx) : n;
-base = base.replace(/[_-]+/g, ' ');
-base = base.replace(/\s+/g, ' ').trim();
-return base || '(unnamed)';
+function getDisplayName(raw){
+const n=String(raw||'');
+const idx=n.lastIndexOf('.');
+let base=idx>0?n.slice(0,idx):n;
+base=base.replace(/[_-]+/g,' ');
+base=base.replace(/\s+/g,' ').trim();
+return base||'(unnamed)'
 }
-function getExt(raw) {
-const n = String(raw || '');
-const idx = n.lastIndexOf('.');
-if(idx > 0 && idx < n.length - 1) return n.slice(idx + 1).toLowerCase();
-return '';
+function getExt(raw){
+const n=String(raw||'');
+const idx=n.lastIndexOf('.');
+if(idx>0&&idx<n.length-1)return n.slice(idx+1).toLowerCase();
+return''
 }
-function applySearchAndSort(items) {
-let out = items;
-if(searchQuery) {
-const q = searchQuery.toLowerCase();
-out = out.filter(m => getDisplayName(m.name).toLowerCase().includes(q));
+function applySearchAndSort(items){
+let out=items;
+if(searchQuery){
+const q=searchQuery.toLowerCase();
+out=out.filter(m=>getDisplayName(m.name).toLowerCase().includes(q));
 }
-out = out.slice().sort((a, b) => {
-if(sortBy === 'name') {
-const an = getDisplayName(a.name).toLowerCase();
-const bn = getDisplayName(b.name).toLowerCase();
-if(an < bn) return sortDir === 'asc' ? -1 : 1;
-if(an > bn) return sortDir === 'asc' ? 1 : -1;
-return 0;
+out=out.slice().sort((a,b)=>{
+if(sortBy==='name'){
+const an=getDisplayName(a.name).toLowerCase();
+const bn=getDisplayName(b.name).toLowerCase();
+if(an<bn)return sortDir==='asc'?-1:1;
+if(an>bn)return sortDir==='asc'?1:-1;
+return 0
 }
-if(sortBy === 'created') {
-const ad = new Date(a.$createdAt || a.dateCreated || 0).getTime();
-const bd = new Date(b.$createdAt || b.dateCreated || 0).getTime();
-if(ad < bd) return sortDir === 'asc' ? -1 : 1;
-if(ad > bd) return sortDir === 'asc' ? 1 : -1;
-return 0;
+if(sortBy==='created'){
+const ad=new Date(a.$createdAt||a.dateCreated||0).getTime();
+const bd=new Date(b.$createdAt||b.dateCreated||0).getTime();
+if(ad<bd)return sortDir==='asc'?-1:1;
+if(ad>bd)return sortDir==='asc'?1:-1;
+return 0
 }
-return 0;
+return 0
 });
-return out;
+return out
 }
-function formatDateOnly(ts) {
-const d = new Date(ts || Date.now());
-return d.toLocaleDateString();
+function formatDateOnly(ts){
+const d=new Date(ts||Date.now());
+return d.toLocaleDateString()
 }
-function renderFilesTable() {
-filesBodyEl.innerHTML = '';
-if(currentFiles.length === 0) {
-filesBodyEl.innerHTML = `<tr><td colspan="5" class="empty">No files.</td></tr>`;
+function renderFilesTable(){
+filesBodyEl.innerHTML='';
+if(currentFiles.length===0){
+filesBodyEl.innerHTML=`<tr><td colspan="5" class="empty">No files.</td></tr>`;
 return;
 }
-const filtered = applySearchAndSort(currentFiles);
-if(filtered.length === 0) {
-filesBodyEl.innerHTML = `<tr><td colspan="5" class="empty">No files match your search.</td></tr>`;
+const filtered=applySearchAndSort(currentFiles);
+if(filtered.length===0){
+filesBodyEl.innerHTML=`<tr><td colspan="5" class="empty">No files match your search.</td></tr>`;
 return;
 }
-for(const meta of filtered) {
-const id = meta.$id;
-const tr = document.createElement('tr');
-const downloadUrl = storage.getFileDownload(APPWRITE_BUCKET_ID, id);
-const displayName = getDisplayName(meta.name || '');
-const ext = getExt(meta.name || '');
-const createdDate = formatDateOnly(meta.$createdAt || meta.dateCreated || Date.now());
-const actionsCell = document.createElement('td');
-actionsCell.innerHTML = '';
-const actionsWrap = document.createElement('div');
-actionsWrap.className = 'table-actions';
-const aDownload = document.createElement('a');
-aDownload.className = 'icon-btn';
-aDownload.href = downloadUrl;
-aDownload.target = '_blank';
-aDownload.rel = 'noopener';
-aDownload.title = 'Download';
-aDownload.setAttribute('aria-label', 'Download');
-aDownload.innerHTML = ICONS.download;
-const btnDelete = document.createElement('button');
-btnDelete.type = 'button';
-btnDelete.className = 'icon-btn btn-delete-file';
-btnDelete.setAttribute('data-id', id);
-btnDelete.title = 'Delete';
-btnDelete.setAttribute('aria-label', 'Delete');
-btnDelete.innerHTML = ICONS.trash;
-actionsWrap.append(aDownload, btnDelete);
+for(const meta of filtered){
+const id=meta.$id;
+const tr=document.createElement('tr');
+const downloadUrl=storage.getFileDownload(APPWRITE_BUCKET_ID,id);
+const displayName=getDisplayName(meta.name||'');
+const ext=getExt(meta.name||'');
+const createdDate=formatDateOnly(meta.$createdAt||meta.dateCreated||Date.now());
+const actionsCell=document.createElement('td');
+actionsCell.innerHTML='';
+const actionsWrap=document.createElement('div');
+actionsWrap.className='table-actions';
+const aDownload=document.createElement('a');
+aDownload.className='icon-btn';
+aDownload.href=downloadUrl;
+aDownload.target='_blank';
+aDownload.rel='noopener';
+aDownload.title='Download';
+aDownload.setAttribute('aria-label','Download');
+aDownload.innerHTML=ICONS.download;
+const btnDelete=document.createElement('button');
+btnDelete.type='button';
+btnDelete.className='icon-btn btn-delete-file';
+btnDelete.setAttribute('data-id',id);
+btnDelete.title='Delete';
+btnDelete.setAttribute('aria-label','Delete');
+btnDelete.innerHTML=ICONS.trash;
+actionsWrap.append(aDownload,btnDelete);
 actionsCell.append(actionsWrap);
-tr.innerHTML = `<td>${displayName}</td><td>${ext}</td><td>${formatBytes(meta.sizeOriginal || meta.size || 0)}</td><td>${createdDate}</td>`;
+tr.innerHTML=`<td>${displayName}</td><td>${ext}</td><td>${formatBytes(meta.sizeOriginal||meta.size||0)}</td><td>${createdDate}</td>`;
 tr.appendChild(actionsCell);
 filesBodyEl.appendChild(tr);
 }
-filesBodyEl.querySelectorAll('.btn-delete-file').forEach(btn => {
-btn.addEventListener('click', async (e) => {
+filesBodyEl.querySelectorAll('.btn-delete-file').forEach(btn=>{
+btn.addEventListener('click',async(e)=>{
 e.preventDefault();
-const id = e.currentTarget.getAttribute('data-id');
+const id=e.currentTarget.getAttribute('data-id');
 await deleteFileById(id);
 });
 });
 }
-async function loadFilesForCurrentView() {
-filesBodyEl.innerHTML = '';
-const ids = getActiveIds();
-if(ids.length === 0) {
-currentFiles = [];
+async function loadFilesForCurrentView(){
+filesBodyEl.innerHTML='';
+const ids=getActiveIds();
+if(ids.length===0){
+currentFiles=[];
 renderFilesTable();
 return;
 }
 setStatus('Loading files...');
 await ensureMeta(ids);
-currentFiles = ids.map(id => metaCache.get(id)).filter(Boolean);
+currentFiles=ids.map(id=>metaCache.get(id)).filter(Boolean);
 renderFilesTable();
 setStatus('Ready');
 }
-async function deleteFileById(fileId) {  
-const ok = await showConfirm(`Delete file with ID ${fileId}?`, 'Delete file');
-if(!ok) return;
+async function deleteFileById(fileId){
+const ok=await showConfirm(`Delete file with ID ${fileId}?`,'Delete file');
+if(!ok)return;
 setStatus('Deleting file...');
-try { await storage.deleteFile(APPWRITE_BUCKET_ID, fileId); } catch (e) { await showAlert('Failed to delete file in Appwrite: ' + e.message, 'Delete failed'); setStatus('Delete failed'); return; }
-try {
-for(const f of folders) {
-f.files = (f.files || []).filter(id => id !== fileId);
-}
+try{await storage.deleteFile(APPWRITE_BUCKET_ID,fileId)}catch(e){await showAlert('Failed to delete file in Appwrite: '+e.message,'Delete failed');setStatus('Delete failed');return}
+try{
+for(const f of folders){f.files=(f.files||[]).filter(id=>id!==fileId)}
 await saveFolders();
 metaCache.delete(fileId);
 renderFoldersList();
 await loadFilesForCurrentView();
 setStatus('File deleted.');
-} catch (e) { await showAlert('Deleted from storage, but failed to update folders: ' + e.message, 'Sync issue'); setStatus('Partial delete.'); }
+}catch(e){await showAlert('Deleted from storage, but failed to update folders: '+e.message,'Sync issue');setStatus('Partial delete.')}
 }
-function refreshUploadFolderSelect() {
-uploadTargetFolderEl.innerHTML = '';
-if(folders.length === 0) {
-const opt = document.createElement('option');
-opt.value = '';
-opt.textContent = 'No folders available';
+function refreshUploadFolderSelect(){
+uploadTargetFolderEl.innerHTML='';
+if(folders.length===0){
+const opt=document.createElement('option');
+opt.value='';
+opt.textContent='No folders available';
 uploadTargetFolderEl.appendChild(opt);
-uploadTargetFolderEl.disabled = true;
-uploadHintEl.textContent = 'Create a folder first.';
-btnStartUpload.disabled = true;
+uploadTargetFolderEl.disabled=true;
+uploadHintEl.textContent='Create a folder first.';
+btnStartUpload.disabled=true;
 return;
 }
-folders.forEach((f, idx) => {
-const opt = document.createElement('option');
-opt.value = String(idx);
-opt.textContent = f.name;
+folders.forEach((f,idx)=>{
+const opt=document.createElement('option');
+opt.value=String(idx);
+opt.textContent=f.name;
 uploadTargetFolderEl.appendChild(opt);
 });
-uploadTargetFolderEl.disabled = false;
-btnStartUpload.disabled = false;
-uploadHintEl.textContent = '';
-if(activeView.type === 'folder' && activeView.index >= 0 && activeView.index < folders.length) {
-uploadTargetFolderEl.value = String(activeView.index);
-} else {
-uploadTargetFolderEl.value = '0';
+uploadTargetFolderEl.disabled=false;
+btnStartUpload.disabled=false;
+uploadHintEl.textContent='';
+if(activeView.type==='folder'&&activeView.index>=0&&activeView.index<folders.length){uploadTargetFolderEl.value=String(activeView.index)}else{uploadTargetFolderEl.value='0'}
 }
-}
-async function uploadMultipleFiles() {
-const idx = parseInt(uploadTargetFolderEl.value, 10);
-if(Number.isNaN(idx) || !folders[idx]) { await showAlert('Choose a target folder.', 'No folder selected'); return; }
-const files = Array.from(uploadFilesInputEl.files || []);
-if(files.length === 0) { await showAlert('Choose files to upload.', 'No files selected'); return; }
+async function uploadMultipleFiles(){
+const idx=parseInt(uploadTargetFolderEl.value,10);
+if(Number.isNaN(idx)||!folders[idx]){await showAlert('Choose a target folder.','No folder selected');return}
+const files=Array.from(uploadFilesInputEl.files||[]);
+if(files.length===0){await showAlert('Choose files to upload.','No files selected');return}
 setStatus('Uploading...');
-let added = 0;
-for(const file of files) {
-try {
-const created = await storage.createFile(APPWRITE_BUCKET_ID, Appwrite.ID.unique(), file);
-const f = folders[idx];
-if(!Array.isArray(f.files)) f.files = [];
-if(!f.files.includes(created.$id)) f.files.push(created.$id);
-added += 1;
-} catch (e) {
-await showAlert('Upload failed for ' + file.name + ': ' + e.message, 'Upload failed');
+let added=0;
+for(const file of files){
+try{
+const created=await storage.createFile(APPWRITE_BUCKET_ID,Appwrite.ID.unique(),file);
+const f=folders[idx];
+if(!Array.isArray(f.files))f.files=[];
+if(!f.files.includes(created.$id))f.files.push(created.$id);
+added+=1;
+}catch(e){await showAlert('Upload failed for '+file.name+': '+e.message,'Upload failed')}
 }
-}
-try {
+try{
 await saveFolders();
-if(activeView.type === 'folder' && activeView.index !== idx) { activeView = { type: 'folder', index: idx }; }
+if(activeView.type==='folder'&&activeView.index!==idx){activeView={type:'folder',index:idx}}
 renderFoldersList();
 closeModal(uploadModal);
-uploadFilesInputEl.value = '';
+uploadFilesInputEl.value='';
 await loadFilesForCurrentView();
-setStatus(added > 0 ? 'Upload complete.' : 'No files uploaded.');
-} catch (e) {
-await showAlert('Uploaded, but failed to sync folders: ' + e.message, 'Sync error');
-setStatus('Sync error.');
+setStatus(added>0?'Upload complete.':'No files uploaded.');
+}catch(e){await showAlert('Uploaded, but failed to sync folders: '+e.message,'Sync error');setStatus('Sync error.')}
 }
-}
-btnOpenCreateFolder.addEventListener('click', () => { createFolderNameEl.value = ''; openModal(createFolderModal); setTimeout(() => createFolderNameEl.focus(), 50); });
-btnCancelCreateFolder.addEventListener('click', () => { closeModal(createFolderModal); });
-btnSaveCreateFolder.addEventListener('click', async () => { const ok = await createFolder(createFolderNameEl.value); if(ok) closeModal(createFolderModal); });
-createFolderNameEl.addEventListener('keydown', async (e) => {
-if(e.key === 'Enter') { const ok = await createFolder(createFolderNameEl.value); if(ok) closeModal(createFolderModal); }
-if(e.key === 'Escape') { closeModal(createFolderModal); }
-});
-btnOpenUpload.addEventListener('click', () => { refreshUploadFolderSelect(); uploadFilesInputEl.value = ''; openModal(uploadModal); });
-btnCancelUpload.addEventListener('click', () => { closeModal(uploadModal); });
-btnStartUpload.addEventListener('click', uploadMultipleFiles);
-searchInputEl.addEventListener('input', () => { searchQuery = searchInputEl.value.trim(); renderFilesTable(); });
-function updateSortIndicators() {
-thName.textContent = 'Name' + (sortBy === 'name' ? (sortDir === 'asc' ? ' ▲' : ' ▼') : '');
-thCreated.textContent = 'Created' + (sortBy === 'created' ? (sortDir === 'asc' ? ' ▲' : ' ▼') : '');
-}
-function setSort(by) {
-if(sortBy === by) { sortDir = sortDir === 'asc' ? 'desc' : 'asc'; } else { sortBy = by; sortDir = by === 'name' ? 'asc' : 'desc'; }
-updateSortIndicators();
-renderFilesTable();
-}
+btnOpenCreateFolder.addEventListener('click',()=>{createFolderNameEl.value='';openModal(createFolderModal);setTimeout(()=>createFolderNameEl.focus(),50)});
+btnCancelCreateFolder.addEventListener('click',()=>{closeModal(createFolderModal)});
+btnSaveCreateFolder.addEventListener('click',async()=>{const ok=await createFolder(createFolderNameEl.value);if(ok)closeModal(createFolderModal)});
+createFolderNameEl.addEventListener('keydown',async(e)=>{if(e.key==='Enter'){const ok=await createFolder(createFolderNameEl.value);if(ok)closeModal(createFolderModal)}if(e.key==='Escape'){closeModal(createFolderModal)}});
+btnOpenUpload.addEventListener('click',()=>{refreshUploadFolderSelect();uploadFilesInputEl.value='';openModal(uploadModal)});
+btnCancelUpload.addEventListener('click',()=>{closeModal(uploadModal)});
+btnStartUpload.addEventListener('click',uploadMultipleFiles);
+searchInputEl.addEventListener('input',()=>{searchQuery=searchInputEl.value.trim();renderFilesTable()});
+function updateSortIndicators(){thName.textContent='Name'+(sortBy==='name'?(sortDir==='asc'?' ▲':' ▼'):'');thCreated.textContent='Created'+(sortBy==='created'?(sortDir==='asc'?' ▲':' ▼'):'')}
+function setSort(by){if(sortBy===by){sortDir=sortDir==='asc'?'desc':'asc'}else{sortBy=by;sortDir=by==='name'?'asc':'desc'}updateSortIndicators();renderFilesTable()}
 thName.classList.add('sortable');
 thCreated.classList.add('sortable');
-thName.addEventListener('click', () => setSort('name'));
-thCreated.addEventListener('click', () => setSort('created'));
+thName.addEventListener('click',()=>setSort('name'));
+thCreated.addEventListener('click',()=>setSort('created'));
 updateSortIndicators();
-function showDialog(options) {
-return new Promise((resolve) => {
-dialogTitle.innerHTML = '';
-dialogBody.innerHTML = '';
-dialogFoot.innerHTML = '';
-const titleText = options.title || '';
-const emoji = options.emoji || '';
-const titleEl = document.createElement('div');
-titleEl.innerHTML = (emoji ? `<span class="emoji">${emoji}</span> ` : '') + titleText;
+function showDialog(options){
+return new Promise((resolve)=>{
+dialogTitle.innerHTML='';
+dialogBody.innerHTML='';
+dialogFoot.innerHTML='';
+const titleText=options.title||'';
+const emoji=options.emoji||'';
+const titleEl=document.createElement('div');
+titleEl.innerHTML=(emoji?`<span class="emoji">${emoji}</span> `:'')+titleText;
 dialogTitle.appendChild(titleEl);
-if(typeof options.body === 'string') {
-const p = document.createElement('div');
-p.textContent = options.body;
-dialogBody.appendChild(p);
-} else if(options.body instanceof Node) {
-dialogBody.appendChild(options.body);
-}
-const btnCancel = document.createElement('button');
-btnCancel.textContent = options.cancelText || 'Cancel';
-if(options.cancelClass) btnCancel.className = options.cancelClass;
-const btnOk = document.createElement('button');
-btnOk.textContent = options.okText || 'OK';
-btnOk.className = options.okClass || 'btn-primary';
-if(options.showCancel !== false) dialogFoot.appendChild(btnCancel);
+if(typeof options.body==='string'){const p=document.createElement('div');p.textContent=options.body;dialogBody.appendChild(p)}else if(options.body instanceof Node){dialogBody.appendChild(options.body)}
+const btnCancel=document.createElement('button');
+btnCancel.textContent=options.cancelText||'Cancel';
+if(options.cancelClass)btnCancel.className=options.cancelClass;
+const btnOk=document.createElement('button');
+btnOk.textContent=options.okText||'OK';
+btnOk.className=options.okClass||'btn-primary';
+if(options.showCancel!==false)dialogFoot.appendChild(btnCancel);
 dialogFoot.appendChild(btnOk);
-let closed = false;
-function done(val) { if(closed) return; closed = true; closeModal(dialogModal); cleanup(); resolve(val); }
-function onKey(e) { if(e.key === 'Escape') done(options.escValue !== undefined ? options.escValue : null); if(e.key === 'Enter' && options.acceptsEnter) { e.preventDefault(); btnOk.click(); } }
-function cleanup() { btnCancel.removeEventListener('click', onCancel); btnOk.removeEventListener('click', onOk); document.removeEventListener('keydown', onKey); dialogModal.removeEventListener('click', onBackdrop); }
-function onCancel() { done(options.cancelValue !== undefined ? options.cancelValue : null); }
-function onOk() { if(typeof options.onOk === 'function') { const result = options.onOk(); done(result); } else { done(true); } }
-function onBackdrop(e) { if(e.target === dialogModal && options.backdropClose) { done(options.backdropValue !== undefined ? options.backdropValue : null); } }
-btnCancel.addEventListener('click', onCancel);
-btnOk.addEventListener('click', onOk);
-document.addEventListener('keydown', onKey);
-dialogModal.addEventListener('click', onBackdrop);
+let closed=false;
+function done(val){if(closed)return;closed=true;closeModal(dialogModal);cleanup();resolve(val)}
+function onKey(e){if(e.key==='Escape')done(options.escValue!==undefined?options.escValue:null);if(e.key==='Enter'&&options.acceptsEnter){e.preventDefault();btnOk.click()}}
+function cleanup(){btnCancel.removeEventListener('click',onCancel);btnOk.removeEventListener('click',onOk);document.removeEventListener('keydown',onKey);dialogModal.removeEventListener('click',onBackdrop)}
+function onCancel(){done(options.cancelValue!==undefined?options.cancelValue:null)}
+function onOk(){if(typeof options.onOk==='function'){const result=options.onOk();done(result)}else{done(true)}}
+function onBackdrop(e){if(e.target===dialogModal&&options.backdropClose){done(options.backdropValue!==undefined?options.backdropValue:null)}}
+btnCancel.addEventListener('click',onCancel);
+btnOk.addEventListener('click',onOk);
+document.addEventListener('keydown',onKey);
+dialogModal.addEventListener('click',onBackdrop);
 openModal(dialogModal);
-if(options.focusEl) setTimeout(() => options.focusEl.focus(), 50);
-});
+if(options.focusEl)setTimeout(()=>options.focusEl.focus(),50);
+})
 }
-function showAlert(message, title) { return showDialog({ title: title || 'Notice', emoji: '📁', body: message, okText: 'OK', okClass: 'btn-success', showCancel: false, acceptsEnter: true }); }
-function showConfirm(message, title) { return showDialog({ title: title || 'Please confirm', emoji: '📁', body: message, okText: 'Yes', cancelText: 'No', okClass: 'btn-danger', cancelClass: '', acceptsEnter: true }).then(v => !!v); }
-function showPrompt(title, defaultValue) {
-const wrap = document.createElement('div');
-const input = document.createElement('input');
-input.type = 'text';
-input.value = defaultValue || '';
-input.placeholder = 'Type here';
+function showAlert(message,title){return showDialog({title:title||'Notice',emoji:'📁',body:message,okText:'OK',okClass:'btn-success',showCancel:false,acceptsEnter:true})}
+function showConfirm(message,title){return showDialog({title:title||'Please confirm',emoji:'📁',body:message,okText:'Yes',cancelText:'No',okClass:'btn-danger',cancelClass:'',acceptsEnter:true}).then(v=>!!v)}
+function showPrompt(title,defaultValue){
+const wrap=document.createElement('div');
+const input=document.createElement('input');
+input.type='text';
+input.value=defaultValue||'';
+input.placeholder='Type here';
 wrap.appendChild(input);
-return showDialog({ title: title || 'Enter value', emoji: '📁', body: wrap, okText: 'Save', cancelText: 'Cancel', okClass: 'btn-primary', acceptsEnter: true, focusEl: input, onOk: () => input.value }).then(v => { if(v === null) return null; return v; });
+return showDialog({title:title||'Enter value',emoji:'📁',body:wrap,okText:'Save',cancelText:'Cancel',okClass:'btn-primary',acceptsEnter:true,focusEl:input,onOk:()=>input.value}).then(v=>{if(v===null)return null;return v})
 }
-(async function init() {
-try { await fetchFolders(); } catch (e) { await showAlert('Failed to load folders from JSONBin: ' + e.message + '.', 'Load error'); }
+(async function init(){
+try{await fetchFolders()}catch(e){await showAlert('Failed to load folders from JSONBin: '+e.message+'.','Load error')}
 renderFoldersList();
 await loadFilesForCurrentView();
 setStatus('Ready');
