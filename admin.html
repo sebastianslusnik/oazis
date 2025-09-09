@@ -76,8 +76,9 @@ a:hover { text-decoration: underline; }
 .icon-btn svg { width: 16px; height: 16px; display: block; }
 .folder-separator { height: 1px; background: var(--border); margin: 8px 6px; }
 .folder.internal { background: #f1f1f1 !important; }
-.folder.internal:hover { background: #f1f1f1 !important; }
 .folder.internal .name, .folder.internal .actions button, .folder.internal .badge.count { color: #222 !important; }
+.folder.internal:hover, .folder.internal.active { background: #333 !important; }
+.folder.internal:hover .name, .folder.internal:hover .actions button, .folder.internal:hover .badge.count, .folder.internal.active .name, .folder.internal.active .actions button, .folder.internal.active .badge.count { color: #fff !important; }
 @media (max-width: 1200px) { .left { width: 270px; } }
 @media (max-width: 900px) { .left { width: 240px; } }
 @media (max-width: 760px) {
