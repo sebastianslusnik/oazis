@@ -31,7 +31,7 @@ body { margin: 0; background: white; color: var(--ink); font-family: "Inter" !im
 .folder .count { transition: 0s; font-family: "Roboto Mono", monospace !important; color: #222; font-weight: 700 }
 .folder.has-actions:hover .count { display: none; }
 .folder .actions svg { width: 16px; height: 16px; display: block; }
-.folder-separator { height: 1px; background: var(--border); margin: 8px 6px; }
+.folder-separator { height: 1px; background: #aaa; margin: 12px 6px; }
 .folder.internal { background: #f1f1f1 !important; }
 .folder.internal .name, .folder.internal .actions button, .folder.internal .badge.count { color: #222 !important; }
 .folder.internal:hover, .folder.internal.active { background: #333 !important; }
@@ -50,7 +50,7 @@ button:focus-visible, .button:focus-visible, input:focus-visible, select:focus-v
 .right .toolbar { padding: 18px 12px; border-bottom: none; background: color-mix(in oklab, var(--card) 92%, transparent); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .right .toolbar input[type="text"] { padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; background: white; min-width: 320px; flex: 1 1 360px; transition: 0S; }
 .right .toolbar button { border-radius: 6px; }
-.content { padding: 0; overflow: scroll; overflow-x: hidden;}
+.content { padding: 0; overflow: overlay; overflow-x: hidden;}
 table { width: 100%; border-collapse: collapse; background: var(--card); border: none; border-radius: 0; overflow: hidden; box-shadow: none; }
 th, td { padding: 10px 20px; border-bottom: 1px solid var(--border); text-align: left; text-transform: uppercase; font-size: 14px; padding-right: 0; }
 th { background: #fff; font-weight: 700; font-size: 13px; color: black; user-select: none; cursor: default; padding: 12px 20px }
