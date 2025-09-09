@@ -75,6 +75,9 @@ a:hover { text-decoration: underline; }
 .icon-btn:hover { background: #333; color: white; }
 .icon-btn svg { width: 16px; height: 16px; display: block; }
 .folder-separator { height: 1px; background: var(--border); margin: 8px 6px; }
+.folder.internal { background: #f1f1f1 !important; }
+.folder.internal:hover { background: #f1f1f1 !important; }
+.folder.internal .name, .folder.internal .actions button, .folder.internal .badge.count { color: #222 !important; }
 @media (max-width: 1200px) { .left { width: 270px; } }
 @media (max-width: 900px) { .left { width: 240px; } }
 @media (max-width: 760px) {
@@ -264,6 +267,9 @@ const allCount = createBadgeEl(getAllIds().length);
 allRight.append(allCount);
 allRow.append(allName, allRight);
 foldersListEl.appendChild(allRow);
+const topSep = document.createElement('div');
+topSep.className = 'folder-separator';
+foldersListEl.appendChild(topSep);
 const internalIndex = folders.findIndex(f => isInternalName(f.name));
 folders.forEach((f, idx) => {
 if(idx === internalIndex) {
@@ -273,7 +279,7 @@ foldersListEl.appendChild(sep);
 }
 const internal = isInternalName(f.name);
 const row = document.createElement('div');
-row.className = 'folder' + (internal ? '' : ' has-actions') + (activeView.type === 'folder' && activeView.index === idx ? ' active' : '');
+row.className = 'folder' + (internal ? ' internal' : ' has-actions') + (activeView.type === 'folder' && activeView.index === idx ? ' active' : '');
 row.onclick = () => { activeView = { type: 'folder', index: idx }; renderFoldersList(); loadFilesForCurrentView(); };
 const name = document.createElement('div');
 name.className = 'name';
