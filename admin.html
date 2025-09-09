@@ -219,19 +219,19 @@ let dragSrcIndex=null;
 function setStatus(msg){statusEl.textContent=msg}
 function isInternalName(name){return String(name||'').trim().toLocaleLowerCase()==='interné'}
 function toNumPosition(p){const n=parseInt(p,10);return Number.isFinite(n)?n:1e9}
-function sortByPosition(arr){const others=arr.filter(f=>!isInternalName(f.name)).sort((a,b)=>toNumPosition(a.position)-toNumPosition(b.position));const internal=arr.find(f=>isInternalName(f.name));return internal?[...others,internal]:others}
-function setPositions(){let k=1;for(const f of folders){if(isInternalName(f.name)){f.position='last'}else{f.position=String(k++);}}}
-function placeInternalLast(){folders=sortByPosition(folders)}
+function sortByStoredPosition(arr){const others=arr.filter(f=>!isInternalName(f.name)).sort((a,b)=>toNumPosition(a.position)-toNumPosition(b.position));const internal=arr.find(f=>isInternalName(f.name));return internal?[...others,internal]:others}
+function moveInternalToEnd(){const idx=folders.findIndex(f=>isInternalName(f.name));if(idx>-1&&idx!==folders.length-1){const it=folders.splice(idx,1)[0];folders.push(it)}}
+function setPositions(){let k=1;for(const f of folders){if(isInternalName(f.name)){f.position='last'}else{f.position=String(k++)}}}
 async function fetchFolders(){
 setStatus('Loading folders...');
 const res=await fetch(`${JSONBIN_BASE}/b/${JSONBIN_BIN_ID}/latest`,{headers:{'X-Master-Key':JSONBIN_MASTER_KEY,'X-Bin-Meta':'false','Content-Type':'application/json'},cache:'no-store'});
 if(!res.ok)throw new Error('Failed to load folders.');
 const data=await res.json();
-folders=sortByPosition(Array.isArray(data.folders)?data.folders:[]);
+folders=sortByStoredPosition(Array.isArray(data.folders)?data.folders:[]);
 setStatus('Folders loaded.');
 }
 async function saveFolders(){
-placeInternalLast();
+moveInternalToEnd();
 setPositions();
 setStatus('Saving...');
 const res=await fetch(`${JSONBIN_BASE}/b/${JSONBIN_BIN_ID}`,{method:'PUT',headers:{'X-Master-Key':JSONBIN_MASTER_KEY,'Content-Type':'application/json'},body:JSON.stringify({folders})});
@@ -294,7 +294,7 @@ row.addEventListener('dragstart',(e)=>{dragSrcIndex=idx;row.classList.add('dragg
 row.addEventListener('dragend',()=>{dragSrcIndex=null;row.classList.remove('dragging');clearDropIndicators()});
 row.addEventListener('dragover',(e)=>{e.preventDefault();if(dragSrcIndex===null)return;const rect=row.getBoundingClientRect();const before=(e.clientY-rect.top)<rect.height/2;clearDropIndicators();row.classList.add(before?'drop-before':'drop-after');e.dataTransfer.dropEffect='move'});
 row.addEventListener('dragleave',()=>{row.classList.remove('drop-before');row.classList.remove('drop-after')});
-row.addEventListener('drop',async(e)=>{e.preventDefault();clearDropIndicators();if(dragSrcIndex===null)return;const src=dragSrcIndex;if(src===idx)return;const rect=row.getBoundingClientRect();const before=(e.clientY-rect.top)<rect.height/2;const internalIdx=folders.findIndex(x=>isInternalName(x.name));const item=folders.splice(src,1)[0];let dest=idx;if(src<idx)dest=dest-1;if(!before)dest=dest+1;if(dest>=internalIdx)dest=internalIdx;folders.splice(dest,0,item);placeInternalLast();setPositions();await saveFolders().catch(()=>{});activeView={type:'folder',index:folders.findIndex(x=>x.name===item.name)};renderFoldersList();loadFilesForCurrentView()});
+row.addEventListener('drop',async(e)=>{e.preventDefault();clearDropIndicators();if(dragSrcIndex===null)return;const src=dragSrcIndex;if(src===idx)return;const rect=row.getBoundingClientRect();const before=(e.clientY-rect.top)<rect.height/2;const internalIdx=folders.findIndex(x=>isInternalName(x.name));const item=folders.splice(src,1)[0];let dest=idx;if(src<idx)dest=dest-1;if(!before)dest=dest+1;if(dest>=internalIdx)dest=internalIdx;folders.splice(dest,0,item);moveInternalToEnd();setPositions();try{await saveFolders()}catch(_){}activeView={type:'folder',index:folders.findIndex(x=>x.name===item.name)};renderFoldersList();loadFilesForCurrentView()});
 }
 foldersListEl.appendChild(row);
 });
@@ -307,7 +307,7 @@ if(folders.find(f=>f.name.toLowerCase()===name.toLowerCase())){await showAlert('
 const insertIdx=folders.findIndex(f=>isInternalName(f.name));
 const newFolder={name,files:[],position:'1'};
 folders.splice(insertIdx>-1?insertIdx:folders.length,0,newFolder);
-placeInternalLast();
+moveInternalToEnd();
 setPositions();
 try{await saveFolders()}catch(err){await showAlert(err.message,'Save failed');return false}
 const idx=folders.findIndex(f=>f.name===name);
@@ -325,7 +325,7 @@ const name=sanitizedFolderName(newName);
 if(!name){await showAlert('Enter a valid name.','Invalid name');return}
 if(folders.find((f,i)=>i!==idx&&f.name.toLowerCase()===name.toLowerCase())){await showAlert('A folder with this name already exists.','Duplicate name');return}
 folders[idx].name=name;
-placeInternalLast();
+moveInternalToEnd();
 setPositions();
 try{await saveFolders()}catch(err){await showAlert(err.message,'Save failed');return}
 renderFoldersList();
@@ -338,7 +338,7 @@ const ok=await showConfirm(`Delete folder "${f.name}"?`,'Delete folder');
 if(!ok)return;
 folders.splice(idx,1);
 if(activeView.type==='folder'){if(activeView.index===idx)activeView={type:'all',index:-1};else if(activeView.index>idx)activeView.index-=1}
-placeInternalLast();
+moveInternalToEnd();
 setPositions();
 try{await saveFolders()}catch(e){await showAlert(e.message,'Save failed')}
 renderFoldersList();
