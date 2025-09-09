@@ -42,7 +42,7 @@ button:focus-visible, .button:focus-visible, input:focus-visible, select:focus-v
 .right .toolbar { padding: 18px 12px; border-bottom: none; background: color-mix(in oklab, var(--card) 92%, transparent); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .right .toolbar input[type="text"] { padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; background: white; min-width: 320px; flex: 1 1 360px; transition: 0S; }
 .right .toolbar button { border-radius: 6px; }
-.content { padding: 0; overflow: overlay; overflow-x: hidden;}
+.content { padding: 0; overflow: scroll; overflow-x: hidden;}
 table { width: 100%; border-collapse: collapse; background: var(--card); border: none; border-radius: 0; overflow: hidden; box-shadow: none; }
 th, td { padding: 10px 20px; border-bottom: 1px solid var(--border); text-align: left; text-transform: uppercase; font-size: 14px; padding-right: 0; }
 th { background: #fff; font-weight: 700; font-size: 13px; color: black; user-select: none; cursor: default; padding: 12px 20px}
@@ -90,9 +90,7 @@ table { display: block; overflow-x: auto; white-space: nowrap; }
 table th:nth-child(3), table td:nth-child(3), table th:nth-child(4), table td:nth-child(4) { display: none; }
 }
 .brand { display: flex; align-items: center; gap: .75rem; font-weight: 800; padding: 12px; color: #333}
-.brand:hover {
-  text-decoration: none !important;
-}
+.brand:hover { text-decoration: none !important; }
 .logo { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: radial-gradient(circle at 30% 30%, #7ddbcf, var(--primary)); color: white; box-shadow: 0 8px 20px rgba(70, 179, 162, .35); }
 </style>
 </head>
@@ -210,15 +208,32 @@ const dialogTitle = document.getElementById('dialogTitle');
 const dialogBody = document.getElementById('dialogBody');
 const dialogFoot = document.getElementById('dialogFoot');
 function setStatus(msg) { statusEl.textContent = msg; }
+function isInternalName(name) { return String(name || '').trim().toLocaleLowerCase() === 'interné'; }
+function placeInternalLast() {
+if(!Array.isArray(folders) || folders.length < 2) return;
+let activeName = null;
+if(activeView.type === 'folder' && folders[activeView.index]) activeName = folders[activeView.index].name;
+const idx = folders.findIndex(f => isInternalName(f.name));
+if(idx > -1 && idx !== folders.length - 1) {
+const item = folders.splice(idx,1)[0];
+folders.push(item);
+}
+if(activeName) {
+const newIdx = folders.findIndex(f => f.name === activeName);
+if(newIdx > -1) activeView = { type: 'folder', index: newIdx };
+}
+}
 async function fetchFolders() {
 setStatus('Loading folders...');
 const res = await fetch(`${JSONBIN_BASE}/b/${JSONBIN_BIN_ID}/latest`, { headers: { 'X-Master-Key': JSONBIN_MASTER_KEY, 'X-Bin-Meta': 'false', 'Content-Type': 'application/json' }, cache: 'no-store' });
 if(!res.ok) throw new Error('Failed to load folders.');
 const data = await res.json();
 folders = Array.isArray(data.folders) ? data.folders : [];
+placeInternalLast();
 setStatus('Folders loaded.');
 }
 async function saveFolders() {
+placeInternalLast();
 setStatus('Saving...');
 const res = await fetch(`${JSONBIN_BASE}/b/${JSONBIN_BIN_ID}`, { method: 'PUT', headers: { 'X-Master-Key': JSONBIN_MASTER_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ folders }) });
 if(!res.ok) throw new Error('Failed to save folders.');
@@ -228,13 +243,7 @@ function sanitizedFolderName(name) { return String(name || '').trim(); }
 function openModal(modal) { modal.classList.add('show'); }
 function closeModal(modal) { modal.classList.remove('show'); }
 function createBadgeEl(n) { const s = document.createElement('span'); s.className = 'badge count'; s.textContent = String(n); return s; }
-function folderActionIcon(svgPath) {
-const btn = document.createElement('button');
-btn.innerHTML = svgPath;
-btn.setAttribute('type', 'button');
-btn.querySelector('svg').setAttribute('aria-hidden', 'true');
-return btn;
-}
+function folderActionIcon(svgPath) { const btn = document.createElement('button'); btn.innerHTML = svgPath; btn.setAttribute('type','button'); btn.querySelector('svg').setAttribute('aria-hidden','true'); return btn; }
 const ICONS = {
 edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"></path><path d="M14.06 6.19L17.81 9.94"></path><path d="M20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>',
 trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg>',
@@ -255,8 +264,9 @@ allRight.append(allCount);
 allRow.append(allName, allRight);
 foldersListEl.appendChild(allRow);
 folders.forEach((f, idx) => {
+const internal = isInternalName(f.name);
 const row = document.createElement('div');
-row.className = 'folder has-actions' + (activeView.type === 'folder' && activeView.index === idx ? ' active' : '');
+row.className = 'folder' + (internal ? '' : ' has-actions') + (activeView.type === 'folder' && activeView.index === idx ? ' active' : '');
 row.onclick = () => { activeView = { type: 'folder', index: idx }; renderFoldersList(); loadFilesForCurrentView(); };
 const name = document.createElement('div');
 name.className = 'name';
@@ -265,6 +275,7 @@ const right = document.createElement('div');
 right.className = 'rightbox';
 const actions = document.createElement('div');
 actions.className = 'actions';
+if(!internal) {
 const renameBtn = folderActionIcon(ICONS.edit);
 renameBtn.title = 'Rename';
 renameBtn.onclick = (e) => { e.stopPropagation(); renameFolder(idx); };
@@ -272,6 +283,7 @@ const delBtn = folderActionIcon(ICONS.trash);
 delBtn.title = 'Delete';
 delBtn.onclick = (e) => { e.stopPropagation(); deleteFolder(idx); };
 actions.append(renameBtn, delBtn);
+}
 const count = createBadgeEl(Array.isArray(f.files) ? f.files.length : 0);
 right.append(actions, count);
 row.append(name, right);
@@ -290,25 +302,30 @@ const name = sanitizedFolderName(nameIn);
 if(!name) { await showAlert('Enter a folder name.', 'Let’s name it'); return false; }
 if(folders.find(f => f.name.toLowerCase() === name.toLowerCase())) { await showAlert('That folder already exists.', 'Duplicate folder'); return false; }
 folders.push({ name, files: [] });
+placeInternalLast();
 try { await saveFolders(); } catch (err) { await showAlert(err.message, 'Save failed'); return false; }
-activeView = { type: 'folder', index: folders.length - 1 };
+const idx = folders.findIndex(f => f.name === name);
+activeView = { type: 'folder', index: idx > -1 ? idx : folders.length - 1 };
 renderFoldersList();
 loadFilesForCurrentView();
 return true;
 }
 async function renameFolder(idx) {
 const current = folders[idx];
+if(isInternalName(current.name)) { await showAlert('This folder cannot be renamed.', 'Not allowed'); return; }
 const newName = await showPrompt('Rename folder', current.name);
 if(newName === null) return;
 const name = sanitizedFolderName(newName);
 if(!name) { await showAlert('Enter a valid name.', 'Invalid name'); return; }
 if(folders.find((f, i) => i !== idx && f.name.toLowerCase() === name.toLowerCase())) { await showAlert('A folder with this name already exists.', 'Duplicate name'); return; }
 folders[idx].name = name;
+placeInternalLast();
 try { await saveFolders(); } catch (err) { await showAlert(err.message, 'Save failed'); return; }
 renderFoldersList();
 }
 async function deleteFolder(idx) {
 const f = folders[idx];
+if(isInternalName(f.name)) { await showAlert('This folder cannot be deleted.', 'Not allowed'); return; }
 if(f.files && f.files.length > 0) { await showAlert('This folder is not empty. Remove files first.', 'Cannot delete'); return; }
 const ok = await showConfirm(`Delete folder "${f.name}"?`, 'Delete folder');
 if(!ok) return;
@@ -317,6 +334,7 @@ if(activeView.type === 'folder') {
 if(activeView.index === idx) activeView = { type: 'all', index: -1 };
 else if(activeView.index > idx) activeView.index -= 1;
 }
+placeInternalLast();
 try { await saveFolders(); } catch (e) { await showAlert(e.message, 'Save failed'); }
 renderFoldersList();
 loadFilesForCurrentView();
@@ -335,6 +353,7 @@ return Array.isArray(f?.files) ? f.files : [];
 function getAllIds() {
 const set = new Set();
 for(const f of folders) {
+if(isInternalName(f.name)) continue;
 for(const id of f.files || []) set.add(id);
 }
 return Array.from(set);
