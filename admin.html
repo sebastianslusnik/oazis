@@ -74,6 +74,7 @@ a:hover { text-decoration: underline; }
 .icon-btn { display: inline-flex; align-items: center; justify-content: center; padding: 6px 8px; border: 1px solid var(--border); background: transparent; border-radius: 10px; color: var(--muted); cursor: pointer; transition: background .12s ease, color .12s ease, border-color .12s ease, box-shadow .12s ease; text-decoration: none; }
 .icon-btn:hover { background: #333; color: white; }
 .icon-btn svg { width: 16px; height: 16px; display: block; }
+.folder-separator { height: 1px; background: var(--border); margin: 8px 6px; }
 @media (max-width: 1200px) { .left { width: 270px; } }
 @media (max-width: 900px) { .left { width: 240px; } }
 @media (max-width: 760px) {
@@ -263,7 +264,13 @@ const allCount = createBadgeEl(getAllIds().length);
 allRight.append(allCount);
 allRow.append(allName, allRight);
 foldersListEl.appendChild(allRow);
+const internalIndex = folders.findIndex(f => isInternalName(f.name));
 folders.forEach((f, idx) => {
+if(idx === internalIndex) {
+const sep = document.createElement('div');
+sep.className = 'folder-separator';
+foldersListEl.appendChild(sep);
+}
 const internal = isInternalName(f.name);
 const row = document.createElement('div');
 row.className = 'folder' + (internal ? '' : ' has-actions') + (activeView.type === 'folder' && activeView.index === idx ? ' active' : '');
