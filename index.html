@@ -145,11 +145,11 @@
 	.hide{display:none}
 	#docs{position:fixed;inset:0;display:grid;place-items:center;padding:6vh 0;background:rgba(16,33,28,.55);backdrop-filter:blur(2px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s ease,visibility .3s ease;z-index:100}
 	#docs.open{opacity:1;visibility:visible;pointer-events:auto}
-	#docs .panel{position:relative;width:min(1000px,86vw);height:min(84vh,900px);background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);transform:translateY(10px) scale(.98);opacity:0;transition:transform .35s cubic-bezier(.2,.7,.2,1),opacity .35s ease}
+	#docs .panel{position:relative;width:80vw;height:80vh;background:#fff;border:1px solid #ccc;border-radius:16px;box-shadow: #ccc 0 10px 30px 0;opacity:0;transition:transform .35s cubic-bezier(.2,.7,.2,1),opacity .35s ease}
 	#docs.open .panel{transform:translateY(0) scale(1);opacity:1}
 	#docs iframe{width:100%;height:100%;border:0;border-radius:inherit}
-	#closeDocs{position:absolute;top:12px;right:12px;background:#10211c;color:#dff3ee;padding:9px 14px;border-radius:10px;font-weight:800;cursor:pointer;border:1px solid rgba(255,255,255,.25);transition:transform .15s ease,background .2s ease}
-	#closeDocs:hover{transform:translateY(-1px);background:#173b33}
+	#closeDocs{position:absolute;top:-24px;right:-24px;background:#333;color:#fff;padding:0;border-radius:50%;font-weight:700;cursor:pointer;border:0;transition:transform .15s ease,background .2s ease}
+	#closeDocs:hover{transform:translateY(-1px);background:#222}
 	body.modal-open{overflow:hidden}
 	</style>
 </head>
@@ -598,7 +598,7 @@
 	<div class="toast" role="status" aria-live="polite" id="toast">Správa bola úspešne odoslaná!</div>
 	<div id="docs" aria-hidden="true">
 		<div class="panel">
-			<button id="closeDocs" type="button">Close</button>
+			<button id="closeDocs" type="button">&times;</button>
 			<iframe src="https://sebastianslusnik.github.io/oazis/documents"></iframe>
 		</div>
 	</div>
